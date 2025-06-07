@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Button xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+        x:Class="CalculatorApp.UIComponents.ExpressionButton"
+        x:DataType="Button"
+        LineBreakMode="CharacterWrap"
+        BorderWidth="2"
+        TextColor="White"
+        BackgroundColor="#512BD4">
+    <Button.GestureRecognizers>
+        <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnDoubleTapped"/>
+        <TapGestureRecognizer NumberOfTapsRequired="1" Tapped="OnSingleTapped"/>
+    </Button.GestureRecognizers>
+</Button>

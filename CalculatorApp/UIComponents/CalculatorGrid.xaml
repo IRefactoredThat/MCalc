@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CalculatorApp.UIComponents"
+             x:Class="CalculatorApp.UIComponents.CalculatorGrid"
+             x:DataType="Grid" >
+    <ContentPage.Content>
+        <Grid x:Name="grid" RowDefinitions="2*, 1*, 1*, 1*, 1*, 1*, 1*"
+                            ColumnDefinitions="1*, 1*, 1*, 1*, 1*, 1*, 1*, 1*">
+            <controls:CalculatorInputField x:Name="inputField"
+                                       Grid.Row="0" Grid.ColumnSpan="8"/>
+            
+            <controls:CalculatorOutputField x:Name="outputField"
+                                       Grid.Row="1" Grid.ColumnSpan="8"/>
+            
+            <controls:CalculatorButton Text="1" x:Name="button1" Grid.Row="2" Grid.Column="0" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="2" x:Name="button2" Grid.Row="2" Grid.Column="1"
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="3" x:Name="button3"  Grid.Row="2" Grid.Column="2"
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="+" x:Name="buttonPlus" Grid.Row="2" Grid.Column="3" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="sin" x:Name="buttonSin" Grid.Row="2" Grid.Column="4" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="cos" x:Name="buttonCos" Grid.Row="2" Grid.Column="5" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="tan" x:Name="buttonTan" Grid.Row="2" Grid.Column="6" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="⌫" x:Name="buttonBackspace" Grid.Row="2" 
+                                       Grid.Column="7" Clicked="OnButtonClicked"/>
+
+            <controls:CalculatorButton Text="4" x:Name="button4" Grid.Row="3" Grid.Column="0"
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="5" x:Name="button5" Grid.Row="3" Grid.Column="1" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="6" x:Name="button6" Grid.Row="3" Grid.Column="2" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="-" x:Name="buttonMinus" Grid.Row="3" Grid.Column="3" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="cot" x:Name="buttonCot" Grid.Row="3" Grid.Column="4" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="sec" x:Name="buttonSec" Grid.Row="3" Grid.Column="5" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="csc" x:Name="buttonCsc" Grid.Row="3" Grid.Column="6" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="C" x:Name="buttonC" Grid.Row="3" 
+                                       Grid.Column="7" Clicked="OnButtonClicked"/>
+
+            <controls:CalculatorButton Text="7" x:Name="button7" Grid.Row="4" Grid.Column="0" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="8" x:Name="button8" Grid.Row="4" Grid.Column="1" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="9" x:Name="button9" Grid.Row="4" Grid.Column="2" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="*" x:Name="buttonTimes" Grid.Row="4" Grid.Column="3" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="!" x:Name="buttonExclamationMark" Grid.Row="4" Grid.Column="4" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="log" x:Name="buttonLog" Grid.Row="4" Grid.Column="5" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="√" x:Name="buttonSqrt" Grid.Row="4" Grid.Column="6" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="ANS" x:Name="buttonAns" Grid.Row="4" Grid.Column="7" 
+                                       Clicked="OnButtonClicked"/>
+
+            <controls:CalculatorButton Text="0" x:Name="button0" Grid.Row="5" Grid.Column="0" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="π" x:Name="buttonPi" Grid.Row="5" Grid.Column="1" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="e" x:Name="buttonE" Grid.Row="5" Grid.Column="2" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="/" x:Name="buttonSlash" Grid.Row="5" Grid.Column="3" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="%" x:Name="buttonPercent" Grid.Row="5" Grid.Column="4" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="ln" x:Name="buttonLn" Grid.Row="5" Grid.Column="5" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="∛" x:Name="buttonCbrt" Grid.Row="5" Grid.Column="6" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="1/2" x:Name="buttonShiftOp" Grid.Row="5" Grid.Column="7" 
+                                       Clicked="OnButtonClicked"/>
+
+            <controls:CalculatorButton Text="(" x:Name="buttonOpen" Grid.Row="6" Grid.Column="0" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="." x:Name="buttonDot" Grid.Row="6" Grid.Column="1"
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text=")" x:Name="buttonClosed" Grid.Row="6" Grid.Column="2" 
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="^" x:Name="buttonCaret" Grid.Row="6" Grid.Column="3"  
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="CIR" x:Name="buttonShiftTrigOp" Grid.Row="6" Grid.Column="4"
+                                       Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="RAD" x:Name="buttonShiftAngleMode" Grid.Row="6" 
+                                       Grid.Column="5" Clicked="OnButtonClicked"/>
+            <controls:CalculatorButton Text="=" x:Name="buttonEquals" Grid.Row="6" Grid.Column="6" 
+                                       Grid.ColumnSpan="2" Clicked="OnButtonClicked"/>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>
