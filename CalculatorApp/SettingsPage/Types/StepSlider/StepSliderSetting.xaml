@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:stepSlider1="clr-namespace:CalculatorApp.SharedElements.StepSlider"
+    x:Class="CalculatorApp.SettingsPage.Types.StepSlider.StepSliderSetting"
+    x:Name="Root"
+    x:DataType="stepSlider:StepSliderSetting">
+    <Grid
+        ColumnDefinitions="Auto, *, Auto"
+        RowDefinitions="Auto, Auto, Auto"
+        Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            HorizontalTextAlignment="End"
+            Style="{StaticResource SettingName}"
+            Margin="0, 0, 15, 0"
+            Text="{Binding Source={x:Reference Root}, Path=ValueText}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <stepSlider1:StepSlider
+            Grid.Row="2"
+            Grid.Column="1"
+            Grid.ColumnSpan="2"
+            Margin="-15, 10, 0, 0"
+            Step="{Binding Source={x:Reference Root}, Path=Step}"
+            Maximum="{Binding Source={x:Reference Root}, Path=Maximum}"
+            Minimum="{Binding Source={x:Reference Root}, Path=Minimum}"
+            Value="{Binding Source={x:Reference Root}, Path=Value}"/>
+    </Grid>
+</contentButton:ContentButton>

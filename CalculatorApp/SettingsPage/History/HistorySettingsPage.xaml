@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:history="clr-namespace:CalculatorApp.SettingsPage.History"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    x:Class="CalculatorApp.SettingsPage.History.HistorySettingsPage"
+    x:DataType="history:HistorySettings"
+    Header="History">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <stepSlider:IntToDoubleConverter x:Key="IntToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <expandable:ExpandableToggleSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="History enabled"
+                Description="Remember calculation results"
+                Icon="{x:Static fonts:MaterialSymbols.HistoryOff}"
+                ToggledBehavior="ShowContentWhenToggledOn"
+                ExpandableView="{x:Reference HistoryOptions}"
+                IsToggled="{Binding HistoryEnabled}"/>
+            <VerticalStackLayout x:Name="HistoryOptions">
+                <stepSlider:StepSliderSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Entry count"
+                    Description="Max number of entries in history"
+                    Icon="{x:Static fonts:MaterialSymbols.HistoryEntries}"
+                    Maximum="{stepSlider:Double {x:Static history:HistorySettings.MaxMaxEntryCount}}"
+                    Minimum="{stepSlider:Double {x:Static history:HistorySettings.MinMaxEntryCount}}"
+                    ResetValue="{stepSlider:Double {x:Static history:HistorySettings.DefaultMaxEntryCount}}"
+                    Value="{Binding MaxEntryCount, Converter={StaticResource IntToDoubleConverter}}"
+                    Step="{stepSlider:Double {x:Static history:HistorySettings.EntryCountStep}}"/>
+                <options:OptionsSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Delete behavior"
+                    Description="What happens to old entries when total number exceeds maximum"
+                    Icon="{x:Static fonts:MaterialSymbols.OldEntry}"
+                    SelectedOption="{Binding OverflowBehavior}"/>
+                <options:OptionsSetting
+                    CornerRadius="5, 5, 15, 15"
+                    Name="Duplicate behavior"
+                    Description="What happens to duplicate entries"
+                    Icon="{x:Static fonts:MaterialSymbols.DuplicateEntry}"
+                    SelectedOption="{Binding DuplicationBehavior}"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
+    xmlns:colorChooser="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorChooser"
+    x:Class="CalculatorApp.SettingsPage.Colors.ColorSettingsPage"
+    x:DataType="appearance:AppearanceSettings"
+    Header="Custom colors">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <options:OptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Color style"
+                Description="Change style of the scheme"
+                Icon="{x:Static fonts:MaterialSymbols.ColorStyle}"
+                SelectedOption="{Binding Style}"/>
+            <colorChooser:ColorChooser
+                CornerRadius="5, 5, 15, 15"
+                Name="Color presets"
+                Description="Choose seed color from presets"
+                Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
+                Colors="{x:Static appearance:SeedPresets.Presets}"
+                DefaultColorIndex="{x:Static appearance:AppearanceSettings.DefaultColorIndex}"
+                SelectedColor="{Binding SeedColor}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

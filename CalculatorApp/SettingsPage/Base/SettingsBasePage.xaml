@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    x:Class="CalculatorApp.SettingsPage.Base.SettingsBasePage"
+    x:Name="Root"
+    x:DataType="base:SettingsBasePage">
+    <Shell.TitleView>
+        <Label
+            x:Name="TitleLabel"
+            Style="{StaticResource ShellTitle}"
+            Text="{Binding Source={x:Reference Root}, Path=Header}"/>
+    </Shell.TitleView>
+    <ContentView x:Name="ContentContainer"/>
+</ContentPage>

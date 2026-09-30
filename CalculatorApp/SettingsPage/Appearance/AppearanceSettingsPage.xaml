@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
+    xmlns:pageNavigation="clr-namespace:CalculatorApp.SettingsPage.Types.PageNavigation"
+    xmlns:colors="clr-namespace:CalculatorApp.SettingsPage.Colors"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
+    x:Class="CalculatorApp.SettingsPage.Appearance.AppearanceSettingsPage"
+    x:DataType="appearance:AppearanceSettings"
+    Header="Appearance">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <expandable:ExpandableOptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Theme mode"
+                Description="Choose how the app looks"
+                Icon="{x:Static fonts:MaterialSymbols.Paint}"
+                ExpandableValues="{Binding AmoledValues}"
+                ExpandableView="{x:Reference AmoledSetting}"
+                SelectedOption="{Binding PreferredTheme}"/>
+            <toggle:ToggleSetting
+                x:Name="AmoledSetting"
+                CornerRadius="5, 5, 5, 5"
+                Name="Darker theme"
+                Description="Apply darker tone to colors"
+                Icon="{x:Static fonts:MaterialSymbols.Amoled}"
+                IsToggled="{Binding AmoledEnabled}"/>
+            <expandable:ExpandableToggleSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Dynamic colors"
+                Description="Determine colors scheme from wallpaper"
+                Icon="{x:Static fonts:MaterialSymbols.DynamicColors}"
+                ToggledBehavior="ShowContentWhenToggledOff"
+                ExpandableView="{x:Reference ColorsPage}"
+                IsToggled="{Binding DynamicColors}"/>
+            <pageNavigation:PageNavigationSetting
+                x:Name="ColorsPage"
+                CornerRadius="5, 5, 15, 15"
+                Name="Custom colors"
+                Description="Choose seed color from presets"
+                Icon="{x:Static fonts:MaterialSymbols.CustomColors}"
+                Route="{x:Type colors:ColorSettingsPage}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

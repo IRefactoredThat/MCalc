@@ -1,52 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>;net9.0-android35.0</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
-		<!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
-		<!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
-
-		<!-- Note for MacCatalyst:
-		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
-		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
-		The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
-		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
-		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+		<TargetFramework>net10.0-android</TargetFramework>
+		<SupportedOSPlatformVersion>23</SupportedOSPlatformVersion>
 
 		<OutputType>Exe</OutputType>
 		<RootNamespace>CalculatorApp</RootNamespace>
-		<UseMaui>true</UseMaui>
+		<UseMaterial3>true</UseMaterial3>
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 
+		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningsNotAsErrors>XC0045;</WarningsNotAsErrors>
+		<!-- Relying on Google.Android.Material theming so supress the Obsolete warnings-->
+		<NoWarn>$(NoWarn);XAOBS001</NoWarn>
+
 		<!-- Display name -->
-		<ApplicationTitle>CalculatorApp</ApplicationTitle>
+		<ApplicationTitle>MCalc</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.calculatorapp</ApplicationId>
+		<ApplicationId>com.macalc.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0beta</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
-		<!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-		<WindowsPackageType>None</WindowsPackageType>
-
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
 		<LangVersion>preview</LangVersion>
 		<DefaultLanguage>en-us</DefaultLanguage>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+	  	<AndroidLinkMode>None</AndroidLinkMode>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+	  	<AndroidLinkMode>SdkOnly</AndroidLinkMode>
+	  	<AndroidLinkTool>r8</AndroidLinkTool>
+	  	<PlatformTarget>AnyCPU</PlatformTarget>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#1C1B1F" />
 
 		<!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#1C1B1F" BaseSize="128,128" />
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
@@ -59,12 +62,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
-		<PackageReference Include="CommunityToolkit.Maui.Core" Version="11.2.0" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.4" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.60" />
-		<PackageReference Include="Microsoft.Maui.Controls.Core" Version="9.0.60" />
-		<PackageReference Include="SharpHook" Version="5.3.9" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="15.0.1" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.110" />
+		<PackageReference Include="Microsoft.Maui.Core" Version="10.0.110" />
+		<!-- The material Slider.Change event requires
+		     Xamarin.Google.Android.Material >= 1.14 -->
+		<PackageReference Include="Xamarin.Google.Android.Material" Version="1.14.0.6" />
+		<PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.13.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.9.0" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.11.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -73,38 +84,279 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="UIComponents\CalculatorButton.xaml.cs">
+	  <Compile Update="Platforms\Android\MainApplication.cs">
+	    <ExcludeFromCurrentConfiguration>true</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="UIComponents\SliderSetting.xaml.cs">
+	    <DependentUpon>SliderSettingsItem.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\ToggleSetting.xaml.cs">
+	    <DependentUpon>ToggleSettingstem.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\OpenExternalAppSetting.xaml.cs">
+	    <DependentUpon>OpenBrowserSettingsItem.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\OptionsSetting.xaml.cs">
+	    <DependentUpon>OptionsSettingsItem.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\SettingsBasePage.xaml.cs">
+	    <DependentUpon>SettingsBasePage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\AppearanceSettingsPage.xaml.cs">
+	    <DependentUpon>AppearanceSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\FormattingSettingsPage.xaml.cs">
+	    <DependentUpon>FormattingSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="UIComponents\DependableOptionsSetting.xaml.cs">
+	    <DependentUpon>DependableOptions.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Shell\AppShell.xaml.cs">
+	    <DependentUpon>AppShell.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Shell\ShellItem.xaml.cs">
+	    <DependentUpon>CalculatorFlyoutItem.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\Buttons\Backspace\BackspaceButton.xaml.cs">
+	    <DependentUpon>BackspaceButton.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\Buttons\CalculatorButton\CalculatorButton.xaml.cs">
 	    <DependentUpon>CalculatorButton.xaml</DependentUpon>
+	    <SubType>Code</SubType>
 	  </Compile>
-	  <Compile Update="UIComponents\CalculatorInputField.xaml.cs">
+	  <Compile Update="CalculatorPage\Grids\Carousel\CarouselGrid.xaml.cs">
+	    <DependentUpon>CarouselGrid.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\Input\CalculatorInputField.xaml.cs">
 	    <DependentUpon>CalculatorInputField.xaml</DependentUpon>
+	    <SubType>Code</SubType>
 	  </Compile>
-	  <Compile Update="UIComponents\History.xaml.cs">
-	    <DependentUpon>History.xaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="UIComponents\CalculatorOutputField.xaml.cs">
+	  <Compile Update="CalculatorPage\Output\CalculatorOutputField.xaml.cs">
 	    <DependentUpon>CalculatorOutputField.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\History\HistoryView.xaml.cs">
+	    <DependentUpon>HistoryView.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\Page\CalculatorGridPage.xaml.cs">
+	    <DependentUpon>CalculatorGridPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Typography\TypographySettingsPage.xaml.cs">
+	    <DependentUpon>TypographySettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\FontSize\FontSizeSettingsPage.xaml.cs">
+	    <DependentUpon>FontSizeSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\FormattingSettings\FormattingSettingsPage.xaml.cs">
+	    <DependentUpon>FormattingSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\OpenExternalApp\OpenExternalAppSetting.xaml.cs">
+	    <DependentUpon>OpenExternalAppSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\Options\OptionsSetting.xaml.cs">
+	    <DependentUpon>OptionsSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\PageNavigation\PageNavigationSetting.xaml.cs">
+	    <DependentUpon>PageNavigationSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\ToggleSetting\ToggleSetting.xaml.cs">
+	    <DependentUpon>ToggleSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Base\SettingsBasePage.xaml.cs">
+	    <DependentUpon>SettingsBasePage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\ColorPicker\ColorChooser.xaml.cs">
+	    <DependentUpon>SliderSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\ColorPicker\ColorPreset.xaml.cs">
+	    <DependentUpon>ColorPreset.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Colors\ColorSettingsPage.xaml.cs">
+	    <DependentUpon>AppearanceSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Appearance\AppearanceSettingsPage.xaml.cs">
+	    <DependentUpon>ColorSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="Platforms\Android\Handlers\StepSliderHandler.cs">
+	    <ExcludeFromCurrentConfiguration>false</ExcludeFromCurrentConfiguration>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\ExpandableToggle\ExpandableToggleSetting.xaml.cs">
+	    <DependentUpon>ExpandableToggleSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\CustomLayout\CustomLayoutSettingsPage.xaml.cs">
+	    <DependentUpon>LayoutSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\CustomLayout\LayoutBuilder\LayoutBuilder.xaml.cs">
+	    <DependentUpon>LayoutBuilder.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\App\AppSettingsPage.xaml.cs">
+	    <DependentUpon>AnimationSettingsPage.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Formatting\NumberPreview.xaml.cs">
+	    <DependentUpon>NumberPreview.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="CalculatorPage\Buttons\CalculatorButton.xaml.cs">
+	    <DependentUpon>CalculatorButton.xaml</DependentUpon>
+	    <SubType>Code</SubType>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="UIComponents\CalculatorButton.xaml">
+	  <MauiXaml Update="UIComponents\SliderSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\ToggleSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\OpenExternalAppSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\OptionsSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\SettingsBasePage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\AppearanceSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\FormattingSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="UIComponents\DependableOptionsSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="Shell\AppShell.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="Shell\ShellItem.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="CalculatorPage\Buttons\Backspace\BackspaceButton.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="CalculatorPage\Buttons\CalculatorButton\CalculatorButton.xaml">
+	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="UIComponents\CalculatorGrid.xaml">
+	  <MauiXaml Update="CalculatorPage\Grids\Carousel\CarouselGrid.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="CalculatorPage\Input\CalculatorInputField.xaml">
+	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="UIComponents\CalculatorInputField.xaml">
+	  <MauiXaml Update="CalculatorPage\Output\CalculatorOutputField.xaml">
+	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="UIComponents\ExpressionButton.xaml">
+	  <MauiXaml Update="CalculatorPage\History\HistoryView.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="CalculatorPage\Page\CalculatorGridPage.xaml">
+	    <SubType>Designer</SubType>
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="UIComponents\History.xaml">
-	    <Generator>MSBuild:Compile</Generator>
+	  <MauiXaml Update="SettingsPage\Typography\TypographySettingsPage.xaml">
+	    <SubType>Designer</SubType>
 	  </MauiXaml>
-	  <MauiXaml Update="UIComponents\CalculatorOutputField.xaml">
-	    <Generator>MSBuild:Compile</Generator>
+	  <MauiXaml Update="SettingsPage\FontSize\FontSizeSettingsPage.xaml">
+	    <SubType>Designer</SubType>
 	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\FormattingSettings\FormattingSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\OpenExternalApp\OpenExternalAppSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\Options\OptionsSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\PageNavigation\PageNavigationSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\ToggleSetting\ToggleSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Base\SettingsBasePage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\ColorPicker\ColorChooser.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\ColorPicker\ColorPreset.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Colors\ColorSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Appearance\AppearanceSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\ExpandableToggle\ExpandableToggleSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\CustomLayout\CustomLayoutSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\CustomLayout\LayoutBuilder\LayoutBuilder.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\App\AppSettingsPage.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Formatting\NumberPreview.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="CalculatorPage\Buttons\CalculatorButton.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiPlatformSpecificFolder Remove="Platforms\Windows\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<MauiPlatformSpecificFolder Remove="Platforms\iOS\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\Images\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Include="SettingsPage\Colors\ColorChooser\ColorChooser.xaml" />
 	</ItemGroup>
 </Project>

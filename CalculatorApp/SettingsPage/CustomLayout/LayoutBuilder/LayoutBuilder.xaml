@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:layout="clr-namespace:CalculatorApp.SettingsPage.Layout"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
+    xmlns:layoutBuilder="clr-namespace:CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder"
+    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder.LayoutBuilder"
+    x:DataType="layout:LayoutSettings"
+    x:Name="Root">
+    <contentButton:ContentButton.Resources>
+        <layoutBuilder:LayoutModeConverter x:Key="LayoutModeConverter"/>
+    </contentButton:ContentButton.Resources>
+    <VerticalStackLayout>
+        <Grid>
+            <layoutBuilder:SpreadsheetGrid
+                x:Name="SpreadsheetGrid"
+                HeightRequest="{Binding Source={x:Reference Root},
+                Path=LayoutHeight, x:DataType='layoutBuilder:LayoutBuilder'}"
+                MaxRows="{x:Static layout:LayoutSettings.MaxUnitHeight}"
+                MaxColumns="{x:Static layout:LayoutSettings.MaxUnitWidth}"
+                TotalRows="{Binding UnitHeight}"
+                TotalColumns="{Binding UnitWidth}"
+                SelectedCell="{Binding SelectedCell}"
+                GridDefined="{Binding GridDefined}"
+                GridViewModel="{Binding GridViewModel}"/>
+            <display:CalculatorLayout
+                CarouselTapped="OnCarouselTapped"
+                Selector="{Binding Source={x:Reference Root},
+                Path=Selector, x:DataType='layoutBuilder:LayoutBuilder'}"
+                ButtonSpacing="{Binding ButtonSpacing}"
+                GridViewModel="{Binding GridViewModel}"
+                EnableCarouselInteraction="True"/>
+            <VerticalStackLayout
+                Spacing="8"
+                Margin="8"
+                HorizontalOptions="End"
+                VerticalOptions="Start">
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ShowHelpCommand}"
+                    IsVisible="{Binding ShowHelpVisible}">
+                    <Label
+                        Text="{x:Static fonts:MaterialSymbols.Help}"
+                        Style="{StaticResource PrimaryIcon}"
+                        FontSize="{DynamicResource LayoutBuilderSize}"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    IsVisible="{Binding GridDefined}"
+                    Style="{StaticResource ErrorButton}"
+                    Clicked="OnClearClicked"
+                    Command="{Binding FullClearCommand}">
+                    <Label
+                        Text="{x:Static fonts:MaterialSymbols.Trashcan}"
+                        Style="{StaticResource ErrorIcon}"
+                        FontSize="{DynamicResource LayoutBuilderSize}"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding IncreaseRowSpanCommand}"
+                    IsVisible="{Binding SelectingSubgrid}">
+                    <Label
+                        Style="{StaticResource PrimaryIcon}"
+                        Text="{x:Static fonts:MaterialSymbols.Collapse}"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding DecreaseRowSpanCommand}"
+                    IsVisible="{Binding SelectingSubgrid}">
+                    <Label
+                        Style="{StaticResource PrimaryIcon}"
+                        Text="{x:Static fonts:MaterialSymbols.Expand}"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding IncreaseColumnSpanCommand}"
+                    IsVisible="{Binding SelectingSubgrid}">
+                    <Label
+                        Style="{StaticResource PrimaryIcon}"
+                        Text="{x:Static fonts:MaterialSymbols.Collapse}"
+                        Rotation="90"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding DecreaseColumnSpanCommand}"
+                    IsVisible="{Binding SelectingSubgrid}">
+                    <Label
+                        Style="{StaticResource PrimaryIcon}"
+                        Text="{x:Static fonts:MaterialSymbols.Expand}"
+                        Rotation="90"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding ToggleLayoutModeCommand}"
+                    IsVisible="{Binding SelectingSubgrid}">
+                    <Label
+                        Style="{StaticResource PrimaryIcon}"
+                        Text="{Binding LayoutMode,
+                        Converter={StaticResource LayoutModeConverter}}"/>
+                </contentButton:ContentButton>
+                <contentButton:ContentButton
+                    Style="{StaticResource TertiaryButton}"
+                    Command="{Binding ClearPartCommand}"
+                    IsVisible="{Binding IsCellOccupied}">
+                    <Label
+                        Style="{StaticResource TertiaryIcon}"
+                        Text="{x:Static fonts:MaterialSymbols.Trashcan}"/>
+                </contentButton:ContentButton>
+            </VerticalStackLayout>
+        </Grid>
+        <FlexLayout x:Name="Categories" Wrap="Wrap"
+                    JustifyContent="Center" AlignItems="Center">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="layout:LayoutItemCategory">
+                    <contentButton:ContentButton
+                        Style="{StaticResource Option}"
+                        Clicked="OnCategoryClicked"
+                        ClickAnimation="{Binding Source={x:Reference Root},
+                        Path=ClickAnimation, x:DataType='layoutBuilder:LayoutBuilder'}">
+                        <Label Text="{Binding .}" Style="{StaticResource OptionLabel}"/>
+                    </contentButton:ContentButton>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+        <CollectionView
+            ItemsSource="{Binding LayoutItems}"
+            HorizontalScrollBarVisibility="Never"
+            SelectionMode="Single"
+            Scrolled="OnScrolled"
+            x:Name="Options"
+            SelectedItem="{Binding SelectedItem}"
+            ItemsUpdatingScrollMode="KeepScrollOffset"
+            Margin="20, 0, 20, 0"
+            IsEnabled="{Binding IsCellSelected}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="buttons:IBaseButtonViewModel">
+                    <Label Text="{Binding Text}" Style="{StaticResource LayoutOption}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+    </VerticalStackLayout>
+</contentButton:ContentButton>

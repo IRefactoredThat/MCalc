@@ -1,9 +1,9 @@
-﻿using Calculator.ExpressionPartConversions;
+﻿using System.Collections.Immutable;
+using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
-using Essentials.ResultType;
 using Essentials.ErrorType;
-using System.Collections.Immutable;
+using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
 
@@ -30,7 +30,8 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
         var resultParts = expression.Parts
             .Aggregate(
                 (ImmutableList<IExpressionPart>.Empty.ToResult(), new EmptyPart().ToResult<IExpressionPart>()),
-                ((Result<ImmutableList<IExpressionPart>> simplifiedParts, Result<IExpressionPart> lastPart) info, IExpressionPart part) =>
+                ((Result<ImmutableList<IExpressionPart>> simplifiedParts, Result<IExpressionPart> lastPart) info,
+                    IExpressionPart part) =>
                 {
                     var newParts = info.simplifiedParts.Map(parts =>
                         part switch
@@ -39,15 +40,18 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
                                 .Map(last =>
                                     last switch
                                     {
-                                        Expression expression => parts.Evaluate(expression.EvaluateAllOperators(), unaryOperator, expression.Mode),
-                                        IOperand operand => parts.Evaluate(operand.ToResult(), unaryOperator, expression.Mode),
-                                        _ => new InvalidRightSideUnaryOperatorUse(unaryOperator)
+                                        Expression innerExpression => parts.Evaluate(innerExpression.EvaluateAllOperators(),
+                                            unaryOperator, innerExpression.Mode),
+                                        IOperand operand => parts.Evaluate(operand.ToResult(), unaryOperator,
+                                            expression.Mode),
+                                        _ => new InvalidRightSideUnaryOperatorUse(unaryOperator.ToToken())
                                     }),
-                            var part => parts.Add(part).ToResult()
+                            _ => parts.Add(part).ToResult()
                         });
 
-                    var newLastPart = newParts.Map(parts => parts.Count > 0 ? parts[^1].ToResult()
-                        : new InvalidRightSideUnaryOperatorUse((part as IRightSideUnaryOperator)!));
+                    var newLastPart = newParts.Map(parts => parts.Count > 0
+                        ? parts[^1].ToResult()
+                        : new InvalidRightSideUnaryOperatorUse((part as IRightSideUnaryOperator)!.ToToken()));
 
                     return (newParts, newLastPart);
                 });
@@ -67,6 +71,7 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
     /// <see cref="IRightSideUnaryOperator"/> application, or an <see cref="Error"/> from
     /// <see cref="ExpressionEvaluatingExtensions.EvaluateAllOperators(Expression)"/>
     /// .</param>
+    /// <param name="unaryOperator">The <see cref="IRightSideUnaryOperator"/> to apply.</param>
     /// <param name="mode">The <see cref="AngleMode"/> used for trigonometric 
     /// functions.</param>
     /// <returns>
@@ -77,8 +82,8 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
     /// <see cref="UnaryOperatorsExtensions.Apply(IUnaryOperator, IOperand, AngleMode)"/>.
     /// </returns>
     private static Result<ImmutableList<IExpressionPart>> Evaluate
-        (this ImmutableList<IExpressionPart> parts, 
+    (this ImmutableList<IExpressionPart> parts,
         Result<IOperand> operand, IRightSideUnaryOperator unaryOperator, AngleMode mode)
-        => operand.Map(operand => unaryOperator.Apply(operand, mode))
-                .Map(operand => parts.SetItem(parts.Count - 1, operand).ToResult());
+        => operand.Map(currentOperand => unaryOperator.Apply(currentOperand, mode))
+            .Map(currentOperand => parts.SetItem(parts.Count - 1, currentOperand).ToResult());
 }

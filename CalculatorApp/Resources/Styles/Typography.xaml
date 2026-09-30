@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <x:Double x:Key="HistoryClearQuestionSize">30</x:Double>
+    <x:Double x:Key="HistoryEmptySize">30</x:Double>
+    <x:Double x:Key="DefaultFontSize">14</x:Double>
+    <x:Double x:Key="ShellTitleSize">25</x:Double>
+    <x:Double x:Key="IconSize">24</x:Double>
+    <x:Double x:Key="LayoutOptionSize">18</x:Double>
+    <x:Double x:Key="NumberPreviewSize">34</x:Double>
+    <x:Double x:Key="LayoutBuilderSize">25</x:Double>
+    <x:Double x:Key="GridDrawableSize">16</x:Double>
+    <x:Double x:Key="SnackbarSize">18</x:Double>
+    <x:Double x:Key="ButtonMinFontSize">10</x:Double>
+    <x:Double x:Key="FlyoutHeaderSize">30</x:Double>
+    <x:Double x:Key="FlyoutItemSize">20</x:Double>
+    <x:Double x:Key="InputSize">80</x:Double>
+    <x:Double x:Key="OutputSize">50</x:Double>
+    <x:Double x:Key="HistoryHeaderSize">30</x:Double>
+    <x:Double x:Key="HistoryItemSize">40</x:Double>
+    <x:Double x:Key="SettingGroupHeaderSize">40</x:Double>
+    <x:Double x:Key="SettingGroupSubheaderSize">25</x:Double>
+    <x:Double x:Key="SettingNameSize">20</x:Double>
+    <x:Double x:Key="SettingDescriptionSize">14</x:Double>
+    <x:Double x:Key="SettingOptionSize">14</x:Double>
+    <x:String x:Key="AppFont"/>
+</ResourceDictionary>

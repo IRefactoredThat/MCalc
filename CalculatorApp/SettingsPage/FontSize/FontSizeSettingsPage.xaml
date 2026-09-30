@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:typography="clr-namespace:CalculatorApp.SettingsPage.Typography"
+    xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    x:Class="CalculatorApp.SettingsPage.FontSize.FontSizeSettingsPage"
+    x:DataType="typography:TypographySettings"
+    Header="Font size">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <toggle:ToggleSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Follow global scale"
+                Description="Link all sizes to one scale, or scale each on its own"
+                Icon="{x:Static fonts:MaterialSymbols.FontSize}"
+                IsToggled="{Binding GlobalScaling}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Flyout"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Header size"
+                Description="Scale for the navigation header"
+                Icon="{x:Static fonts:MaterialSymbols.Flyout}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding FlyoutHeaderScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Item size"
+                Description="Scale for navigation items"
+                Icon="{x:Static fonts:MaterialSymbols.Flyout}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding FlyoutItemScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Input"/>
+            <expandable:ExpandableToggleSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Dynamic text scaling"
+                Description="Auto resize font for long inputs"
+                Icon="{x:Static fonts:MaterialSymbols.DynamicFontSize}"
+                ExpandableView="{x:Reference AutoScaling}"
+                ToggledBehavior="ShowContentWhenToggledOff"
+                IsToggled="{Binding DynamicTextScaling}"/>
+            <stepSlider:StepSliderSetting x:Name="AutoScaling"
+                CornerRadius="5, 5, 15, 15"
+                Name="Input size"
+                Description="Scale for the calculator input"
+                Icon="{x:Static fonts:MaterialSymbols.Input}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding InputScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Output"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 15, 15"
+                Name="Output size"
+                Description="Scale for the calculator output"
+                Icon="{x:Static fonts:MaterialSymbols.Output}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding OutputScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="History"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Header size"
+                Description="Scale for the history header"
+                Icon="{x:Static fonts:MaterialSymbols.HistoryHeader}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding HistoryHeaderScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Item size"
+                Description="Scale for history entries"
+                Icon="{x:Static fonts:MaterialSymbols.History}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding HistoryItemScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Empty state size"
+                Description="Scale for the empty history message"
+                Icon="{x:Static fonts:MaterialSymbols.HistoryOff}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding HistoryEmptyScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Clear question size"
+                Description="Scale for the clear confirmation"
+                Icon="{x:Static fonts:MaterialSymbols.Delete}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding HistoryClearQuestionScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Settings"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Group header size"
+                Description="Scale for group headers"
+                Icon="{x:Static fonts:MaterialSymbols.SettingGroupHeader}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SettingGroupHeaderScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Group subheader size"
+                Description="Scale for group subheaders"
+                Icon="{x:Static fonts:MaterialSymbols.SettingGroupSubheader}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SettingGroupSubheaderScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Name size"
+                Description="Scale for setting names"
+                Icon="{x:Static fonts:MaterialSymbols.SettingName}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SettingNameScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Description size"
+                Description="Scale for setting descriptions"
+                Icon="{x:Static fonts:MaterialSymbols.SettingDescription}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SettingDescriptionScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Option size"
+                Description="Scale for option chips"
+                Icon="{x:Static fonts:MaterialSymbols.SettingOption}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SettingOptionScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Shell and text"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Shell title size"
+                Description="Scale for the shell title"
+                Icon="{x:Static fonts:MaterialSymbols.Typography}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding ShellTitleScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Base text size"
+                Description="Scale for default text labels"
+                Icon="{x:Static fonts:MaterialSymbols.FontSize}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding DefaultFontScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Icons"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Icon size"
+                Description="Scale for icon glyphs"
+                Icon="{x:Static fonts:MaterialSymbols.DynamicFontSize}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding IconScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Layout builder icon size"
+                Description="Scale for layout builder icons"
+                Icon="{x:Static fonts:MaterialSymbols.CustomGrid}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding LayoutBuilderScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Previews"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Number preview size"
+                Description="Scale for formatted number preview"
+                Icon="{x:Static fonts:MaterialSymbols.Numbers}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding NumberPreviewScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Option chip size"
+                Description="Scale for layout option chips"
+                Icon="{x:Static fonts:MaterialSymbols.SettingOption}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding LayoutOptionScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Grid label size"
+                Description="Scale for grid preview labels"
+                Icon="{x:Static fonts:MaterialSymbols.Grid}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding GridDrawableScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Other"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Snackbar size"
+                Description="Scale for notification text"
+                Icon="{x:Static fonts:MaterialSymbols.Notifications}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding SnackbarScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Keypad minimum size"
+                Description="Scale for the smallest keypad text"
+                Icon="{x:Static fonts:MaterialSymbols.Calculator}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding ButtonMinFontScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

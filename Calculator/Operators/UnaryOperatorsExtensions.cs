@@ -1,8 +1,8 @@
-﻿using Essentials.ResultType;
+﻿using Calculator.ExpressionPartConversions;
+using Calculator.Operands;
 using Essentials.Calculator;
 using Essentials.ErrorType;
-using Calculator.Operands;
-using static System.Math;
+using Essentials.ResultType;
 
 namespace Calculator.Operators;
 
@@ -25,8 +25,7 @@ internal static class UnaryOperatorsExtensions
     /// <see cref="InvalidOperation"/> |
     /// <see cref="UndefinedOperation"/>.
     /// </returns>
-    public static Result<IOperand> Apply(this IUnaryOperator unaryOperator, 
-        IOperand operand, AngleMode mode)
+    public static Result<IOperand> Apply(this IUnaryOperator unaryOperator, IOperand operand, AngleMode mode)
     {
         var result = unaryOperator switch
         {
@@ -36,13 +35,10 @@ internal static class UnaryOperatorsExtensions
                 leftSideUnaryOperator.Apply(operand),
             IRightSideUnaryOperator rightSideUnaryOperator =>
                 rightSideUnaryOperator.Apply(operand),
-
             _ => new UndefinedOperation(unaryOperator)
         };
-
-        return result.Map(operand => operand.Value is
-            double.NegativeInfinity or double.PositiveInfinity or double.NaN ?
-            new InvalidOperation(unaryOperator) : operand.ToResult());
+        return result.Map(finalOperand => double.IsFinite(finalOperand.Value) ?
+            finalOperand.ToResult() : new InvalidOperation(unaryOperator.ToToken()));
     }
 
     /// <summary>
@@ -65,11 +61,11 @@ internal static class UnaryOperatorsExtensions
             NegationOperator => new Number(-operand.Value),
             PositiveValueOperator => operand.ToResult(),
 
-            SquareRootOperator => new Number(Sqrt(operand.Value)),
-            CubeRootOperator => new Number(Cbrt(operand.Value)),
+            SquareRootOperator => new Number(double.Sqrt(operand.Value)),
+            CubeRootOperator => new Number(double.Cbrt(operand.Value)),
 
-            LogarithmOperator => new Number(Log10(operand.Value)),
-            NaturalLogarithmOperator => new Number(Log(operand.Value)),
+            LogarithmOperator => new Number(double.Log10(operand.Value)),
+            NaturalLogarithmOperator => new Number(double.Log(operand.Value)),
 
             _ => new UndefinedOperation(unaryOperator),
         };
@@ -92,10 +88,10 @@ internal static class UnaryOperatorsExtensions
     {
         return unaryOperator switch
         {
-            FactorialOperator when operand.ExceedsMaximumOperandValueForFactorial()
-                => new NumberOverflow(unaryOperator),
-            FactorialOperator when operand.IsWholeNonNegativeInteger()
-                => new Number(operand.GetFactorial()),
+            FactorialOperator when operand.FactorialOverflow()
+                => new NumberOverflow(ExclamationMarkToken.Instance),
+            FactorialOperator when operand.FactorialDefined()
+                => operand.Value.GetFactorial().ToResult(),
 
             _ => new UndefinedOperation(unaryOperator),
         };
@@ -115,44 +111,45 @@ internal static class UnaryOperatorsExtensions
     /// the computed result of the operation, or one <see cref="Error"/> listed here:
     /// <see cref="UndefinedOperation"/>.
     /// </returns>
-    public static Result<IOperand> Apply(this ITrigonometricOperator 
+    private static Result<IOperand> Apply(this ITrigonometricOperator 
         trigonometricOperator, IOperand operand, AngleMode mode)
     {
         var value = operand.Value;
-        if(mode is AngleMode.DEG)
+        if (mode is AngleMode.DEG)
         {
             value = double.DegreesToRadians(value);
         }
 
         return trigonometricOperator switch
         {
-            SineOperator => new Number(Sin(value)).ToResult<IOperand>(),
-            CosineOperator => new Number(Cos(value)),
-            TangentOperator => new Number(Tan(value)), 
-            CotangentOperator => new Number(1 / Tan(value)),
-            SecantOperator => new Number(1 / Cos(value)),
-            CosecantOperator => new Number(1 / Sin(value)),
+            SineOperator => new Number(double.Sin(value)).ToResult<IOperand>(),
+            CosineOperator => new Number(double.Cos(value)),
+            TangentOperator => new Number(double.Tan(value)),
+            CotangentOperator => new Number(double.Cos(value) / double.Sin(value)),
+            SecantOperator => new Number(1 / double.Cos(value)),
+            CosecantOperator => new Number(1 / double.Sin(value)),
 
-            ArcsineOperator => new Number(Asin(value)),
-            ArccosineOperator => new Number(Acos(value)),
-            ArctangentOperator => new Number(Atan(value)),
-            ArccotangentOperator => new Number(1 / Atan(value)),
-            ArcsecantOperator => new Number(1 / Acos(value)),
-            ArccosecantOperator => new Number(1 / Asin(value)),
+            ArcsineOperator => new Number(double.Asin(value)),
+            ArccosineOperator => new Number(double.Acos(value)),
+            ArctangentOperator => new Number(double.Atan(value)),
+            ArccotangentOperator => new Number(double.Atan2(1, value)),
+            ArcsecantOperator => new Number(double.Acos(1 / value)),
+            ArccosecantOperator => new Number(double.Asin(1 / value)),
 
-            HyperbolicSineOperator => new Number(Sinh(value)),
-            HyperbolicCosineOperator => new Number(Cosh(value)),
-            HyperbolicTangentOperator => new Number(Tanh(value)),
-            HyperbolicCotangentOperator => new Number(1 / Tanh(value)),
-            HyperbolicSecantOperator => new Number(1 / Cosh(value)),
-            HyperbolicCosecantOperator => new Number(1 / Sinh(value)),
+            HyperbolicSineOperator => new Number(double.Sinh(value)),
+            HyperbolicCosineOperator => new Number(double.Cosh(value)),
+            HyperbolicTangentOperator => new Number(double.Tanh(value)),
+            HyperbolicCotangentOperator => new Number(double.Cosh(value) / double.Sinh(value)),
+            HyperbolicSecantOperator => new Number(1 / double.Cosh(value)),
+            HyperbolicCosecantOperator => new Number(1 / double.Sinh(value)),
 
-            HyperbolicArcsineOperator => new Number(Asinh(value)),
-            HyperbolicArccosineOperator => new Number(Acosh(value)),
-            HyperbolicArctangentOperator => new Number(Atanh(value)),
-            HyperbolicArccotangentOperator => new Number(1 / Atanh(value)),
-            HyperbolicArcsecantOperator => new Number(1 / Acosh(value)),
-            HyperbolicArccosecantOperator => new Number(1 / Asinh(value)),
+            HyperbolicArcsineOperator => new Number(double.Asinh(value)),
+            HyperbolicArccosineOperator => new Number(double.Acosh(value)),
+            HyperbolicArctangentOperator => new Number(double.Atanh(value)),
+
+            HyperbolicArccotangentOperator => new Number(double.Atanh(1 / value)),
+            HyperbolicArcsecantOperator => new Number(double.Acosh(1 / value)),
+            HyperbolicArccosecantOperator => new Number(double.Asinh(1 / value)),
 
             _ => new UndefinedOperation(trigonometricOperator)
         };

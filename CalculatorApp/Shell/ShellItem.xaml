@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.Shell.ShellItem"
+    x:DataType="FlyoutItem"
+    Margin="20, 0, 20, 5"
+    HeightRequest="56"
+    CornerRadius="28"
+    Clicked="OnItemClicked">
+    <Grid ColumnDefinitions="1*, 3*">
+        <Label
+            Grid.Column="0"
+            Style="{StaticResource ShellItemIcon}"
+            Text="{Binding Icon}"
+            x:Name="Icon"/>
+        <Label
+            Grid.Column="1"
+            Style="{StaticResource ShellItemLabel}"
+            Text="{Binding Title}"
+            Margin="0"/>
+    </Grid>
+</contentButton:ContentButton>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:app="clr-namespace:CalculatorApp.SettingsPage.App"
+    xmlns:openExternalApp="clr-namespace:CalculatorApp.SettingsPage.Types.OpenExternalApp"
+    x:Class="CalculatorApp.SettingsPage.App.AppSettingsPage"
+    x:DataType="app:AppSettings"
+    Header="App"
+    x:Name="DerivedRoot">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <app:ExceptionLog
+                HeightRequest="{Binding Source={x:Reference DerivedRoot}, Path=LayoutHeight, x:DataType='base:SettingsBasePage'}"/>
+            <openExternalApp:OpenExternalAppSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Source code"
+                Description="Backing code for the app"
+                Icon="{x:Static fonts:MaterialSymbols.Code}"
+                Uri="{x:Static app:AppSettings.RepositoryUrl}"/>
+            <openExternalApp:OpenExternalAppSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="About author"
+                Description="Info about author"
+                Icon="{x:Static fonts:MaterialSymbols.Author}"
+                Uri="{x:Static app:AppSettings.AuthorUrl}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

@@ -1,5 +1,4 @@
-﻿using Calculator.ExpressionComposition;
-using Calculator.Operands;
+﻿using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -11,56 +10,31 @@ namespace Calculator.ExpressionSolving;
 /// Represents an extension class containing methods for 
 /// evaluating an <see cref="Expression"/> completely.
 /// </summary>
-internal static class ExpressionEvaluatingExtensions
+public static class ExpressionEvaluatingExtensions
 {
     /// <summary>
-    /// Evaluates a <see cref="string"/>, trying to
-    /// determine the result of the underlaying expression, 
-    /// using the specified <see cref="AngleMode"/>.
+    /// Evaluates an <see cref="Expression"/>, trying to determine the result. Then, the result is rounded.
     /// </summary>
-    /// <param name="expression">The <see cref="string"/> to evaluate.</param>
-    /// <param name="mode">The <see cref="AngleMode"/> to use.</param>
-    /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either
-    /// representing an <see cref="IOperand"/> with an <see cref="IOperand.Value"/>
-    /// property set to the computed result, or an <see cref="Error"/> object.
-    /// </returns>
-    public static Result<IOperand> Evaluate(string expression, AngleMode mode) =>
-        ExpressionParsingExtensions.Parse(expression, mode)
-            .Map(expression => expression.SubstituteAllParentheses())
-            .Map(expression => expression.EvaluateAllOperators());
-
-    /// <summary>
-    /// Evaluates a <see cref="string"/>, trying to
-    /// determine the result of the underlaying expression, 
-    /// using the specified <see cref="AngleMode"/>. Then, the result is rounded.
-    /// </summary>
-    /// <param name="expression">The <see cref="string"/> to evaluate.</param>
-    /// <param name="mode">The <see cref="AngleMode"/> to use.</param>
+    /// <param name="expression">The <see cref="Expression"/> to evaluate.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="double"/> either
     /// representing the rounded computed result, or an <see cref="Error"/> object.
     /// </returns>
-    public static Result<double> EvaluateAndRound(string expression, AngleMode mode) =>
-        Evaluate(expression, mode).Map(operand => 
+    public static Result<double> EvaluateAndRound(Expression expression) =>
+        expression.MatchAllParentheses().SubstituteAllParentheses()
+            .Map(simplifiedExpression => simplifiedExpression.EvaluateAllOperators()).Map(operand =>
             operand.SmartRound().ToResult());
 
     /// <summary>
     /// Evaluates all operators inside the <paramref name="expression"/> with no
-    /// parentheses (denoted by <see cref="GroupingStartOperator"/> and 
-    /// <see cref="GroupingEndOperator"/>) in order to determine its result.
+    /// parentheses in order to determine its result.
     /// </summary>
-    /// <param name="expression">The <see cref="Expression"/> for evaluation.</param>
+    /// <param name="expression">The <see cref="Expression"/> to evaluate.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either
     /// representing an <see cref="IOperand"/> with an <see cref="IOperand.Value"/>
-    /// property set to the computed result, or one <see cref="Error"/>
-    /// from <see cref="LeftSideUnaryOperatorsEvaluatingExtensions
-    /// .EvaluateLeftSideUnaryOperators(Expression)"/>,
-    /// <see cref="RightSideUnaryOperatorsEvaluatingExtensions
-    /// .EvaluateRightSideUnaryOperators(Expression)"/>
-    /// or <see cref="BinaryOperatorEvaluatingExtensions
-    /// .EvaluateBinaryOperators(Expression)"/> method.
+    /// property set to the computed result, or an <see cref="Error"/>
+    /// from evaluating one of the expression operators
     /// </returns>
     /// <remarks>
     /// <b>Note</b>: Invoke
@@ -73,15 +47,16 @@ internal static class ExpressionEvaluatingExtensions
         expression
                 .SubstituteAllExponentiationOperators()
                 .EvaluateRightSideUnaryOperators()
-                .Map(expression => expression
+                .Map(simplifiedExpression => simplifiedExpression
                     .EvaluateLeftSideUnaryOperators())
-                .Map(expression => expression.EvaluateBinaryOperators
+                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
                     <ExponentiationOperator, NegativeExponentiationOperator>())
-                .Map(expression => expression.EvaluateBinaryOperators
+                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
                     <MultiplicationOperator, DivisionOperator, ModuloOperator>())
-                .Map(expression => expression.EvaluateBinaryOperators
+                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
                     <AdditionOperator, SubtractionOperator>())
-                .Map(value => value.Parts is 
-                      [IOperand operand] ? operand.ToResult() :
-                      new ExpressionNotEvaluated());
+                .Map(value => value.Parts is
+                    [IOperand operand]
+                    ? operand.ToResult()
+                    : new ExpressionNotEvaluated());
 }

@@ -1,11 +1,10 @@
-﻿using Calculator.Operators;
+﻿using System.Collections.Immutable;
+using System.Globalization;
 using Calculator.ExpressionPartConversions;
-using Essentials.Linq;
+using Calculator.Operators;
 using Essentials.Calculator;
-using Essentials.ResultType;
 using Essentials.ErrorType;
-using System.Collections.Immutable;
-using static Calculator.ExpressionComposition.ExpressionPartsParsingExtensions;
+using Essentials.ResultType;
 using static Calculator.ExpressionPartsMapping.GroupingOperatorMappingExtensions;
 
 namespace Calculator.ExpressionComposition;
@@ -17,23 +16,18 @@ namespace Calculator.ExpressionComposition;
 internal static class ExpressionParsingExtensions
 {
     /// <summary>
-    /// Parses a <see cref="string"/> into an <see cref="Expression"/> object, 
-    /// which will have specified <see cref="AngleMode"/>.
+    /// Parses an <see cref="IEnumerable{T}"/> of type <see cref="IToken"/>
+    /// into an <see cref="Expression"/> object, which will have specified <see cref="AngleMode"/>.
     /// </summary>
-    /// <param name="expression">A <see cref="string"/> to parse.</param>
+    /// <param name="tokens">Tokens to parse.</param>
     /// <param name="mode">An <see cref="AngleMode"/> for <see cref="Expression"/>.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="Expression"/> either representing
     /// a new, partially validated <see cref="Expression"/> object 
     /// or one <see cref="Error"/> listed here:
-    /// <see cref="EmptyExpression"/> |
-    /// <see cref="InvalidSymbolsInExpression"/> |
-    /// <see cref="InvalidExponentiationOperatorUse"/> |
-    /// <see cref="InvalidDivisionOperatorUse"/> |
-    /// <see cref="InvalidMultiplicationOperatorUse"/> |
+    /// <see cref="InvalidBinaryOperatorUse"/> |
     /// <see cref="InvalidGroupingEndOperatorUse"/> |
     /// <see cref="ExpressionContainsEmptyGrouping"/> |
-    /// <see cref="UndefinedExpressionPartMapping"/> |
     /// <see cref="InvalidExpressionEnd"/>.
     /// </returns>
     /// <remarks>
@@ -41,42 +35,32 @@ internal static class ExpressionParsingExtensions
     /// other errors are tracked down upon evaluation.
     /// </para>
     /// </remarks>
-    public static Result<Expression> Parse(string expression, AngleMode mode)
+    public static Result<Expression> Parse(IReadOnlyList<IToken> tokens, NumberFormatInfo info, AngleMode mode)
     {
-        expression = expression.Replace(" ", "");
-
-        if(expression == string.Empty)
+        if (tokens is [NumberToken])
         {
             return new EmptyExpression();
         }
+        var validatedParts = tokens
+            .Aggregate(ImmutableArray.Create<IExpressionPart>(
+                new EmptyPart()).ToResult(),
+            (accumulatedParts, token) => accumulatedParts
+                .SelfMap(parts => MapToProperPart(parts, info, token)),
+            finalParts => finalParts.SelfMap(parts => parts.RemoveAt(0)));
 
-        var partsAsStrings = Symbols(expression)
-            .ToImmutableList();
-
-        if(!string.Concat(partsAsStrings)
-            .SequenceEqual(expression))
-        {
-            return new InvalidSymbolsInExpression();
-        }
-
-        var ignoredSymbol = new EmptyPart().ToResult<IExpressionPart>();
-
-        var resultParts = partsAsStrings.ScanWithoutSeed(ignoredSymbol, 
-            (partInFront, currentSymbol) => 
-                partInFront.Map(part => MapToProperPart(currentSymbol, part))
-        );
-
-        return resultParts.ValuesOrFirstError()
-                .Map(parts => parts
-                        .SubstituteImplicitMultiplications()
-                        .EvaluateChainedOperands()
-                        .AttachAngleMode(mode)
-                        .ToResult())
-                .SelfMap(expression => expression.Parts switch
-                {
-                    [.., not (GroupingEndOperator or IOperand or FactorialOperator)] 
-                        => new InvalidExpressionEnd(),
-                    _ => expression
-                });
+        return validatedParts
+            .Map(parts => parts
+                .SubstituteImplicitMultiplications()
+                .ToImmutableArray()
+                .EvaluateChainedOperands()
+                .AttachAngleMode(mode)
+                .ToResult())
+            .SelfMap(finalExpression => finalExpression.Parts switch
+            {
+                [] => new EmptyExpression(),
+                // Expression can only end with ), some number or !, if that's not the case...
+                [.., not (GroupingEndOperator or IOperand or FactorialOperator)] => new InvalidExpressionEnd(),
+                _ => finalExpression
+            });
     }
 }

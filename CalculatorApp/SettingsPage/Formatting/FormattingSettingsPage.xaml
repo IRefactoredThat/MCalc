@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:formatting="clr-namespace:CalculatorApp.SettingsPage.Formatting"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:input="clr-namespace:CalculatorApp.CalculatorPage.Input"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    x:Class="CalculatorApp.SettingsPage.Formatting.FormattingSettingsPage"
+    x:DataType="formatting:FormattingSettings"
+    Header="Formatting">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <stepSlider:IntToDoubleConverter x:Key="IntToDoubleConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <formatting:NumberPreview
+                CornerRadius="15, 15, 15, 15"
+                DecimalSeparator="{Binding DecimalSeparator}"
+                ThousandSeparator="{Binding ThousandSeparator}"
+                ENotationExponentThreshold="{Binding ENotationExponentThreshold}"
+                FractionalPartLength="{x:Static input:Tokens.Precision}"
+                MaxLength="{x:Static input:Tokens.MaxTotalDigits}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Separators"/>
+            <expandable:ExpandableOptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Thousand separator"
+                Description="Separates integer digits"
+                Icon="{x:Static fonts:MaterialSymbols.ThousandSeparator}"
+                ExpandableValues="{x:Static formatting:FormattingSettings.RequiredThousandForDecimalSeparator}"
+                ExpandableView="{x:Reference DecimalSeparatorSetting}"
+                SelectedOption="{Binding ThousandSeparator}"/>
+            <options:OptionsSetting
+                x:Name="DecimalSeparatorSetting"
+                CornerRadius="5, 5, 15, 15"
+                Name="Decimal separator"
+                Description="Separates integer from fractional digits"
+                Icon="{x:Static fonts:MaterialSymbols.DecimalSeparator}"
+                SelectedOption="{Binding DecimalSeparator}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="E notation"/>
+            <expandable:ExpandableOptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Mode"
+                Description="Mode for scientific notation"
+                Icon="{x:Static fonts:MaterialSymbols.ENotation}"
+                ExpandableValues="{x:Static formatting:FormattingSettings.RequiredNotationForDigits}"
+                ExpandableView="{x:Reference EDigitsSetting}"
+                SelectedOption="{Binding ENotation}"/>
+            <stepSlider:StepSliderSetting
+                x:Name="EDigitsSetting"
+                CornerRadius="5, 5, 15, 15"
+                Name="Digits for E notation"
+                Description="Apply E notation after this many digits"
+                Icon="{x:Static fonts:MaterialSymbols.EDigits}"
+                Maximum="{stepSlider:Double {x:Static formatting:FormattingSettings.MaxAutoENotationDigits}}"
+                Minimum="{stepSlider:Double {x:Static formatting:FormattingSettings.MinAutoENotationDigits}}"
+                ResetValue="{stepSlider:Double {x:Static formatting:FormattingSettings.DefaultAutoENotationDigits}}"
+                Value="{Binding AutoENotationDigits, Converter={StaticResource IntToDoubleConverter}}"
+                Step="1"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

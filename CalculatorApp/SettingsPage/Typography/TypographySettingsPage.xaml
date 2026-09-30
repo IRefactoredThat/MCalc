@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:typography="clr-namespace:CalculatorApp.SettingsPage.Typography"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:pageNavigation="clr-namespace:CalculatorApp.SettingsPage.Types.PageNavigation"
+    xmlns:fontSize="clr-namespace:CalculatorApp.SettingsPage.FontSize"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    x:Class="CalculatorApp.SettingsPage.Typography.TypographySettingsPage"
+    x:DataType="typography:TypographySettings"
+    Header="Typography">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <expandable:ExpandableToggleSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Use system font"
+                Description="Set system font as app font"
+                Icon="{x:Static fonts:MaterialSymbols.SystemFont}"
+                ToggledBehavior="ShowContentWhenToggledOff"
+                ExpandableView="{x:Reference CustomFontSetting}"
+                IsToggled="{Binding UseSystemFont}"/>
+            <options:OptionsSetting
+                x:Name="CustomFontSetting"
+                CornerRadius="5, 5, 15, 15"
+                Name="Set predefined font"
+                Description="Set predefined font as app font"
+                Icon="{x:Static fonts:MaterialSymbols.CustomFont}"
+                SelectedOption="{Binding CustomAppFont}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Font size"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="15, 15, 15, 15"
+                Name="Font scale"
+                Description="Linked global scale or per-size scaling"
+                Icon="{x:Static fonts:MaterialSymbols.FontSize}"
+                Route="{x:Type fontSize:FontSizeSettingsPage}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

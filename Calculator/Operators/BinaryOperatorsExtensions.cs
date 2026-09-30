@@ -1,8 +1,8 @@
-﻿using Calculator.Operands;
+﻿using Calculator.ExpressionPartConversions;
+using Calculator.Operands;
 using Essentials.Calculator;
 using Essentials.ErrorType;
 using Essentials.ResultType;
-using static System.Math;
 
 namespace Calculator.Operators;
 
@@ -41,32 +41,41 @@ internal static class BinaryOperatorsExtensions
                 new Number(leftOperand.Value * rightOperand.Value),
 
             DivisionOperator when rightOperand.Value == 0 =>
-                new InvalidOperation(binaryOperator),
+                new InvalidOperation(DivToken.Instance),
             DivisionOperator =>
                 new Number(leftOperand.Value / rightOperand.Value),
 
             ExponentiationOperator when leftOperand.Value == 0 &&
-                rightOperand.Value < 0 => new InvalidOperation(binaryOperator),
+                rightOperand.Value < 0 => new InvalidOperation(CaretToken.Instance),
             ExponentiationOperator => new Number(
-                Pow(leftOperand.Value, rightOperand.Value)),
+                double.Pow(leftOperand.Value, rightOperand.Value)),
 
             NegativeExponentiationOperator when 
                 leftOperand.Value == 0 && rightOperand.Value < 0 => 
-                    new InvalidOperation(new ExponentiationOperator()),
+                    new InvalidOperation(CaretToken.Instance),
             NegativeExponentiationOperator => new Number(
-                -Pow(leftOperand.Value, rightOperand.Value)),
+                -double.Pow(leftOperand.Value, rightOperand.Value)),
 
             ModuloOperator => leftOperand.Modulo(rightOperand).ToResult(),
 
             _ => new UndefinedOperation(binaryOperator),
         };
 
-        return result.Map(operand => operand.Value switch
+
+        return result.Map(operand =>
         {
-            double.NegativeInfinity or double.PositiveInfinity
-                => new NumberOverflow(binaryOperator),
-            double.NaN => new InvalidOperation(binaryOperator),
-            _ => operand.ToResult()
+            if (double.IsNegativeInfinity(operand.Value) || double.IsPositiveInfinity(operand.Value))
+            {
+                return new NumberOverflow(binaryOperator.ToToken());
+            }
+
+            if (double.IsNaN(operand.Value))
+            {
+                return new InvalidOperation(binaryOperator.ToToken());
+            }
+
+            return operand.ToResult();
         });
+
     }
 }

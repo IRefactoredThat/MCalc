@@ -68,8 +68,7 @@ public readonly record struct EmptyPart : IExpressionPart;
 /// <see cref="IExpressionPart"/> instances used to determine the
 /// expression object.</param>
 /// <param name="Mode">An <see cref="AngleMode"/> used for trigonometric functions.</param>
-public record Expression(ImmutableList<IExpressionPart> Parts, AngleMode Mode) 
-    : IExpressionPart;
+public record Expression(ImmutableList<IExpressionPart> Parts, AngleMode Mode) : IExpressionPart;
 
 /// <summary>
 /// Represents a way angle values are interpreted in <see cref="Expression"/>.

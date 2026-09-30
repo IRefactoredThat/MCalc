@@ -1,10 +1,10 @@
-﻿using Calculator.ExpressionPartConversions;
+﻿using System.Collections.Immutable;
+using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
+using Essentials.ErrorType;
 using Essentials.ImmutableList;
 using Essentials.ResultType;
-using Essentials.ErrorType;
-using System.Collections.Immutable;
 
 namespace Calculator.ExpressionSolving;
 

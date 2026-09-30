@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Shell
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:shell="clr-namespace:CalculatorApp.Shell"
+    xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
+    xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
+    xmlns:all="clr-namespace:CalculatorApp.SettingsPage.All"
+    x:Class="CalculatorApp.Shell.AppShell"
+    x:DataType="appearance:AppearanceSettings"
+    BackgroundColor="{Binding ShellColor}">
+    <Shell.FlyoutHeader>
+        <Label Style="{StaticResource ShellHeaderLabel}" Text="MCalc"/>
+    </Shell.FlyoutHeader>
+    <Shell.ItemTemplate>
+        <DataTemplate x:DataType="FlyoutItem">
+            <shell:ShellItem/>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+    <FlyoutItem Title="Calculator" Icon="{x:Static fonts:MaterialSymbols.Calculator}">
+        <ShellContent ContentTemplate="{DataTemplate page:CalculatorGridPage}"/>
+    </FlyoutItem>
+    <FlyoutItem Title="Settings" Icon="{x:Static fonts:MaterialSymbols.Settings}">
+        <ShellContent ContentTemplate="{DataTemplate all:AllSettingsPage}"/>
+    </FlyoutItem>
+</Shell>

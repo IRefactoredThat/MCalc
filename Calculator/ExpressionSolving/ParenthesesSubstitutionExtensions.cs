@@ -1,11 +1,11 @@
-﻿using Essentials.ErrorType;
-using Essentials.ResultType;
+﻿using System.Collections.Immutable;
+using Calculator.ExpressionPartConversions;
+using Calculator.Operators;
 using Essentials.Calculator;
+using Essentials.ErrorType;
 using Essentials.ImmutableList;
 using Essentials.Linq;
-using Calculator.Operators;
-using Calculator.ExpressionPartConversions;
-using System.Collections.Immutable;
+using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
 
@@ -46,6 +46,38 @@ internal static class ParenthesesSubstitutionExtensions
                     ? new GroupingOperatorsRemainedInExpression() : finalExpression)
         );
     }
+    
+    /// <summary>
+    /// Match all parentheses (denoted by <see cref="GroupingStartOperator"/>
+    /// and <see cref="GroupingEndOperator"/>) in the <paramref name="expression"/> by
+    /// prepending the necessary <see cref="GroupingStartOperator"/>s and appending
+    /// the necessary <see cref="GroupingEndOperator"/>s for expression to have
+    /// the same amount of each, making it possibly evaluatable.
+    /// </summary>
+    /// <param name="expression">The <see cref="Expression"/> object used for matching.</param>
+    /// <returns>An <see cref="Expression"/> object with possibly well-formed parentheses.</returns>
+    public static Expression MatchAllParentheses(this Expression expression)
+    {
+        var neededGroupingStartOperators = expression.Parts
+            .Aggregate(0, (count, part) =>
+                part switch
+                {
+                    GroupingStartOperator => count - 1,
+                    GroupingEndOperator => count + 1,
+                    _ => count
+                });
+
+        var newParts = neededGroupingStartOperators switch
+        {
+            >0 => expression.Parts.InsertRange(0, Enumerable.Repeat<IExpressionPart>(
+                new GroupingStartOperator(), neededGroupingStartOperators)),
+            <0 => expression.Parts.AddRange(Enumerable.Repeat<IExpressionPart>(
+                new GroupingEndOperator(), -neededGroupingStartOperators)),
+            _ => expression.Parts
+        };
+
+        return newParts.AttachAngleMode(expression.Mode);
+    }
 
     /// <summary>
     /// Substitutes each pair of parentheses (denoted by <see cref="GroupingStartOperator"/>
@@ -66,15 +98,15 @@ internal static class ParenthesesSubstitutionExtensions
         var groupingStartIndex = expression.Parts
             .FindIndex(part => part is GroupingStartOperator);
 
-        if(groupingStartIndex == -1)
+        if (groupingStartIndex == -1)
         {
             return expression;
         }
 
         var groupingEndIndex = expression.MatchingGroupingOperatorIndex(groupingStartIndex);
-        if(groupingEndIndex == -1)
+        if (groupingEndIndex == -1)
         {
-            return new SuitableGroupingEndOperatorNotFound(groupingStartIndex);
+            return new SuitableGroupingEndOperatorNotFound();
         }
 
         var partsBefore = expression.Parts
@@ -146,9 +178,9 @@ internal static class ParenthesesSubstitutionExtensions
                 (Indicator: 1, Index: startingIndex),
                 (accumulator, part) => accumulator switch
                 {
-                    (var indicator, var index) when part
+                    var (indicator, index) when part
                     is GroupingStartOperator => (indicator + 1, index + 1),
-                    (var indicator, var index) when part
+                    var (indicator, index) when part
                     is GroupingEndOperator => (indicator - 1, index + 1),
                     _ => (accumulator.Indicator, accumulator.Index + 1)
                 },

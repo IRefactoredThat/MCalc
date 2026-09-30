@@ -1,10 +1,10 @@
-﻿using Calculator.ExpressionPartConversions;
+﻿using System.Collections.Immutable;
+using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
-using Essentials.ResultType;
 using Essentials.ImmutableList;
-using System.Collections.Immutable;
+using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
 
@@ -109,19 +109,19 @@ internal static class BinaryOperatorEvaluatingExtensions
                 })
             );
 
-        return parts.Map(parts => parts
+        return parts.Map(simplifiedParts => simplifiedParts
             .AttachAngleMode(expression.Mode)
             .ToResult());
     }
 
     /// <summary>
     /// Evaluates a portion of the <paramref name="parts"/> list by applying the
-    /// binary <paramref name="operator"/> to the <paramref name="first"/> 
+    /// binary <paramref name="operator"/> to the <paramref name="first"/>
     /// and <paramref name="second"/> operands.
     /// </summary>
     /// <typeparam name="T">The type of the operator used in evaluation.</typeparam>
     /// <param name="parts">The list being evaluated.</param>
-    /// <param name="binaryOperator">The binary operator applied to the operands.</param>
+    /// <param name="operator">The binary operator applied to the operands.</param>
     /// <param name="first">The first operand in the evaluation.</param>
     /// <param name="second">The second operand in the evaluation.</param>
     /// <returns>

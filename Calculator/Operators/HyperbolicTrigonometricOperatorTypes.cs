@@ -3,50 +3,50 @@
 namespace Calculator.Operators;
 
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the sinh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="SinhToken"/>.
 /// </summary>
 public readonly record struct HyperbolicSineOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the cosh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="CoshToken"/>.
 /// </summary>
 public readonly record struct HyperbolicCosineOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the tanh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="TanhToken"/>.
 /// </summary>
 public readonly record struct HyperbolicTangentOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the coth symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="CothToken"/>.
 /// </summary>
 public readonly record struct HyperbolicCotangentOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the sech symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="SechToken"/>.
 /// </summary>
 public readonly record struct HyperbolicSecantOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the csch symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="CschToken"/>.
 /// </summary>
 public readonly record struct HyperbolicCosecantOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the asinh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AsinhToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArcsineOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the acosh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AcoshToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArccosineOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the atanh symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AtanhToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArctangentOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the acoth symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AcothToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArccotangentOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the asech symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AsechToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArcsecantOperator : ITrigonometricOperator;
 /// <summary>
-/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the acsch symbol.
+/// Represents a type of <see cref="ITrigonometricOperator"/>, denoted by the <see cref="AcschToken"/>.
 /// </summary>
 public readonly record struct HyperbolicArccosecantOperator : ITrigonometricOperator;

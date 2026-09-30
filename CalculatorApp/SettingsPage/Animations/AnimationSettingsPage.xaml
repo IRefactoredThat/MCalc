@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:animations="clr-namespace:CalculatorApp.SettingsPage.Animations"
+    x:Class="CalculatorApp.SettingsPage.Animations.AnimationSettingsPage"
+    x:DataType="animations:AnimationSettings"
+    Header="Animations">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <Label Style="{StaticResource SettingSubheader}" Text="Calculator"/>
+            <options:OptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Click animation"
+                Description="Click animation for buttons on grid"
+                Icon="{x:Static fonts:MaterialSymbols.ClickAnimation}"
+                SelectedOption="{Binding CalculatorClickAnimation}"/>
+            <options:OptionsSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Transition animation"
+                Description="Transition animation for buttons on grid whose text changes"
+                Icon="{x:Static fonts:MaterialSymbols.TransitionAnimation}"
+                SelectedOption="{Binding CalculatorTransitionAnimation}"/>
+            <options:OptionsSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Result animation"
+                Description="Text animation from output to input field when clicking ="
+                Icon="{x:Static fonts:MaterialSymbols.ResultAnimation}"
+                SelectedOption="{Binding OutputToInputAnimation}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Settings"/>
+            <options:OptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Click animation"
+                Description="Click animation for all surfaces"
+                Icon="{x:Static fonts:MaterialSymbols.ClickAnimation}"
+                SelectedOption="{Binding SettingsClickAnimation}"/>
+            <options:OptionsSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Transition animation"
+                Description="Transition animation for settings that just became available"
+                Icon="{x:Static fonts:MaterialSymbols.TransitionAnimation}"
+                SelectedOption="{Binding SettingsTransitionAnimation}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

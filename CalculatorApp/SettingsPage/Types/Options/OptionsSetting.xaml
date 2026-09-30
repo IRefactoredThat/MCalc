@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    x:Class="CalculatorApp.SettingsPage.Types.Options.OptionsSetting"
+    x:Name="Root"
+    x:DataType="options:OptionsSetting">
+    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *" Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <FlexLayout
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="0, 5, 0, 5"
+            Wrap="Wrap"
+            JustifyContent="Start"
+            x:Name="Options">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="system:Enum">
+                    <contentButton:ContentButton
+                        Clicked="OnButtonClicked"
+                        Style="{StaticResource Option}"
+                        ClickAnimation="{Binding Source={x:Reference Root},
+                        Path=ClickAnimation, x:DataType='options:OptionsSetting'}">
+                        <Label Text="{Binding .}" Style="{StaticResource OptionLabel}"/>
+                    </contentButton:ContentButton>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </FlexLayout>
+    </Grid>
+</contentButton:ContentButton>

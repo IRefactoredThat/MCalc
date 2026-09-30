@@ -8,12 +8,9 @@ namespace Essentials.ErrorType;
 /// </summary>
 /// <param name="Operator"></param>
 public record UndefinedOperation(IOperator Operator) 
-    : Error($"Operation with the {Operator.GetType().Name} was not defined.");
+    : Error($"Operation undefined for {Operator.GetType().Name}.");
 /// <summary>
-/// Represents an implementation error.
-/// Occurs when a mapping from <paramref name="Symbol"/> to 
-/// <see cref="IExpressionPart"/> was not defined.
+/// Represents an implementation error. 
+/// Occurs when <see cref="Expression"/> was not evaluated.
 /// </summary>
-/// <param name="Symbol"></param>
-public record UndefinedExpressionPartMapping(string Symbol)
-    : Error($"Identifed expression part: {Symbol} was not valid or not defined.");
+public record ExpressionNotEvaluated() : Error("Expression was not successfully evaluated.");

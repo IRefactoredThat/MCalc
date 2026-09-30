@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
+    xmlns:history="clr-namespace:CalculatorApp.CalculatorPage.History"
+    xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:bottomSheet="clr-namespace:CalculatorApp.SharedElements.BottomSheet"
+    x:Class="CalculatorApp.CalculatorPage.Page.CalculatorGridPage"
+    x:DataType="page:CalculatorPageViewModel">
+    <Shell.TitleView>
+        <HorizontalStackLayout Style="{StaticResource Toolbar}">
+            <contentButton:ContentButton
+                Style="{StaticResource ToolbarButton}"
+                IsVisible="{Binding HistorySettings.HistoryEnabled}"
+                Command="{Binding HistoryViewModel.DeleteAllCommand}">
+                <Label
+                    Text="{x:Static fonts:MaterialSymbols.Trashcan}"
+                    Style="{StaticResource ToolbarIcon}"/>
+            </contentButton:ContentButton>
+            <contentButton:ContentButton
+                Style="{StaticResource ToolbarButton}"
+                Clicked="OnHistoryButtonClicked"
+                IsVisible="{Binding HistorySettings.HistoryEnabled}">
+                <Label
+                    Text="{x:Static fonts:MaterialSymbols.History}"
+                    Style="{StaticResource ToolbarIcon}"/>
+            </contentButton:ContentButton>
+        </HorizontalStackLayout>
+    </Shell.TitleView>
+    <Grid RowDefinitions="0.25*, 0.75*" SafeAreaEdges="None">
+        <page:InputOutput x:Name="InputOutput" Grid.Row="0"/>
+        <display:CalculatorGrid
+            Grid.Row="1"
+            Margin="0, 10, 0, 0"
+            InputOutput="{x:Reference InputOutput}"/>
+        <bottomSheet:BottomSheet x:Name="BottomSheet" Grid.Row="1">
+            <history:HistoryView PageViewModel="{Binding .}"/>
+        </bottomSheet:BottomSheet>
+    </Grid>
+</ContentPage>

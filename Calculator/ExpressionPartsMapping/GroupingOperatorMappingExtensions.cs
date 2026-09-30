@@ -1,31 +1,30 @@
-﻿using Calculator.Operators;
+﻿using System.Collections.Immutable;
+using System.Globalization;
+using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
 using Essentials.ResultType;
-using static Calculator.ExpressionPartsMapping.ExpressionPartSymbols;
 
 namespace Calculator.ExpressionPartsMapping;
 
 /// <summary>
-/// Represents a class containing a method used for mapping a symbol
+/// Represents a class containing a method used for mapping a token
 /// to an <see cref="IGroupingOperator"/> instance.
 /// </summary>
-internal class GroupingOperatorMappingExtensions
+internal static class GroupingOperatorMappingExtensions
 {
     /// <summary>
-    /// Maps a <paramref name="symbol"/> into an <see cref="IGroupingOperator"/> instance
+    /// Maps a <paramref name="token"/> into an <see cref="IGroupingOperator"/> instance
     /// or <see cref="ImplicitMultiplicationOperator"/> instance wrapping 
     /// <see cref="IGroupingOperator"/> instance
-    /// based on <see cref="string"/> contents and <paramref name="precedingPart"/> formed
+    /// based on <see cref="IExpressionPart"/> type and <paramref name="token"/> formed
     /// by previous invocation of <see cref="ExpressionPartsMapping"/> method chain
     /// or delegates this request to the
-    /// <see cref="UnaryOperatorMappingExtensions"/> class if the <paramref name="symbol"/>
+    /// <see cref="UnaryOperatorMappingExtensions"/> class if the <paramref name="token"/>
     /// does not represent one of the aforementioned instances. This method represent the
     /// start of the chain.
     /// </summary>
-    /// <param name="symbol">A <see cref="string"/> to map.</param>
-    /// <param name="precedingPart">An <see cref="IExpressionPart"/> formed 
-    /// by previous invocation.</param>
+    /// <param name="token">An assumed <see cref="IExpressionPart"/> to map.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> either being:
     /// <para>
@@ -36,32 +35,30 @@ internal class GroupingOperatorMappingExtensions
     /// <para>
     /// 2) An <see cref="Error"/> listed here: <see cref="InvalidGroupingEndOperatorUse"/>
     /// | <see cref="ExpressionContainsEmptyGrouping"/>, when the mapping was successful,
-    /// but the resulting instance cannot be preceded by <paramref name="precedingPart"/>.
+    /// but the resulting instance cannot be preceded by <see cref="IExpressionPart"/>.
     /// </para>
     /// 3) A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> formed by
     /// delegating the request to the <see cref="UnaryOperatorMappingExtensions"/> class,
     /// when the mapping was not successful.
     /// </returns>
-    public static Result<IExpressionPart> MapToProperPart(string symbol,
-        IExpressionPart precedingPart) => (symbol, precedingPart) switch
+    public static Result<ImmutableArray<IExpressionPart>> MapToProperPart(ImmutableArray<IExpressionPart> parts,
+        NumberFormatInfo info, IToken token) => (token, parts[^1]) switch
         {
-            (Open, IOperand or GroupingEndOperator or
+            (OpenBracketToken, IOperand or GroupingEndOperator or
                 IRightSideUnaryOperator or
-                ImplicitMultiplicationOperator(IOperand) or 
+                ImplicitMultiplicationOperator(IOperand) or
                 ImplicitMultiplicationOperator(GroupingEndOperator) or
                 ImplicitMultiplicationOperator(IRightSideUnaryOperator))
-                => new ImplicitMultiplicationOperator(new GroupingStartOperator()),
-            (Open, _)
-                => new GroupingStartOperator(),
+                => parts.Add(new ImplicitMultiplicationOperator(new GroupingStartOperator())),
 
-            (Closed, IBinaryOperator or ILeftSideUnaryOperator)
+            (ClosedBracketToken, IBinaryOperator or ILeftSideUnaryOperator)
                 => new InvalidGroupingEndOperatorUse(),
-            (Closed, GroupingStartOperator)
+            (ClosedBracketToken, GroupingStartOperator)
                 => new ExpressionContainsEmptyGrouping(),
-            (Closed, _)
-                => new GroupingEndOperator(),
+            (ClosedBracketToken, _) => parts.Add(new GroupingEndOperator()),
+            (OpenBracketToken, _) => parts.Add(new GroupingStartOperator()),
 
             _ => UnaryOperatorMappingExtensions.
-                   UnaryOperatorMappings(symbol, precedingPart),
+                   UnaryOperatorMappings(parts, info, token),
         };
 }

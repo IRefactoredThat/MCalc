@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Grid
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:history="clr-namespace:CalculatorApp.CalculatorPage.History"
+    xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
+    xmlns:converters="clr-namespace:CalculatorApp.CalculatorPage.History.Converters"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.CalculatorPage.History.HistoryView"
+    x:DataType="page:CalculatorPageViewModel"
+    RowDefinitions="Auto, Auto, 1*"
+    RowSpacing="15"
+    x:Name="History">
+    <Grid.Resources>
+        <converters:ResultConverter
+            x:Key="ResultConverter"
+            FormattingSettings="{Binding Source={x:Reference History},
+            Path=PageViewModel.FormattingSettings, x:DataType='history:HistoryView'}"/>
+        <converters:ExpressionConverter
+            x:Key="ExpressionConverter"
+            FormattingSettings="{Binding Source={x:Reference History},
+            Path=PageViewModel.FormattingSettings, x:DataType='history:HistoryView'}"/>
+    </Grid.Resources>
+    <BoxView Grid.Row="0" Style="{StaticResource Pill}"/>
+    <Label Grid.Row="1" Style="{StaticResource HistoryHeader}" Text="History"/>
+    <CollectionView
+        Grid.Row="2"
+        VerticalScrollBarVisibility="Never"
+        ItemsSource="{Binding HistoryViewModel.Items}"
+        ItemsLayout="VerticalList"
+        ItemsUpdatingScrollMode="{Binding HistoryViewModel.ScrollMode}">
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="history:HistoryItem">
+                <Grid RowDefinitions="1*, 1*" ColumnDefinitions="Auto, 1*" Margin="0, 0, 10, 0">
+                    <contentButton:ContentButton
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Command="{Binding Source={x:Reference History},
+                        Path=PageViewModel.HistoryViewModel.DeleteCommand,
+                        x:DataType='history:HistoryView'}"
+                        CommandParameter="{Binding .}">
+                        <Label
+                            Text="{x:Static fonts:MaterialSymbols.Delete}"
+                            Style="{StaticResource SettingsIcon}"/>
+                    </contentButton:ContentButton>
+                    <ScrollView
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalOptions="End"
+                        HorizontalScrollBarVisibility="Never">
+                        <contentButton:ContentButton
+                            Command="{Binding Source={x:Reference History},
+                            Path=PageViewModel.AppendTokensCommand,
+                            x:DataType='history:HistoryView'}"
+                            CommandParameter="{Binding Expression}">
+                            <Label
+                                Text="{Binding Expression, Converter=
+                                {StaticResource ExpressionConverter}}"
+                                Style="{StaticResource HistoryItem}"/>
+                        </contentButton:ContentButton>
+                    </ScrollView>
+                    <ScrollView
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Orientation="Horizontal"
+                        HorizontalOptions="End"
+                        HorizontalScrollBarVisibility="Never">
+                        <contentButton:ContentButton
+                            Command="{Binding Source={x:Reference History},
+                            x:DataType='history:HistoryView', Path=PageViewModel.AppendTokenCommand}"
+                            CommandParameter="{Binding Result}">
+                            <Label
+                                Text="{Binding Result, Converter={StaticResource ResultConverter}}"
+                                Style="{StaticResource HistoryItem}"/>
+                        </contentButton:ContentButton>
+                    </ScrollView>
+                </Grid>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+    <VerticalStackLayout
+        x:Name="Overlay"
+        HorizontalOptions="Center"
+        VerticalOptions="Center"
+        Grid.Row="1"
+        Grid.RowSpan="2">
+        <Label Text="{x:Static fonts:MaterialSymbols.History}" Style="{StaticResource Icon}"/>
+        <Label Text="No history" Style="{StaticResource NoHistory}"/>
+    </VerticalStackLayout>
+</Grid>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.SettingsPage.Types.Toggle.ToggleSetting"
+    x:Name="Root"
+    x:DataType="toggle:ToggleSetting"
+    Clicked="OnClicked">
+    <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="Auto, *, Auto" Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <Switch x:Name="Switch"
+            Margin="0, 0, 10, 0"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            IsToggled="{Binding Source={x:Reference Root}, Path=IsToggled}"
+            InputTransparent="True"/>
+    </Grid>
+</contentButton:ContentButton>

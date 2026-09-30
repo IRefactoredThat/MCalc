@@ -10,10 +10,10 @@ namespace Calculator.Operators;
 public readonly record struct ImplicitMultiplicationOperator
     (IExpressionPart InnerPart) : IExpressionPart;
 /// <summary>
-/// Represents a type of <see cref="IGroupingOperator"/>, denoted by the ( symbol.
+/// Represents a type of <see cref="IGroupingOperator"/>, denoted by the <see cref="OpenBracketToken"/>.
 /// </summary>
 public readonly record struct GroupingStartOperator : IGroupingOperator;
 /// <summary>
-/// Represents a type of <see cref="IGroupingOperator"/>, denoted by the ) symbol.
+/// Represents a type of <see cref="IGroupingOperator"/>, denoted by the <see cref="ClosedBracketToken"/>.
 /// </summary>
 public readonly record struct GroupingEndOperator : IGroupingOperator;

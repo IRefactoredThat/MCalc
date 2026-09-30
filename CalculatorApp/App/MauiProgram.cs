@@ -1,28 +1,24 @@
 ﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
 
-namespace CalculatorApp;
+namespace CalculatorApp.App;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
-		var builder = MauiApp.CreateBuilder();
-		builder
-			.UseMauiCommunityToolkit(options =>
-			{
-				options.SetShouldEnableSnackbarOnWindows(true);
-			})
-			.UseMauiApp<App>()
-			.ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-			});
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp
+            .CreateBuilder()
+            .UseMauiCommunityToolkit()
+            .RegisterFonts()
+            .UseMauiApp<App>()
+            .ConfigureHandlers();
 
-#if DEBUG
-        builder.Logging.AddDebug();
-#endif
-		return builder.Build();
-	}
+        builder.Services
+            .AddPersistence()
+            .AddSettings()
+            .AddViewModels()
+            .AddPages();
+
+        return builder.Build();
+    }
 }

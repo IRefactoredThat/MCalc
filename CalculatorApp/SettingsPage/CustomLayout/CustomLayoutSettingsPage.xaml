@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:layout="clr-namespace:CalculatorApp.SettingsPage.Layout"
+    xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:layoutBuilder="clr-namespace:CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder"
+    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
+    xmlns:customLayout="clr-namespace:CalculatorApp.SettingsPage.CustomLayout"
+    x:Class="CalculatorApp.SettingsPage.CustomLayout.CustomLayoutSettingsPage"
+    x:Name="DerivedRoot"
+    x:DataType="layout:LayoutSettings"
+    Header="Custom layout"
+    IsScrollable="False">
+    <base:SettingsBasePage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="AngleModeButton" x:DataType="buttons:AngleModeButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="BackspaceButton" x:DataType="buttons:BackspaceButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceFrontPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="EqualButton" x:DataType="buttons:EqualButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource PrimaryPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="InverseButton" x:DataType="buttons:InverseButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="NumberButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceFrontPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="TrigButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="PrimaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SecondaryPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="SecondaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
+            <display:CalculatorButtonSelector
+                x:Key="ButtonSelector"
+                AngleModeButtonTemplate="{StaticResource AngleModeButton}"
+                BackspaceButtonTemplate="{StaticResource BackspaceButton}"
+                EqualButtonTemplate="{StaticResource EqualButton}"
+                InverseButtonTemplate="{StaticResource InverseButton}"
+                NumberButtonTemplate="{StaticResource NumberButton}"
+                PrimaryButtonTemplate="{StaticResource PrimaryButton}"
+                SecondaryButtonTemplate="{StaticResource SecondaryButton}"
+                TrigButtonTemplate="{StaticResource TrigButton}"/>
+        </ResourceDictionary>
+    </base:SettingsBasePage.Resources>
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <layoutBuilder:LayoutBuilder
+                CornerRadius="15, 15, 15, 15"
+                Selector="{StaticResource ButtonSelector}"
+                ActiveCategory="{Binding ActiveCategory}"
+                LayoutHeight="{Binding Source={x:Reference DerivedRoot}, Path=LayoutHeight, x:DataType='base:SettingsBasePage'}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

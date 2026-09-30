@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<display:CalculatorLayout
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
+    xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
+    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
+    x:Class="CalculatorApp.CalculatorPage.MainGrid.Display.CalculatorGrid"
+    x:Name="Grid"
+    x:DataType="page:CalculatorPageViewModel"
+    ButtonSpacing="{Binding LayoutSettings.ButtonSpacing}"
+    GridViewModel="{Binding LayoutSettings.GridViewModel}">
+    <display:CalculatorLayout.Resources>
+        <DataTemplate x:Key="AngleModeButton"
+                      x:DataType="buttons:AngleModeButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceBackPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.ToggleAngleModeCommand}"
+                Text="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AngleMode}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="BackspaceButton" x:DataType="buttons:BackspaceButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceFrontPreset}"
+                Text="{Binding Text}"
+                LongCommand="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.ClearInputCommand}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.DeleteTokenCommand}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="EqualButton" x:DataType="buttons:EqualButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource PrimaryPreset}"
+                Text="{Binding Text}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.EvaluateCommand}"
+                CommandParameter="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorGrid', Path=InputOutput}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="InverseButton" x:DataType="buttons:InverseButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceBackPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.ToggleInverseModeCommand}"
+                Text="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.InverseMode}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="NumbersButton" x:DataType="buttons:ICalculatorButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceFrontPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AppendTokenCommand}"
+                CommandParameter="{Binding Token}"
+                Text="{Binding Text}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="TrigButton" x:DataType="buttons:ICalculatorButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceBackPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AppendTokenCommand}"
+                CommandParameter="{Binding Token}"
+                Text="{Binding Text}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="PrimaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SecondaryPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AppendTokenCommand}"
+                CommandParameter="{Binding Token}"
+                Text="{Binding Text}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="SecondaryButton"
+                      x:DataType="buttons:ICalculatorButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource SurfaceBackPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AppendTokenCommand}"
+                CommandParameter="{Binding Token}"
+                Text="{Binding Text}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+    </display:CalculatorLayout.Resources>
+    <display:CalculatorLayout.Selector>
+        <display:CalculatorButtonSelector
+            AngleModeButtonTemplate="{StaticResource AngleModeButton}"
+            BackspaceButtonTemplate="{StaticResource BackspaceButton}"
+            EqualButtonTemplate="{StaticResource EqualButton}"
+            InverseButtonTemplate="{StaticResource InverseButton}"
+            NumberButtonTemplate="{StaticResource NumbersButton}"
+            TrigButtonTemplate="{StaticResource TrigButton}"
+            PrimaryButtonTemplate="{StaticResource PrimaryButton}"
+            SecondaryButtonTemplate="{StaticResource SecondaryButton}"/>
+    </display:CalculatorLayout.Selector>
+</display:CalculatorLayout>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:input="clr-namespace:CalculatorApp.CalculatorPage.Input"
+    xmlns:output="clr-namespace:CalculatorApp.CalculatorPage.Output"
+    xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
+    x:Class="CalculatorApp.CalculatorPage.Page.InputOutput"
+    x:DataType="page:CalculatorPageViewModel"
+    x:Name="Grid">
+    <Grid RowDefinitions="1.5*, 1*">
+        <input:CalculatorInputField
+            Grid.Row="0"
+            x:Name="InputField"
+            BindingContext="{Binding InputViewModel}"/>
+        <output:CalculatorOutputField
+            Grid.Row="1"
+            x:Name="OutputField"
+            BindingContext="{Binding OutputViewModel}"/>
+        <Label
+            Grid.Row="0"
+            x:Name="Overlay"
+            IsVisible="False"
+            VerticalOptions="End"
+            LineBreakMode="NoWrap"
+            AnchorX="1"
+            AnchorY="1"
+            InputTransparent="True"
+            HorizontalTextAlignment="End"
+            Margin="10, 0, 10, 0"
+            BindingContext="{Binding InputViewModel}"/>
+    </Grid>
+</contentButton:ContentButton>

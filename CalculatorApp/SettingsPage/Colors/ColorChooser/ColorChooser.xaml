@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:colorChooser="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorChooser"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.SettingsPage.Colors.ColorChooser.ColorChooser"
+    x:Name="Root"
+    x:DataType="colorChooser:ColorChooser">
+    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *" Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <CollectionView
+            Grid.Row="2"
+            Grid.Column="1"
+            x:Name="PresetsView"
+            SelectionMode="None"
+            Margin="0, 10, 0, 0"
+            HorizontalScrollBarVisibility="Never"
+            VerticalScrollBarVisibility="Never">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="colorChooser:ColorPreset">
+                    <contentButton:ContentButton
+                        Style="{StaticResource ColorPreset}"
+                        Clicked="OnClicked"
+                        ClickAnimation="{Binding Source={x:Reference Root},
+                        Path=ClickAnimation, x:DataType='colorChooser:ColorChooser'}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+        </CollectionView>
+    </Grid>
+</contentButton:ContentButton>

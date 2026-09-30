@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:pageNavigation="clr-namespace:CalculatorApp.SettingsPage.Types.PageNavigation"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
+    xmlns:typography="clr-namespace:CalculatorApp.SettingsPage.Typography"
+    xmlns:formatting="clr-namespace:CalculatorApp.SettingsPage.Formatting"
+    xmlns:history="clr-namespace:CalculatorApp.SettingsPage.History"
+    xmlns:animations="clr-namespace:CalculatorApp.SettingsPage.Animations"
+    xmlns:layout="clr-namespace:CalculatorApp.SettingsPage.Layout"
+    xmlns:app="clr-namespace:CalculatorApp.SettingsPage.App"
+    x:Class="CalculatorApp.SettingsPage.All.AllSettingsPage"
+    Header="Settings">
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <Label Style="{StaticResource SettingSubheader}" Text="General"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Theme"
+                Description="Global app appearance"
+                Icon="{x:Static fonts:MaterialSymbols.Theme}"
+                Route="{x:Type appearance:AppearanceSettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Typography"
+                Description="Font-related settings"
+                Icon="{x:Static fonts:MaterialSymbols.Typography}"
+                Route="{x:Type typography:TypographySettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Layout"
+                Description="Element shapes and positions"
+                Icon="{x:Static fonts:MaterialSymbols.Layout}"
+                Route="{x:Type layout:LayoutSettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Animations"
+                Description="Interaction and motion"
+                Icon="{x:Static fonts:MaterialSymbols.Animation}"
+                Route="{x:Type animations:AnimationSettingsPage}"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Calculator"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Numbers"
+                Description="Result formating and number appearance"
+                Icon="{x:Static fonts:MaterialSymbols.Numbers}"
+                Route="{x:Type formatting:FormattingSettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="History"
+                Description="Save calculation results"
+                Icon="{x:Static fonts:MaterialSymbols.History}"
+                Route="{x:Type history:HistorySettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Development"
+                Description="App info and bug reports"
+                Icon="{x:Static fonts:MaterialSymbols.App}"
+                Route="{x:Type app:AppSettingsPage}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

@@ -1,11 +1,11 @@
-﻿using Android.App;
+using Android.App;
 using Android.Runtime;
+using CalculatorApp.App;
 
-namespace CalculatorApp;
+namespace CalculatorApp.Platforms.Android;
 
 [Application]
-public class MainApplication(IntPtr handle, JniHandleOwnership ownership) 
-    : MauiApplication(handle, ownership)
+public class MainApplication(IntPtr handle, JniHandleOwnership ownership) : MauiApplication(handle, ownership)
 {
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

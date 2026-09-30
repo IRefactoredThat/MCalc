@@ -1,7 +1,7 @@
-﻿using Calculator.ExpressionPartConversions;
+﻿using System.Collections.Immutable;
+using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
-using System.Collections.Immutable;
 
 namespace Calculator.ExpressionSolving;
 
@@ -35,7 +35,7 @@ internal static class ExponentiationSubstitutionExtensions
                 {
                     return newParts.Add(new NegativeExponentiationOperator());
                 }
-                if(part is Expression innerExpression)
+                if (part is Expression innerExpression)
                 {
                     return newParts.Add(innerExpression
                         .SubstituteAllExponentiationOperators());

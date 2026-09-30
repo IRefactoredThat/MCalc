@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base:SettingsBasePage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:layout="clr-namespace:CalculatorApp.SettingsPage.Layout"
+    xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    xmlns:pageNavigation="clr-namespace:CalculatorApp.SettingsPage.Types.PageNavigation"
+    xmlns:customLayout="clr-namespace:CalculatorApp.SettingsPage.CustomLayout"
+    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
+    xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
+    x:Class="CalculatorApp.SettingsPage.Layout.LayoutSettingsPage"
+    x:Name="DerivedRoot"
+    x:DataType="layout:LayoutSettings"
+    Header="Layout">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <DataTemplate x:Key="AngleModeButton" x:DataType="buttons:AngleModeButtonViewModel">
+                <buttons:CalculatorButton
+                    Text="{Binding Text}"
+                    Style="{StaticResource SurfaceBackPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    Path=AnimationSettings.CalculatorClickAnimation, x:DataType='base:SettingsBasePage'}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=LayoutSettings.ButtonShape, x:DataType='layout:LayoutSettingsPage'}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="BackspaceButton" x:DataType="buttons:BackspaceButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceFrontPreset}"
+                    Text="{Binding Text}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage', Path=LayoutSettings.ButtonShape}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="EqualButton" x:DataType="buttons:EqualButtonViewModel">
+                <buttons:CalculatorButton
+                    Text="{Binding Text}"
+                    Style="{StaticResource PrimaryPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="InverseButton" x:DataType="buttons:InverseButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="NumberButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceFrontPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="TrigButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="PrimaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SecondaryPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
+            <DataTemplate x:Key="SecondaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource SurfaceBackPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=LayoutSettings.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
+            <display:CalculatorButtonSelector
+                x:Key="ButtonSelector"
+                AngleModeButtonTemplate="{StaticResource AngleModeButton}"
+                BackspaceButtonTemplate="{StaticResource BackspaceButton}"
+                EqualButtonTemplate="{StaticResource EqualButton}"
+                InverseButtonTemplate="{StaticResource InverseButton}"
+                NumberButtonTemplate="{StaticResource NumberButton}"
+                PrimaryButtonTemplate="{StaticResource PrimaryButton}"
+                SecondaryButtonTemplate="{StaticResource SecondaryButton}"
+                TrigButtonTemplate="{StaticResource TrigButton}"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <base:SettingsBasePage.SettingsContent>
+        <VerticalStackLayout>
+            <contentButton:ContentButton
+                Style="{StaticResource LayoutPreview}"
+                CornerRadius="15, 15, 5, 5"
+                HeightRequest="{Binding Source={x:Reference DerivedRoot},
+                Path=LayoutHeight, x:DataType='base:SettingsBasePage'}">
+                <display:CalculatorLayout
+                    Selector="{StaticResource ButtonSelector}"
+                    ButtonSpacing="{Binding ButtonSpacing}"
+                    GridViewModel="{Binding GridViewModel}"/>
+            </contentButton:ContentButton>
+            <expandable:ExpandableOptionsSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Grid layout"
+                Description="Choose layout for buttons inside grid"
+                Icon="{x:Static fonts:MaterialSymbols.Grid}"
+                ExpandableValues="{x:Static layout:LayoutSettings.RequiredLayoutForCustomModel}"
+                ExpandableView="{x:Reference CustomLayout}"
+                SelectedOption="{Binding GridLayout}"/>
+            <VerticalStackLayout x:Name="CustomLayout">
+                <pageNavigation:PageNavigationSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Custom layout"
+                    Description="Create a custom grid layout"
+                    Icon="{x:Static fonts:MaterialSymbols.CustomGrid}"
+                    Route="{x:Type customLayout:CustomLayoutSettingsPage}"/>
+                <toggle:ToggleSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Custom layout builder guide"
+                    Description="Show a button to help you understand custom layout creation"
+                    Icon="{x:Static fonts:MaterialSymbols.Help}"
+                    IsToggled="{Binding ShowHelpVisible}"/>
+            </VerticalStackLayout>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 5, 5"
+                Name="Spacing"
+                Description="Adjust space between neighboring buttons"
+                Icon="{x:Static fonts:MaterialSymbols.Spacing}"
+                Maximum="{x:Static layout:LayoutSettings.MaxButtonSpacing}"
+                Minimum="{x:Static layout:LayoutSettings.MinButtonSpacing}"
+                Step="{x:Static layout:LayoutSettings.ButtonSpacingStep}"
+                ResetValue="{x:Static layout:LayoutSettings.DefaultButtonSpacing}"
+                Value="{Binding ButtonSpacing}"/>
+            <options:OptionsSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Button shape"
+                Description="Change button shape"
+                Icon="{x:Static fonts:MaterialSymbols.Shape}"
+                SelectedOption="{Binding ButtonShape}"/>
+        </VerticalStackLayout>
+    </base:SettingsBasePage.SettingsContent>
+</base:SettingsBasePage>

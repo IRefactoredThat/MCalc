@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
+    xmlns:openExternalApp="clr-namespace:CalculatorApp.SettingsPage.Types.OpenExternalApp"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    x:Class="CalculatorApp.SettingsPage.Types.OpenExternalApp.OpenExternalAppSetting"
+    x:Name="Root"
+    x:DataType="openExternalApp:OpenExternalAppSetting"
+    Clicked="OnOpenClicked">
+    <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto" Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <Label
+            Margin="0, 0, 10, 0"
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            Style="{StaticResource SettingsIcon}"
+            Text="{x:Static fonts:MaterialSymbols.Web}"/>
+    </Grid>
+</contentButton:ContentButton>

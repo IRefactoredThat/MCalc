@@ -1,5 +1,4 @@
 ﻿using Essentials.Calculator;
-using static System.Math;
 
 namespace Calculator.Operands;
 
@@ -10,23 +9,23 @@ namespace Calculator.Operands;
 public readonly record struct Number(double Value) : IOperand;
 
 /// <summary>
-/// Represents a type of <see cref="IConstant"/>, the constant π.
+/// Represents a type of <see cref="IConstant"/>, denoted by <see cref="PiToken"/>.
 /// </summary>
-public readonly record struct PiConstant() : IConstant
+public readonly record struct PiConstant : IConstant
 {
     /// <summary>
     /// Value of the constant, 3.1415926535897931...
     /// </summary>
-    public double Value => PI;
+    public double Value => double.Pi;
 }
 
 /// <summary>
-/// Represents a type of <see cref="IConstant"/>, the constant e.
+/// Represents a type of <see cref="IConstant"/>, the constant <see cref="PiToken"/>.
 /// </summary>
-public readonly record struct EConstant() : IConstant
+public readonly record struct EConstant : IConstant
 {
     /// <summary>
     /// Value of the constant, 2.7182818284590451...
     /// </summary>
-    public double Value => E;
+    public double Value => double.E;
 }
