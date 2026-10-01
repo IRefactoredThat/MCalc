@@ -364,3 +364,9 @@ FodyWeavers.xsd
 # IDE
 .idea/
 *.DotSettings.user
+
+# Android signing keys - these are credentials, never commit them
+*.keystore
+*.jks
+*.p12
+*.pfx
