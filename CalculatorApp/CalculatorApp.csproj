@@ -38,7 +38,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
+		<RuntimeIdentifier>android-arm64</RuntimeIdentifier>
 	  	<AndroidLinkMode>SdkOnly</AndroidLinkMode>
 	  	<AndroidLinkTool>r8</AndroidLinkTool>
 	  	<PlatformTarget>AnyCPU</PlatformTarget>
