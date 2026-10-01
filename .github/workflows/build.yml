@@ -50,17 +50,25 @@ jobs:
           test -f "$NOTES" || { echo "missing release notes: $NOTES"; exit 1; }
 
           case "$VER" in
-            *-*) PRERELEASE=true ;;
-            *)    PRERELEASE=false ;;
+            *-*) echo "note: version looks like a pre-release but IsPreRelease is independent" ;;
+          esac
+
+          PRERELEASE=$(sed -n 's:.*<IsPreRelease>\(.*\)</IsPreRelease>.*:\1:p' \
+            CalculatorApp/CalculatorApp.csproj | head -1)
+          case "$PRERELEASE" in
+            true|false) ;;
+            *) echo "IsPreRelease must be true or false, got '$PRERELEASE'"; exit 1 ;;
           esac
 
           TAG_EXISTS=false
           git ls-remote --exit-code --tags origin "refs/tags/$VER" >/dev/null 2>&1 && TAG_EXISTS=true
 
-          echo "version=$VER"           >> "$GITHUB_OUTPUT"
-          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
-          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
-          echo "notes=$NOTES"           >> "$GITHUB_OUTPUT"
+          {
+            echo "version=$VER"
+            echo "prerelease=$PRERELEASE"
+            echo "tag_exists=$TAG_EXISTS"
+            echo "notes=$NOTES"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Publish
         env:

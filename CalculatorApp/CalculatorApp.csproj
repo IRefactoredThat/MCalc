@@ -27,6 +27,9 @@
 		<ApplicationDisplayVersion>1.0.0-beta.1</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
+		<!-- Using the MSBuild property for Obtainium to work easily -->
+		<IsPreRelease>false</IsPreRelease>
+
 		<LangVersion>preview</LangVersion>
 		<DefaultLanguage>en-us</DefaultLanguage>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
