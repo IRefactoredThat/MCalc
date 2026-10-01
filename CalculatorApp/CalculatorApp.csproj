@@ -24,7 +24,7 @@
 		<ApplicationId>com.macalc.app</ApplicationId>
 
 		<!-- Versions -->
-		<ApplicationDisplayVersion>1.0beta</ApplicationDisplayVersion>
+		<ApplicationDisplayVersion>1.0.0-beta.1</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 
 		<LangVersion>preview</LangVersion>

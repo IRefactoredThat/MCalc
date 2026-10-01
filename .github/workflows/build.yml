@@ -1,0 +1,98 @@
+name: build
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - '**/*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install Android workload
+        run: dotnet workload install maui-android
+
+      - name: Prepare
+        id: prep
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE: ${{ runner.temp }}/mcalc.keystore
+        run: |
+          test -n "$KEYSTORE_BASE64" || { echo "ANDROID_KEYSTORE_BASE64 is not set"; exit 1; }
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE"
+          test -s "$KEYSTORE" || { echo "keystore decoded to an empty file"; exit 1; }
+
+          VER=$(sed -n 's:.*<ApplicationDisplayVersion>\(.*\)</ApplicationDisplayVersion>.*:\1:p' \
+            CalculatorApp/CalculatorApp.csproj | head -1)
+          test -n "$VER" || { echo "ApplicationDisplayVersion not found"; exit 1; }
+
+          NOTES=".github/release-notes/$VER.md"
+          test -f "$NOTES" || { echo "missing release notes: $NOTES"; exit 1; }
+
+          case "$VER" in
+            *-*) PRERELEASE=true ;;
+            *)    PRERELEASE=false ;;
+          esac
+
+          TAG_EXISTS=false
+          git ls-remote --exit-code --tags origin "refs/tags/$VER" >/dev/null 2>&1 && TAG_EXISTS=true
+
+          echo "version=$VER"           >> "$GITHUB_OUTPUT"
+          echo "prerelease=$PRERELEASE" >> "$GITHUB_OUTPUT"
+          echo "tag_exists=$TAG_EXISTS" >> "$GITHUB_OUTPUT"
+          echo "notes=$NOTES"           >> "$GITHUB_OUTPUT"
+
+      - name: Publish
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEYSTORE: ${{ runner.temp }}/mcalc.keystore
+        run: |
+          dotnet publish CalculatorApp/CalculatorApp.csproj \
+            -c Release \
+            -p:AndroidKeyStore=true \
+            -p:AndroidSigningKeyStore="$KEYSTORE" \
+            -p:AndroidSigningStorePass="$KS_PASS" \
+            -p:AndroidSigningKeyAlias=mcalc \
+            -p:AndroidSigningKeyPass="$KS_PASS" \
+            -p:ApplicationVersion="${{ github.run_number }}" \
+            -o "${{ runner.temp }}/out"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mcalc-${{ steps.prep.outputs.version }}-apk
+          path: ${{ runner.temp }}/out/*.apk
+          if-no-files-found: error
+
+      - name: Release
+        if: steps.prep.outputs.tag_exists == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VER: ${{ steps.prep.outputs.version }}
+          PRERELEASE: ${{ steps.prep.outputs.prerelease }}
+          NOTES: ${{ steps.prep.outputs.notes }}
+        run: |
+          git tag "$VER" "$GITHUB_SHA"
+          git push origin "$VER"
+          set -- gh release create "$VER" "${{ runner.temp }}/out"/*.apk --title "$VER" --notes-file "$NOTES"
+          [ "$PRERELEASE" = true ] && set -- "$@" --prerelease
+          "$@"
