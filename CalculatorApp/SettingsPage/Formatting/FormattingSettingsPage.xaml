@@ -7,8 +7,8 @@
     xmlns:formatting="clr-namespace:CalculatorApp.SettingsPage.Formatting"
     xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
     xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
-    xmlns:input="clr-namespace:CalculatorApp.CalculatorPage.Input"
     xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
+    xmlns:expressionParsing="clr-namespace:Calculator.ExpressionParsing;assembly=Calculator"
     x:Class="CalculatorApp.SettingsPage.Formatting.FormattingSettingsPage"
     x:DataType="formatting:FormattingSettings"
     Header="Formatting">
@@ -24,8 +24,8 @@
                 DecimalSeparator="{Binding DecimalSeparator}"
                 ThousandSeparator="{Binding ThousandSeparator}"
                 ENotationExponentThreshold="{Binding ENotationExponentThreshold}"
-                FractionalPartLength="{x:Static input:Tokens.Precision}"
-                MaxLength="{x:Static input:Tokens.MaxTotalDigits}"/>
+                FractionalPartLength="{x:Static expressionParsing:Tokens.Precision}"
+                MaxLength="{x:Static expressionParsing:Tokens.MaxTotalDigits}"/>
             <Label Style="{StaticResource SettingSubheader}" Text="Separators"/>
             <expandable:ExpandableOptionsSetting
                 CornerRadius="15, 15, 5, 5"

@@ -16,12 +16,12 @@ public interface IOperator : IExpressionPart;
 /// </summary>
 public interface IUnaryOperator : IOperator;
 /// <summary>
-/// Represents the base for all unary operators 
+/// Represents the base for all unary operators
 /// that appear on the right side of the operand.
 /// </summary>
 public interface IRightSideUnaryOperator : IUnaryOperator;
 /// <summary>
-/// Represents the base for all unary operators 
+/// Represents the base for all unary operators
 /// that appear on the left side of the operand.
 /// </summary>
 public interface ILeftSideUnaryOperator : IUnaryOperator;
@@ -64,7 +64,7 @@ public readonly record struct EmptyPart : IExpressionPart;
 /// <see cref="Expression"/> can also be a part of <see cref="Parts"/> i.e. it
 /// is a type of <see cref="IExpressionPart"/>.
 /// </summary>
-/// <param name="Parts">A <see cref="ImmutableList{T}"/> of type 
+/// <param name="Parts">A <see cref="ImmutableList{T}"/> of type
 /// <see cref="IExpressionPart"/> instances used to determine the
 /// expression object.</param>
 /// <param name="Mode">An <see cref="AngleMode"/> used for trigonometric functions.</param>
@@ -82,5 +82,39 @@ public enum AngleMode
     /// <summary>
     /// Angle values are in degrees.
     /// </summary>
-    DEG 
+    DEG
+}
+
+/// <summary>
+/// Separates digits on each thousand in <see cref="NumberToken"/>.
+/// </summary>
+public enum ThousandSeparator
+{
+    /// <summary>
+    /// Comma between digits.
+    /// </summary>
+    Comma = ',',
+    /// <summary>
+    /// Period between digits.
+    /// </summary>
+    Period = '.',
+    /// <summary>
+    /// Space between digits.
+    /// </summary>
+    Space = ' '
+}
+
+/// <summary>
+/// Separates integer and fractional digits.
+/// </summary>
+public enum DecimalSeparator
+{
+    /// <summary>
+    /// Comma between digits.
+    /// </summary>
+    Comma = ',',
+    /// <summary>
+    /// Period between digits
+    /// </summary>
+    Period = '.'
 }

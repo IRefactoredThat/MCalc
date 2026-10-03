@@ -95,7 +95,7 @@ public class DecimalSeparatorButtonViewModel :
         set
         {
             field = value;
-            Token = new NumberToken(((char)Separator).ToString(), ' ');
+            Token = new NumberToken(((char)Separator).ToString(), value);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Text)));
         }
     }

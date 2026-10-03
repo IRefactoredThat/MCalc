@@ -12,7 +12,7 @@ public sealed class TokenConverter(FormattingSettings formattingSettings) : Json
     {
         ArgumentNullException.ThrowIfNull(value);
 
-        var separator = (char)formattingSettings.DecimalSeparator;
+        var separator = formattingSettings.DecimalSeparator;
 
         var result = string.Create(
             value.Length,
@@ -26,7 +26,7 @@ public sealed class TokenConverter(FormattingSettings formattingSettings) : Json
                     destination[i] = c switch
                     {
                         (char)DecimalSeparator.Period or (char)DecimalSeparator.Comma
-                            => state.separator,
+                            => (char)state.separator,
                         _ => c
                     };
                 }

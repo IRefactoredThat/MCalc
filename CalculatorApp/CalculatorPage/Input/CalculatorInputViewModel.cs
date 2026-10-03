@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Calculator.ExpressionParsing;
 using CalculatorApp.SettingsPage.Formatting;
 using Essentials.Calculator;
 

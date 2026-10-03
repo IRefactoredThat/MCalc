@@ -18,26 +18,26 @@ public sealed class NumberToken : IToken, IEquatable<NumberToken>
     public int IntegerLength { get; }
     public string Value { get; }
 
-    public NumberToken(string value, char decimalSeparator)
+    public NumberToken(string value, DecimalSeparator decimalSeparator)
     {
         Value = value;
-        IntegerLength = value.IndexOfAny(decimalSeparator, 'E');
+        IntegerLength = value.IndexOfAny((char)decimalSeparator, 'E');
         if (IntegerLength < 0)
         {
             IntegerLength = value.Length;
         }
     }
 
-    public static readonly NumberToken Zero = new("0", ' ');
-    public static readonly NumberToken One = new("1", ' ');
-    public static readonly NumberToken Two = new("2", ' ');
-    public static readonly NumberToken Three = new("3", ' ');
-    public static readonly NumberToken Four = new("4", ' ');
-    public static readonly NumberToken Five = new("5", ' ');
-    public static readonly NumberToken Six = new("6", ' ');
-    public static readonly NumberToken Seven = new("7", ' ');
-    public static readonly NumberToken Eight = new("8", ' ');
-    public static readonly NumberToken Nine = new("9", ' ');
+    public static readonly NumberToken Zero = new("0", DecimalSeparator.Period);
+    public static readonly NumberToken One = new("1", DecimalSeparator.Period);
+    public static readonly NumberToken Two = new("2", DecimalSeparator.Period);
+    public static readonly NumberToken Three = new("3", DecimalSeparator.Period);
+    public static readonly NumberToken Four = new("4", DecimalSeparator.Period);
+    public static readonly NumberToken Five = new("5", DecimalSeparator.Period);
+    public static readonly NumberToken Six = new("6", DecimalSeparator.Period);
+    public static readonly NumberToken Seven = new("7", DecimalSeparator.Period);
+    public static readonly NumberToken Eight = new("8", DecimalSeparator.Period);
+    public static readonly NumberToken Nine = new("9", DecimalSeparator.Period);
 
     public bool Equals(NumberToken? other) => Value == other?.Value;
 

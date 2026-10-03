@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Calculator.ExpressionComposition;
+using Calculator.ExpressionParsing;
 using Calculator.ExpressionSolving;
 using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.CalculatorPage.History;
@@ -135,7 +136,7 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
         OutputViewModel.ConsumeResult(async result =>
         {
             _isAnimating = true;
-            var resultToken = new NumberToken(result, (char)FormattingSettings.DecimalSeparator);
+            var resultToken = new NumberToken(result, FormattingSettings.DecimalSeparator);
             if (HistorySettings.HistoryEnabled)
             {
                 var item = new HistoryItem

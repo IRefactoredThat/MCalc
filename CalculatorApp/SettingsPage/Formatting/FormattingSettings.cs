@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Calculator.ExpressionParsing;
 using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.CalculatorPage.Input;
 using Essentials.Calculator;
@@ -8,8 +9,6 @@ using Essentials.Calculator;
 namespace CalculatorApp.SettingsPage.Formatting;
 
 public enum ENotation { Enabled, Auto, Disabled }
-public enum ThousandSeparator { Comma = ',', Period = '.', Space = ' ' }
-public enum DecimalSeparator { Comma = ',', Period = '.' }
 
 public class FormattingSettings : INotifyPropertyChanged
 {
