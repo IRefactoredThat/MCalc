@@ -15,7 +15,7 @@ internal static class GroupingOperatorMappingExtensions
 {
     /// <summary>
     /// Maps a <paramref name="token"/> into an <see cref="IGroupingOperator"/> instance
-    /// or <see cref="ImplicitMultiplicationOperator"/> instance wrapping 
+    /// or <see cref="ImplicitMultiplicationOperator"/> instance wrapping
     /// <see cref="IGroupingOperator"/> instance
     /// based on <see cref="IExpressionPart"/> type and <paramref name="token"/> formed
     /// by previous invocation of <see cref="ExpressionPartsMapping"/> method chain
@@ -28,8 +28,8 @@ internal static class GroupingOperatorMappingExtensions
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> either being:
     /// <para>
-    /// 1) An <see cref="IGroupingOperator"/> instance or 
-    /// <see cref="ImplicitMultiplicationOperator"/> instance, 
+    /// 1) An <see cref="IGroupingOperator"/> instance or
+    /// <see cref="ImplicitMultiplicationOperator"/> instance,
     /// when the mapping was successful.
     /// </para>
     /// <para>
@@ -46,9 +46,7 @@ internal static class GroupingOperatorMappingExtensions
         {
             (OpenBracketToken, IOperand or GroupingEndOperator or
                 IRightSideUnaryOperator or
-                ImplicitMultiplicationOperator(IOperand) or
-                ImplicitMultiplicationOperator(GroupingEndOperator) or
-                ImplicitMultiplicationOperator(IRightSideUnaryOperator))
+                ImplicitMultiplicationOperator(IOperand))
                 => parts.Add(new ImplicitMultiplicationOperator(new GroupingStartOperator())),
 
             (ClosedBracketToken, IBinaryOperator or ILeftSideUnaryOperator)
