@@ -6,137 +6,33 @@ namespace Tests;
 [TestFixture]
 public class TokenizationTests
 {
-    private Tokens _tokens;
-    private DecimalSeparator _decimalSeparator;
-    private ThousandSeparator _thousandSeparator;
+    private TokenSession _session;
 
     [SetUp]
-    public void Setup()
-    {
-        _tokens = new Tokens();
-        _decimalSeparator = DecimalSeparator.Period;
-        _thousandSeparator = ThousandSeparator.Space;
-    }
+    public void Setup() => _session = new TokenSession();
 
-    private static readonly NumberToken[] DigitTokens =
-    [
-        NumberToken.Zero,
-        NumberToken.One,
-        NumberToken.Two,
-        NumberToken.Three,
-        NumberToken.Four,
-        NumberToken.Five,
-        NumberToken.Six,
-        NumberToken.Seven,
-        NumberToken.Eight,
-        NumberToken.Nine
-    ];
-
-    private static readonly OperatorToken[] AllOperatorTokens =
-    [
-        PiToken.Instance,
-        EToken.Instance,
-        PlusToken.Instance,
-        MinusToken.Instance,
-        TimesToken.Instance,
-        DivToken.Instance,
-        CaretToken.Instance,
-        PercentToken.Instance,
-        ExclamationMarkToken.Instance,
-        OpenBracketToken.Instance,
-        ClosedBracketToken.Instance,
-        SinToken.Instance,
-        CosToken.Instance,
-        TanToken.Instance,
-        CotToken.Instance,
-        SecToken.Instance,
-        CscToken.Instance,
-        AsinToken.Instance,
-        AcosToken.Instance,
-        AtanToken.Instance,
-        AcotToken.Instance,
-        AsecToken.Instance,
-        AcscToken.Instance,
-        SinhToken.Instance,
-        CoshToken.Instance,
-        TanhToken.Instance,
-        CothToken.Instance,
-        SechToken.Instance,
-        CschToken.Instance,
-        AsinhToken.Instance,
-        AcoshToken.Instance,
-        AtanhToken.Instance,
-        AcothToken.Instance,
-        AsechToken.Instance,
-        AcschToken.Instance,
-        SqrtToken.Instance,
-        CbrtToken.Instance,
-        LogToken.Instance,
-        LnToken.Instance
-    ];
-
-    private static IEnumerable<TestCaseData> AllOperators()
-    {
-        return AllOperatorTokens.Select(op => new TestCaseData(op)
+    private static IEnumerable<TestCaseData> AllOperators() =>
+        TokenSession.AllOperatorTokens.Select(op => new TestCaseData(op)
             .SetName($"{{m}}(Operator:{op.Value})"));
-    }
 
-    private NumberToken Number(string value) =>
-        new(value, _decimalSeparator);
+    private NumberToken Number(string value) => _session.Number(value);
 
-    private NumberToken DecimalSeparatorToken() =>
-        Number(((char)_decimalSeparator).ToString());
+    private NumberToken DecimalSeparatorToken() => _session.DecimalSeparatorToken();
 
-    private void TypeNumber(string digits)
-    {
-        foreach (var digit in digits)
-        {
-            Add(DigitTokens[digit - '0']);
-        }
-    }
+    private void TypeNumber(string digits) => _session.TypeNumber(digits);
 
-    private (string Text, int Position) Add(IToken token)
-    {
-        var logicalPosition = _tokens.AddToken(token, _decimalSeparator);
+    private (string Text, int Position) Add(IToken token) => _session.Add(token);
 
-        return Render(logicalPosition);
-    }
+    private (string Text, int Position) Remove() => _session.Remove();
 
-    private (string Text, int Position) Remove()
-    {
-        var logicalPosition = _tokens.RemoveToken(_decimalSeparator);
+    private (string Text, int Position) Paste(IReadOnlyList<IToken> sequence) => _session.Paste(sequence);
 
-        return Render(logicalPosition);
-    }
+    private string CurrentText => _session.RenderedText();
 
-    private (string Text, int Position) Paste(IReadOnlyList<IToken> sequence)
-    {
-        var logicalPosition = _tokens.AddTokens(sequence, _decimalSeparator);
-
-        return Render(logicalPosition);
-    }
-
-    private string CurrentText =>
-        _tokens.GetTextInfo(0, _thousandSeparator, _decimalSeparator).Text;
-
-    private (string Text, int Position) Render(int logicalPosition)
-    {
-        var (text, position) = _tokens.GetTextInfo(logicalPosition, _thousandSeparator,
-            _decimalSeparator);
-
-        _tokens.UpdateTokenPosition(position, IsAfterThousandSeparator(text, position));
-
-        return (text, position);
-    }
-
-    private void MoveCursorTo(int displayPosition)
-    {
-        var text = CurrentText;
-        _tokens.UpdateTokenPosition(displayPosition, IsAfterThousandSeparator(text, displayPosition));
-    }
+    private void MoveCursorTo(int displayPosition) => _session.MoveCursorTo(displayPosition);
 
     private bool IsAfterThousandSeparator(string text, int position) =>
-        position > 0 && text[position - 1] == (char)_thousandSeparator;
+        position > 0 && text[position - 1] == (char)_session.ThousandSeparator;
 
     [Test]
     public void TokensAreExposedInInsertionOrder()
@@ -147,13 +43,13 @@ public class TokenizationTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[0], Is.TypeOf<NumberToken>());
-            Assert.That(_tokens[0].Value, Is.EqualTo("12"));
-            Assert.That(_tokens[1], Is.SameAs(PlusToken.Instance));
-            Assert.That(_tokens[2], Is.TypeOf<NumberToken>());
-            Assert.That(_tokens[2].Value, Is.EqualTo("34"));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[0], Is.TypeOf<NumberToken>());
+            Assert.That(_session[0].Value, Is.EqualTo("12"));
+            Assert.That(_session[1], Is.SameAs(PlusToken.Instance));
+            Assert.That(_session[2], Is.TypeOf<NumberToken>());
+            Assert.That(_session[2].Value, Is.EqualTo("34"));
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12", "+", "34"]));
         }
     }
@@ -165,11 +61,11 @@ public class TokenizationTests
         Add(PlusToken.Instance);
         TypeNumber("34");
 
-        _tokens.Clear();
+        _session.Clear();
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_tokens, Is.Empty);
+            Assert.That(_session, Is.Empty);
             Assert.That(CurrentText, Is.Empty);
         }
     }
@@ -189,8 +85,8 @@ public class TokenizationTests
             Assert.That(second.Position, Is.EqualTo(2));
             Assert.That(third.Text, Is.EqualTo("123"));
             Assert.That(third.Position, Is.EqualTo(3));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
-            Assert.That(_tokens[0].Value, Is.EqualTo("123"));
+            Assert.That(_session.Count, Is.EqualTo(1));
+            Assert.That(_session[0].Value, Is.EqualTo("123"));
         }
     }
 
@@ -202,7 +98,7 @@ public class TokenizationTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(CurrentText, Is.EqualTo("1 234"));
-            Assert.That(_tokens.DisplayPosition, Is.EqualTo(5));
+            Assert.That(_session.DisplayPosition, Is.EqualTo(5));
         }
     }
 
@@ -214,8 +110,8 @@ public class TokenizationTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(CurrentText, Is.EqualTo("131 231"));
-            Assert.That(_tokens.DisplayPosition, Is.EqualTo(7));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session.DisplayPosition, Is.EqualTo(7));
+            Assert.That(_session.Count, Is.EqualTo(1));
         }
     }
 
@@ -231,8 +127,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1 293 456"));
             Assert.That(position, Is.EqualTo(4));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
-            Assert.That(_tokens[0].Value, Is.EqualTo("1293456"));
+            Assert.That(_session.Count, Is.EqualTo(1));
+            Assert.That(_session[0].Value, Is.EqualTo("1293456"));
         }
     }
 
@@ -242,7 +138,7 @@ public class TokenizationTests
         TypeNumber("123456");
         MoveCursorTo(4);
 
-        Assert.That(_tokens.DisplayPosition, Is.EqualTo(3));
+        Assert.That(_session.DisplayPosition, Is.EqualTo(3));
 
         var (text, position) = Add(NumberToken.Nine);
 
@@ -250,8 +146,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1 239 456"));
             Assert.That(position, Is.EqualTo(6));
-            Assert.That(_tokens.DisplayPosition, Is.EqualTo(5));
-            Assert.That(_tokens[0].Value, Is.EqualTo("1239456"));
+            Assert.That(_session.DisplayPosition, Is.EqualTo(5));
+            Assert.That(_session[0].Value, Is.EqualTo("1239456"));
         }
     }
 
@@ -267,7 +163,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("91 234"));
             Assert.That(position, Is.EqualTo(1));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session.Count, Is.EqualTo(1));
         }
     }
 
@@ -281,10 +177,10 @@ public class TokenizationTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(CurrentText, Is.EqualTo("12+3 456"));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[0].Value, Is.EqualTo("12"));
-            Assert.That(_tokens[1], Is.SameAs(PlusToken.Instance));
-            Assert.That(_tokens[2].Value, Is.EqualTo("3456"));
+            Assert.That(_session.Count, Is.EqualTo(3));
+            Assert.That(_session[0].Value, Is.EqualTo("12"));
+            Assert.That(_session[1], Is.SameAs(PlusToken.Instance));
+            Assert.That(_session[2].Value, Is.EqualTo("3456"));
         }
     }
 
@@ -302,8 +198,8 @@ public class TokenizationTests
             Assert.That(withOperator.Position, Is.EqualTo(2 + op.Value.Length));
             Assert.That(afterOperator.Text, Is.EqualTo("12" + op.Value + "34"));
             Assert.That(afterOperator.Position, Is.EqualTo(2 + op.Value.Length + 2));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[1], Is.SameAs(op));
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[1], Is.SameAs(op));
         }
     }
 
@@ -320,7 +216,7 @@ public class TokenizationTests
 
             var snapsBeforeOperator = displayOffset <= op.Value.Length / 2;
 
-            Assert.That(_tokens.DisplayPosition,
+            Assert.That(_session.DisplayPosition,
                 Is.EqualTo(snapsBeforeOperator ? 2 : 2 + op.Value.Length),
                 $"cursor {displayOffset} character(s) into '{op.Value}'");
         }
@@ -339,8 +235,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1 234+"));
             Assert.That(position, Is.EqualTo(5));
-            Assert.That(_tokens, Has.Count.EqualTo(2));
-            Assert.That(_tokens[0].Value, Is.EqualTo("1234"));
+            Assert.That(_session, Has.Count.EqualTo(2));
+            Assert.That(_session[0].Value, Is.EqualTo("1234"));
         }
     }
 
@@ -356,8 +252,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("4+"));
             Assert.That(position, Is.EqualTo(1));
-            Assert.That(_tokens, Has.Count.EqualTo(2));
-            Assert.That(_tokens[0].Value, Is.EqualTo("4"));
+            Assert.That(_session, Has.Count.EqualTo(2));
+            Assert.That(_session[0].Value, Is.EqualTo("4"));
         }
     }
 
@@ -376,7 +272,7 @@ public class TokenizationTests
             Assert.That(afterSign.Position, Is.EqualTo(3));
             Assert.That(afterDigit.Text, Is.EqualTo("5×-3"));
             Assert.That(afterDigit.Position, Is.EqualTo(4));
-            Assert.That(_tokens.Select(token => token.Value), Is.EqualTo(["5", "×", "-", "3"]));
+            Assert.That(_session.TokenValues, Is.EqualTo(["5", "×", "-", "3"]));
         }
     }
 
@@ -395,7 +291,7 @@ public class TokenizationTests
             Assert.That(afterSign.Position, Is.EqualTo(6));
             Assert.That(afterDigit.Text, Is.EqualTo("12sin-3"));
             Assert.That(afterDigit.Position, Is.EqualTo(7));
-            Assert.That(_tokens.Select(token => token.Value), Is.EqualTo(["12", "sin", "-", "3"]));
+            Assert.That(_session.TokenValues, Is.EqualTo(["12", "sin", "-", "3"]));
         }
     }
 
@@ -412,7 +308,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("5+×"));
             Assert.That(position, Is.EqualTo(2));
-            Assert.That(_tokens.Select(token => token.Value), Is.EqualTo(["5", "+", "×"]));
+            Assert.That(_session.TokenValues, Is.EqualTo(["5", "+", "×"]));
         }
     }
 
@@ -431,7 +327,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin3-3"));
             Assert.That(position, Is.EqualTo(6));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12", "sin", "3", "-", "3"]));
         }
     }
@@ -451,7 +347,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin4-3"));
             Assert.That(position, Is.EqualTo(6));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12", "sin", "4", "-", "3"]));
         }
     }
@@ -470,8 +366,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin334"));
             Assert.That(position, Is.EqualTo(6));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[2].Value, Is.EqualTo("334"));
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[2].Value, Is.EqualTo("334"));
         }
     }
 
@@ -480,7 +376,7 @@ public class TokenizationTests
     public void DecimalSeparatorEndsTheIntegerPartThatIsGrouped(
         DecimalSeparator decimalSeparator, string separator)
     {
-        _decimalSeparator = decimalSeparator;
+        _session.DecimalSeparator = decimalSeparator;
         TypeNumber("1234567");
         Add(DecimalSeparatorToken());
 
@@ -497,7 +393,7 @@ public class TokenizationTests
     [TestCase(DecimalSeparator.Comma)]
     public void DecimalSeparatorIsRenderedAccordingToSettings(DecimalSeparator decimalSeparator)
     {
-        _decimalSeparator = decimalSeparator;
+        _session.DecimalSeparator = decimalSeparator;
         TypeNumber("1234567");
         Add(DecimalSeparatorToken());
 
@@ -509,8 +405,8 @@ public class TokenizationTests
                 ? "1 234 567,5"
                 : "1 234 567.5"));
             Assert.That(position, Is.EqualTo(11));
-            Assert.That(_tokens[0].Value, Is.EqualTo("1234567" + (char)decimalSeparator + "5"));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session[0].Value, Is.EqualTo("1234567" + (char)decimalSeparator + "5"));
+            Assert.That(_session, Has.Count.EqualTo(1));
         }
     }
 
@@ -520,13 +416,13 @@ public class TokenizationTests
     public void ThousandSeparatorIsRenderedAccordingToSettings(ThousandSeparator thousandSeparator,
         string expectedText)
     {
-        _thousandSeparator = thousandSeparator;
+        _session.ThousandSeparator = thousandSeparator;
         TypeNumber("1234567");
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(CurrentText, Is.EqualTo(expectedText));
-            Assert.That(_tokens.DisplayPosition, Is.EqualTo(9));
+            Assert.That(_session.DisplayPosition, Is.EqualTo(9));
         }
     }
 
@@ -541,10 +437,10 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("5 612+34"));
             Assert.That(position, Is.EqualTo(8));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[0].Value, Is.EqualTo("5612"));
-            Assert.That(_tokens[1].Value, Is.EqualTo("+"));
-            Assert.That(_tokens[2].Value, Is.EqualTo("34"));
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[0].Value, Is.EqualTo("5612"));
+            Assert.That(_session[1].Value, Is.EqualTo("+"));
+            Assert.That(_session[2].Value, Is.EqualTo("34"));
         }
     }
 
@@ -562,8 +458,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo(before));
             Assert.That(position, Is.EqualTo(18));
-            Assert.That(_tokens, Has.Count.EqualTo(2));
-            Assert.That(_tokens[0].Value, Is.EqualTo("123456789012345"));
+            Assert.That(_session, Has.Count.EqualTo(2));
+            Assert.That(_session[0].Value, Is.EqualTo("123456789012345"));
         }
     }
 
@@ -580,7 +476,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("123 456 789 012 345+"));
             Assert.That(position, Is.EqualTo(19));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["123456789012345", "+"]));
         }
     }
@@ -599,7 +495,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin123 456 789 012 345"));
             Assert.That(position, Is.EqualTo(5));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12", "sin", "123456789012345"]));
         }
     }
@@ -616,7 +512,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12+"));
             Assert.That(position, Is.EqualTo(3));
-            Assert.That(_tokens.Select(token => token.Value), Is.EqualTo(["12", "+"]));
+            Assert.That(_session.TokenValues, Is.EqualTo(["12", "+"]));
         }
     }
 
@@ -629,7 +525,7 @@ public class TokenizationTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_tokens, Is.Empty);
+            Assert.That(_session, Is.Empty);
             Assert.That(text, Is.Empty);
             Assert.That(position, Is.Zero);
         }
@@ -656,7 +552,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo(before));
             Assert.That(position, Is.EqualTo(10));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12345678", "87654321", "87654321"]));
         }
     }
@@ -670,7 +566,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.Empty);
             Assert.That(position, Is.Zero);
-            Assert.That(_tokens.Count, Is.Zero);
+            Assert.That(_session.Count, Is.Zero);
         }
     }
 
@@ -699,7 +595,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.Empty);
             Assert.That(position, Is.Zero);
-            Assert.That(_tokens.Count, Is.Zero);
+            Assert.That(_session.Count, Is.Zero);
         }
     }
 
@@ -717,8 +613,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("934"));
             Assert.That(position, Is.EqualTo(1));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
-            Assert.That(_tokens[0].Value, Is.EqualTo("934"));
+            Assert.That(_session, Has.Count.EqualTo(1));
+            Assert.That(_session[0].Value, Is.EqualTo("934"));
         }
     }
 
@@ -737,7 +633,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo(before));
             Assert.That(position, Is.EqualTo(11));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12345678", "+", "12345678"]));
         }
     }
@@ -758,7 +654,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("34"));
             Assert.That(position, Is.Zero);
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session, Has.Count.EqualTo(1));
         }
     }
 
@@ -775,7 +671,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1+"));
             Assert.That(position, Is.EqualTo(1));
-            Assert.That(_tokens[0].Value, Is.EqualTo("1"));
+            Assert.That(_session[0].Value, Is.EqualTo("1"));
         }
     }
 
@@ -792,8 +688,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1234"));
             Assert.That(position, Is.EqualTo(2));
-            Assert.That(_tokens, Has.Count.EqualTo(2));
-            Assert.That(_tokens[1].Value, Is.EqualTo("34"));
+            Assert.That(_session, Has.Count.EqualTo(2));
+            Assert.That(_session[1].Value, Is.EqualTo("34"));
         }
     }
 
@@ -809,8 +705,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("+"));
             Assert.That(position, Is.Zero);
-            Assert.That(_tokens, Has.Count.EqualTo(1));
-            Assert.That(_tokens[0], Is.SameAs(PlusToken.Instance));
+            Assert.That(_session, Has.Count.EqualTo(1));
+            Assert.That(_session[0], Is.SameAs(PlusToken.Instance));
         }
     }
 
@@ -840,7 +736,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("1 234 567E+15"));
             Assert.That(position, Is.EqualTo(13));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session, Has.Count.EqualTo(1));
         }
     }
 
@@ -853,7 +749,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12+34"));
             Assert.That(position, Is.EqualTo(5));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
+            Assert.That(_session, Has.Count.EqualTo(3));
         }
     }
 
@@ -868,7 +764,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12"));
             Assert.That(position, Is.EqualTo(2));
-            Assert.That(_tokens, Has.Count.EqualTo(1));
+            Assert.That(_session, Has.Count.EqualTo(1));
         }
     }
 
@@ -884,8 +780,8 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12+345"));
             Assert.That(position, Is.EqualTo(5));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[2].Value, Is.EqualTo("345"));
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[2].Value, Is.EqualTo("345"));
         }
     }
 
@@ -903,10 +799,10 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin534"));
             Assert.That(position, Is.EqualTo(6));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-            Assert.That(_tokens[0], Is.EqualTo(Number("12")));
-            Assert.That(_tokens[1], Is.EqualTo(SinToken.Instance));
-            Assert.That(_tokens[2], Is.EqualTo(Number("534")));
+            Assert.That(_session, Has.Count.EqualTo(3));
+            Assert.That(_session[0], Is.EqualTo(Number("12")));
+            Assert.That(_session[1], Is.EqualTo(SinToken.Instance));
+            Assert.That(_session[2], Is.EqualTo(Number("534")));
         }
     }
 
@@ -924,7 +820,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("23+7"));
             Assert.That(position, Is.EqualTo(4));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
+            Assert.That(_session, Has.Count.EqualTo(3));
         }
     }
 
@@ -939,7 +835,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12 345 678 901 234+34"));
             Assert.That(position, Is.EqualTo(18));
-            Assert.That(_tokens.Select(token => token.Value),
+            Assert.That(_session.TokenValues,
                 Is.EqualTo(["12345678901234", "+", "34"]));
         }
     }
@@ -956,41 +852,7 @@ public class TokenizationTests
         {
             Assert.That(text, Is.EqualTo("12sin34"));
             Assert.That(position, Is.EqualTo(7));
-            Assert.That(_tokens, Has.Count.EqualTo(3));
-        }
-    }
-
-    [Test]
-    public void UpdateTokenPositionOnEmptyInputResetsPositionToZero()
-    {
-        TypeNumber("12");
-        MoveCursorTo(2);
-
-        _tokens.Clear();
-        _tokens.UpdateTokenPosition(4, false);
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(_tokens.DisplayPosition, Is.Zero);
-            Assert.That(CurrentText, Is.Empty);
-        }
-    }
-
-    [Test]
-    public void CursorPastEndOfInputClampsTokenButNotDisplayPosition()
-    {
-        TypeNumber("12");
-
-        _tokens.UpdateTokenPosition(9, false);
-
-        Assert.That(_tokens.DisplayPosition, Is.EqualTo(9));
-
-        var (text, position) = Add(NumberToken.Three);
-
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(text, Is.EqualTo("123"));
-            Assert.That(position, Is.EqualTo(3));
+            Assert.That(_session, Has.Count.EqualTo(3));
         }
     }
 
@@ -1004,7 +866,7 @@ public class TokenizationTests
         {
             MoveCursorTo(displayPosition);
 
-            Assert.That(_tokens.DisplayPosition,
+            Assert.That(_session.DisplayPosition,
                 Is.EqualTo(displayPosition > 0 && IsAfterThousandSeparator(CurrentText,
                     displayPosition)
                     ? displayPosition - 1

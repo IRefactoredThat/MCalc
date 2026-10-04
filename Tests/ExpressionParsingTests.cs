@@ -1,7 +1,4 @@
 using System.Collections.Immutable;
-using System.Globalization;
-using Calculator.ExpressionComposition;
-using Calculator.ExpressionParsing;
 using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
@@ -16,10 +13,7 @@ public class ExpressionParsingTests
     private TokenSession _session;
 
     [SetUp]
-    public void Setup()
-    {
-        _session = new TokenSession();
-    }
+    public void Setup() => _session = new TokenSession();
 
     private static readonly (OperatorToken Token, Type Part)[] BinaryOperators =
     [
@@ -63,25 +57,19 @@ public class ExpressionParsingTests
         (LnToken.Instance, typeof(NaturalLogarithmOperator))
     ];
 
-    private static IEnumerable<TestCaseData> BinaryOperatorCases()
-    {
-        return BinaryOperators.Select(entry => new TestCaseData(entry.Token, entry.Part)
+    private static IEnumerable<TestCaseData> BinaryOperatorCases() =>
+        BinaryOperators.Select(entry => new TestCaseData(entry.Token, entry.Part)
             .SetName($"{{m}}(Operator:{entry.Token.Value})"));
-    }
 
-    private static IEnumerable<TestCaseData> LeftSideUnaryOperatorCases()
-    {
-        return LeftSideUnaryOperators.Select(entry => new TestCaseData(entry.Token, entry.Part)
+    private static IEnumerable<TestCaseData> LeftSideUnaryOperatorCases() =>
+        LeftSideUnaryOperators.Select(entry => new TestCaseData(entry.Token, entry.Part)
             .SetName($"{{m}}(Operator:{entry.Token.Value})"));
-    }
 
-    private static IEnumerable<TestCaseData> MultiplicativeOperators()
-    {
-        return BinaryOperators
+    private static IEnumerable<TestCaseData> MultiplicativeOperators() =>
+        BinaryOperators
             .Where(entry => entry.Token is not (PlusToken or MinusToken))
             .Select(entry => new TestCaseData(entry.Token)
                 .SetName($"{{m}}(Operator:{entry.Token.Value})"));
-    }
 
     private NumberToken Number(string value) => _session.Number(value);
 
@@ -122,10 +110,8 @@ public class ExpressionParsingTests
         (IExpressionPart)Activator.CreateInstance(partType)!;
 
     [Test]
-    public void EmptyInputIsNotAnExpression()
-    {
+    public void EmptyInputIsNotAnExpression() =>
         Assert.That(Error(), Is.TypeOf<EmptyExpression>());
-    }
 
     [Test]
     public void SingleNumberIsNotAnExpression()
