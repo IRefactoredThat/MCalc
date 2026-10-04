@@ -13,39 +13,13 @@ namespace Tests;
 [TestFixture]
 public class ExpressionParsingTests
 {
-    private Tokens _tokens;
-    private DecimalSeparator _decimalSeparator;
-    private ThousandSeparator _thousandSeparator;
-    private NumberFormatInfo _info;
-    private AngleMode _mode;
+    private TokenSession _session;
 
     [SetUp]
     public void Setup()
     {
-        _tokens = new Tokens();
-        _decimalSeparator = DecimalSeparator.Period;
-        _thousandSeparator = ThousandSeparator.Space;
-        _info = new NumberFormatInfo
-        {
-            NumberDecimalSeparator = ".",
-            NumberGroupSeparator = " "
-        };
-        _mode = AngleMode.RAD;
+        _session = new TokenSession();
     }
-
-    private static readonly NumberToken[] DigitTokens =
-    [
-        NumberToken.Zero,
-        NumberToken.One,
-        NumberToken.Two,
-        NumberToken.Three,
-        NumberToken.Four,
-        NumberToken.Five,
-        NumberToken.Six,
-        NumberToken.Seven,
-        NumberToken.Eight,
-        NumberToken.Nine
-    ];
 
     private static readonly (OperatorToken Token, Type Part)[] BinaryOperators =
     [
@@ -109,38 +83,13 @@ public class ExpressionParsingTests
                 .SetName($"{{m}}(Operator:{entry.Token.Value})"));
     }
 
-    private NumberToken Number(string value) => new(value, _decimalSeparator);
+    private NumberToken Number(string value) => _session.Number(value);
 
-    private void TypeNumber(string digits)
-    {
-        foreach (var digit in digits)
-        {
-            Add(DigitTokens[digit - '0']);
-        }
-    }
+    private void TypeNumber(string digits) => _session.TypeNumber(digits);
 
-    private void Add(IToken token)
-    {
-        var logicalPosition = _tokens.AddToken(token, _decimalSeparator);
+    private void Add(IToken token) => _session.Add(token);
 
-        Render(logicalPosition);
-    }
-
-    private void Paste(IReadOnlyList<IToken> sequence)
-    {
-        var logicalPosition = _tokens.AddTokens(sequence, _decimalSeparator);
-
-        Render(logicalPosition);
-    }
-
-    private void Render(int logicalPosition)
-    {
-        var (text, position) = _tokens.GetTextInfo(logicalPosition, _thousandSeparator,
-            _decimalSeparator);
-
-        _tokens.UpdateTokenPosition(position,
-            position > 0 && text[position - 1] == (char)_thousandSeparator);
-    }
+    private void Paste(IReadOnlyList<IToken> sequence) => _session.Paste(sequence);
 
     private ImmutableList<IExpressionPart> Parts()
     {
@@ -167,8 +116,7 @@ public class ExpressionParsingTests
         return error!;
     }
 
-    private Result<Expression> Parse() =>
-        ExpressionParsingExtensions.Parse(_tokens, _info, _mode);
+    private Result<Expression> Parse() => _session.Parse();
 
     private static IExpressionPart Part(Type partType) =>
         (IExpressionPart)Activator.CreateInstance(partType)!;
@@ -236,8 +184,8 @@ public class ExpressionParsingTests
     public void DecimalSeparatorIsTakenFromTheSuppliedFormat(
         DecimalSeparator decimalSeparator, string value, double expected)
     {
-        _decimalSeparator = decimalSeparator;
-        _info.NumberDecimalSeparator = ((char)decimalSeparator).ToString();
+        _session.DecimalSeparator = decimalSeparator;
+        _session.Info.NumberDecimalSeparator = ((char)decimalSeparator).ToString();
         Paste([Number(value)]);
         Add(PlusToken.Instance);
         TypeNumber("2");
@@ -889,7 +837,7 @@ public class ExpressionParsingTests
     [Test]
     public void ParseAttachesGivenAngleMode()
     {
-        _mode = AngleMode.DEG;
+        _session.Mode = AngleMode.DEG;
         TypeNumber("1");
         Add(PlusToken.Instance);
         TypeNumber("2");
