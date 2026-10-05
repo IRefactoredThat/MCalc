@@ -100,6 +100,9 @@ internal static class OperandExtensions
         right.Value == 0 ? left :
             new Number(left.Value - right.Value * double.Floor(left.Value / right.Value));
 
+    public const double Tolerance = 1e-15;
+    private static readonly int DigitCap = (int)-Math.Log10(Tolerance);
+
     /// <summary>
     /// Rounds a <see cref="IOperand.Value"/> to the nearest double, or
     /// returns the original <see cref="IOperand.Value"/> if rounding is not needed,
@@ -110,19 +113,24 @@ internal static class OperandExtensions
     /// <returns>A rounded or original <see cref="double"/> value.</returns>
     public static double SmartRound(this IOperand operand)
     {
+        if (Math.Abs(operand.Value) < Tolerance)
+        {
+            return 0;
+        }
+
         var scale = 1;
 
-        for (var digits = 0; digits <= 15; digits++)
+        for (var digits = 0; digits <= DigitCap; digits++)
         {
             var rounded = double.Round(operand.Value * scale) / scale;
-
-            if (double.Abs(operand.Value - rounded) <=
-                1e-15 * double.Max(1, double.Abs(operand.Value)))
+            if (double.Abs(operand.Value - rounded) <= Tolerance * double.Max(1, double.Abs(operand.Value)))
             {
-                if (rounded != 0 || operand.Value == 0)
-                    return rounded;
+                if (Math.Abs(rounded) < Tolerance)
+                {
+                    return 0;
+                }
+                return rounded;
             }
-
             scale *= 10;
         }
 
