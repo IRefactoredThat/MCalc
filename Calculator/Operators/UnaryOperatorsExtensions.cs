@@ -29,8 +29,14 @@ internal static class UnaryOperatorsExtensions
     {
         var result = unaryOperator switch
         {
-            ITrigonometricOperator trigonometricOperator =>
-                trigonometricOperator.Apply(operand, mode),
+            IDirectCircularTrigOperator directCircularTrigOperator =>
+                directCircularTrigOperator.Apply(operand, mode),
+            IInverseCircularTrigOperator inverseCircularTrigOperator =>
+                inverseCircularTrigOperator.Apply(operand, mode),
+            IDirectHyperbolicTrigOperator directHyperbolicTrigOperator =>
+                directHyperbolicTrigOperator.Apply(operand),
+            IInverseHyperbolicTrigOperator inverseHyperbolicTrigOperator =>
+                inverseHyperbolicTrigOperator.Apply(operand),
             ILeftSideUnaryOperator leftSideUnaryOperator =>
                 leftSideUnaryOperator.Apply(operand),
             IRightSideUnaryOperator rightSideUnaryOperator =>
@@ -44,7 +50,7 @@ internal static class UnaryOperatorsExtensions
     /// <summary>
     /// Applies <paramref name="unaryOperator"/> to the <paramref name="operand"/>.
     /// </summary>
-    /// <param name="unaryOperator">The <see cref="ILeftSideUnaryOperator"/> 
+    /// <param name="unaryOperator">The <see cref="ILeftSideUnaryOperator"/>
     /// applied.</param>
     /// <param name="operand">The <see cref="IOperand"/> instance.</param>
     /// <returns>
@@ -74,7 +80,7 @@ internal static class UnaryOperatorsExtensions
     /// <summary>
     /// Applies <paramref name="unaryOperator"/> to the <paramref name="operand"/>.
     /// </summary>
-    /// <param name="unaryOperator">The <see cref="IRightSideUnaryOperator"/> 
+    /// <param name="unaryOperator">The <see cref="IRightSideUnaryOperator"/>
     /// applied.</param>
     /// <param name="operand">The <see cref="IOperand"/> instance.</param>
     /// <returns>
@@ -111,8 +117,8 @@ internal static class UnaryOperatorsExtensions
     /// the computed result of the operation, or one <see cref="Error"/> listed here:
     /// <see cref="UndefinedOperation"/>.
     /// </returns>
-    private static Result<IOperand> Apply(this ITrigonometricOperator 
-        trigonometricOperator, IOperand operand, AngleMode mode)
+    private static Result<IOperand> Apply(this IDirectCircularTrigOperator trigonometricOperator,
+        IOperand operand, AngleMode mode)
     {
         var value = operand.Value;
         if (mode is AngleMode.DEG)
@@ -122,35 +128,113 @@ internal static class UnaryOperatorsExtensions
 
         return trigonometricOperator switch
         {
-            SineOperator => new Number(double.Sin(value)).ToResult<IOperand>(),
+            SineOperator => new Number(double.Sin(value)),
             CosineOperator => new Number(double.Cos(value)),
             TangentOperator => new Number(double.Tan(value)),
             CotangentOperator => new Number(double.Cos(value) / double.Sin(value)),
             SecantOperator => new Number(1 / double.Cos(value)),
             CosecantOperator => new Number(1 / double.Sin(value)),
+            _ => new UndefinedOperation(trigonometricOperator)
+        };
+    }
 
-            ArcsineOperator => new Number(double.Asin(value)),
-            ArccosineOperator => new Number(double.Acos(value)),
-            ArctangentOperator => new Number(double.Atan(value)),
-            ArccotangentOperator => new Number(double.Atan2(1, value)),
-            ArcsecantOperator => new Number(double.Acos(1 / value)),
-            ArccosecantOperator => new Number(double.Asin(1 / value)),
+    /// <summary>
+    /// Applies <paramref name="trigonometricOperator"/> to the <paramref name="operand"/>
+    /// using <paramref name="mode"/>.
+    /// </summary>
+    /// <param name="trigonometricOperator">The <see cref="ITrigonometricOperator"/>
+    /// applied.</param>
+    /// <param name="operand">The <see cref="IOperand"/> instance.</param>
+    /// <param name="mode">The <see cref="AngleMode"/> used.</param>
+    /// <returns>
+    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either representing
+    /// a new <see cref="IOperand"/> instance with <see cref="IOperand.Value"/> set to
+    /// the computed result of the operation, or one <see cref="Error"/> listed here:
+    /// <see cref="UndefinedOperation"/>.
+    /// </returns>
+    private static Result<IOperand> Apply(this IInverseCircularTrigOperator trigonometricOperator,
+        IOperand operand, AngleMode mode)
+    {
+        var value = operand.Value;
+        Result<double> result = trigonometricOperator switch
+        {
+            ArcsineOperator => double.Asin(value),
+            ArccosineOperator => double.Acos(value),
+            ArctangentOperator => double.Atan(value),
+            ArccotangentOperator => double.Atan2(1, value),
+            ArcsecantOperator => double.Acos(1 / value),
+            ArccosecantOperator => double.Asin(1 / value),
+            _ => new UndefinedOperation(trigonometricOperator)
+        };
 
+        return result.Map<double, IOperand>(validValue =>
+        {
+            if (!double.IsFinite(validValue))
+            {
+                return new InvalidOperation(trigonometricOperator.ToToken());
+            }
+
+            if (mode is AngleMode.DEG)
+            {
+                validValue = double.RadiansToDegrees(validValue);
+            }
+
+            return new Number(validValue);
+        });
+    }
+
+    /// <summary>
+    /// Applies <paramref name="trigonometricOperator"/> to the <paramref name="operand"/>.
+    /// </summary>
+    /// <param name="trigonometricOperator">The <see cref="ITrigonometricOperator"/>
+    /// applied.</param>
+    /// <param name="operand">The <see cref="IOperand"/> instance.</param>
+    /// <returns>
+    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either representing
+    /// a new <see cref="IOperand"/> instance with <see cref="IOperand.Value"/> set to
+    /// the computed result of the operation, or one <see cref="Error"/> listed here:
+    /// <see cref="UndefinedOperation"/>.
+    /// </returns>
+    private static Result<IOperand> Apply(this IDirectHyperbolicTrigOperator trigonometricOperator,
+        IOperand operand)
+    {
+        var value = operand.Value;
+        return trigonometricOperator switch
+        {
             HyperbolicSineOperator => new Number(double.Sinh(value)),
             HyperbolicCosineOperator => new Number(double.Cosh(value)),
             HyperbolicTangentOperator => new Number(double.Tanh(value)),
             HyperbolicCotangentOperator => new Number(double.Cosh(value) / double.Sinh(value)),
             HyperbolicSecantOperator => new Number(1 / double.Cosh(value)),
             HyperbolicCosecantOperator => new Number(1 / double.Sinh(value)),
+            _ => new UndefinedOperation(trigonometricOperator)
+        };
+    }
 
+    /// <summary>
+    /// Applies <paramref name="trigonometricOperator"/> to the <paramref name="operand"/>.
+    /// </summary>
+    /// <param name="trigonometricOperator">The <see cref="ITrigonometricOperator"/>
+    /// applied.</param>
+    /// <param name="operand">The <see cref="IOperand"/> instance.</param>
+    /// <returns>
+    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either representing
+    /// a new <see cref="IOperand"/> instance with <see cref="IOperand.Value"/> set to
+    /// the computed result of the operation, or one <see cref="Error"/> listed here:
+    /// <see cref="UndefinedOperation"/>.
+    /// </returns>
+    private static Result<IOperand> Apply(this IInverseHyperbolicTrigOperator trigonometricOperator,
+        IOperand operand)
+    {
+        var value = operand.Value;
+        return trigonometricOperator switch
+        {
             HyperbolicArcsineOperator => new Number(double.Asinh(value)),
             HyperbolicArccosineOperator => new Number(double.Acosh(value)),
             HyperbolicArctangentOperator => new Number(double.Atanh(value)),
-
             HyperbolicArccotangentOperator => new Number(double.Atanh(1 / value)),
             HyperbolicArcsecantOperator => new Number(double.Acosh(1 / value)),
             HyperbolicArccosecantOperator => new Number(double.Asinh(1 / value)),
-
             _ => new UndefinedOperation(trigonometricOperator)
         };
     }
