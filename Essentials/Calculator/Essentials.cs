@@ -29,6 +29,26 @@ public interface ILeftSideUnaryOperator : IUnaryOperator;
 /// Represents the base for all trigonometric functions.
 /// </summary>
 public interface ITrigonometricOperator : ILeftSideUnaryOperator;
+
+/// <summary>
+/// Represents the base for all direct circular trigonometric functions.
+/// </summary>
+public interface IDirectCircularTrigOperator : ITrigonometricOperator;
+
+/// <summary>
+/// Represents the base for all inverse circular trigonometric functions.
+/// </summary>
+public interface IInverseCircularTrigOperator : ITrigonometricOperator;
+
+/// <summary>
+/// Represents the base for all direct hyperbolic trigonometric functions.
+/// </summary>
+public interface IDirectHyperbolicTrigOperator : ITrigonometricOperator;
+
+/// <summary>
+/// Represents the base for all inverse hyperbolic trigonometric functions.
+/// </summary>
+public interface IInverseHyperbolicTrigOperator : ITrigonometricOperator;
 /// <summary>
 /// Represents the base for all binary operators.
 /// </summary>
@@ -114,7 +134,7 @@ public enum DecimalSeparator
     /// </summary>
     Comma = ',',
     /// <summary>
-    /// Period between digits
+    /// Period between digits.
     /// </summary>
     Period = '.'
 }
