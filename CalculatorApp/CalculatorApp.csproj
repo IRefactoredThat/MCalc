@@ -233,6 +233,18 @@
 	    <DependentUpon>CalculatorButton.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
+	  <Compile Update="SettingsPage\Types\Export\ExportSetting.xaml.cs">
+	    <DependentUpon>ExportSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\Import\ImportSetting.xaml.cs">
+	    <DependentUpon>ExportSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
+	  <Compile Update="SettingsPage\Types\Import\ImportSetting.xaml.cs">
+	    <DependentUpon>ExportSetting.xaml</DependentUpon>
+	    <SubType>Code</SubType>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -343,6 +355,12 @@
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	  <MauiXaml Update="CalculatorPage\Buttons\CalculatorButton.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\Export\ExportSetting.xaml">
+	    <SubType>Designer</SubType>
+	  </MauiXaml>
+	  <MauiXaml Update="SettingsPage\Types\Import\ImportSetting.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	</ItemGroup>

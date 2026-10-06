@@ -10,6 +10,8 @@ public static class MaterialSymbols
     public const string Delete = "\ue5cd";
     public const string Copy = "\ue14d";
     public const string Web = "\ue894";
+    public const string Import = "\uf09b";
+    public const string Export = "\ue255";
     public const string Notifications = "\ue7f4";
     public const string Help = "\ue887";
     public const string GoToPage = "\ue5c8";
@@ -47,7 +49,6 @@ public static class MaterialSymbols
     public const string ClickAnimation = "\ue762";
     public const string TransitionAnimation = "\uf50c";
     public const string ResultAnimation = "\uf736";
-    public const string TitleAnimation = "\ue428";
     public const string Grid = "\uf79d";
     public const string CustomGrid = "\uf016";
     public const string CarouselLayout = "\ue8eb";
