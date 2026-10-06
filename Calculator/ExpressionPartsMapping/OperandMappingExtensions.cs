@@ -41,10 +41,19 @@ internal static class OperandMappingExtensions
                 NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign,
                 info, out var result) && double.IsFinite(result)
                 ? new Number(result) : new NumberFormatError(),
-            _ => throw new ArgumentException($"Invalid argument of type {token.GetType().Name}", nameof(token))
+            _ => throw new ArgumentException(
+                $"Invalid argument of type {token.GetType().Name}", nameof(token))
         };
 
         return operand.Map<IOperand, ImmutableArray<IExpressionPart>>(value =>
-            parts[^1] is GroupingEndOperator ? parts.Add(value.WrapForImplicitMultiplication()) : parts.Add(value));
+            parts[^1] switch
+            {
+                GroupingEndOperator => parts.Add(
+                    value.WrapForImplicitMultiplication()),
+                AdditionOperator or SubtractionOperator when
+                    parts[^2] is not IOperand => parts.Add(
+                    value).Add(new GroupingEndOperator()),
+                _ => parts.Add(value)
+            });
     }
 }

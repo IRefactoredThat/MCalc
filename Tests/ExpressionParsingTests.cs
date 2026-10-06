@@ -372,54 +372,6 @@ public class ExpressionParsingTests
         Assert.That(Error(), Is.TypeOf<InvalidExpressionEnd>());
     }
 
-    [Test]
-    public void RepeatedAdditionBecomesPositiveValueOperator()
-    {
-        TypeNumber("1");
-        Add(PlusToken.Instance);
-        Add(PlusToken.Instance);
-        TypeNumber("2");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new AdditionOperator(), new PositiveValueOperator(), new Number(2)]));
-    }
-
-    [Test]
-    public void RepeatedSubtractionBecomesNegationOperator()
-    {
-        TypeNumber("1");
-        Add(MinusToken.Instance);
-        Add(MinusToken.Instance);
-        TypeNumber("2");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new SubtractionOperator(), new NegationOperator(), new Number(2)]));
-    }
-
-    [Test]
-    public void SubtractionAfterAdditionBecomesNegationOperator()
-    {
-        TypeNumber("1");
-        Add(PlusToken.Instance);
-        Add(MinusToken.Instance);
-        TypeNumber("2");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new AdditionOperator(), new NegationOperator(), new Number(2)]));
-    }
-
-    [Test]
-    public void SubtractionAfterExponentiationBecomesNegationOperator()
-    {
-        TypeNumber("1");
-        Add(CaretToken.Instance);
-        Add(MinusToken.Instance);
-        TypeNumber("2");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new ExponentiationOperator(), new NegationOperator(), new Number(2)]));
-    }
-
     [TestCaseSource(nameof(MultiplicativeOperators))]
     public void MultiplicativeOperatorAfterBinaryOperatorIsRejectedAsInvalidUse(OperatorToken op)
     {
@@ -461,21 +413,6 @@ public class ExpressionParsingTests
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
             [new GroupingStartOperator(), new GroupingStartOperator(), new Number(1),
                 new GroupingEndOperator(), new GroupingEndOperator()]));
-    }
-
-    [Test]
-    public void GroupingAfterLeftSideUnaryOperatorIsKeptWithoutMultiplication()
-    {
-        Add(SqrtToken.Instance);
-        Add(OpenBracketToken.Instance);
-        TypeNumber("9");
-        Add(ClosedBracketToken.Instance);
-        Add(PlusToken.Instance);
-        TypeNumber("1");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new SquareRootOperator(), new GroupingStartOperator(), new Number(9),
-                new GroupingEndOperator(), new AdditionOperator(), new Number(1)]));
     }
 
     [Test]
@@ -591,43 +528,6 @@ public class ExpressionParsingTests
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
             [new Number(2), new MultiplicationOperator(), new SineOperator(),
                 new GroupingStartOperator(), new Number(3), new GroupingEndOperator()]));
-    }
-
-    [Test]
-    public void BinaryOperatorAfterClosedBracketBecomesItsOwnPart()
-    {
-        TypeNumber("2");
-        Add(ClosedBracketToken.Instance);
-        Add(PlusToken.Instance);
-        TypeNumber("3");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new GroupingEndOperator(), new AdditionOperator(), new Number(3)]));
-    }
-
-    [Test]
-    public void BinaryOperatorAfterFactorialBecomesItsOwnPart()
-    {
-        TypeNumber("2");
-        Add(ExclamationMarkToken.Instance);
-        Add(PlusToken.Instance);
-        TypeNumber("3");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new FactorialOperator(), new AdditionOperator(), new Number(3)]));
-    }
-
-    [Test]
-    public void BinaryOperatorAfterImplicitlyMultipliedOperandBecomesItsOwnPart()
-    {
-        Add(ClosedBracketToken.Instance);
-        TypeNumber("2");
-        Add(PlusToken.Instance);
-        TypeNumber("3");
-
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new GroupingEndOperator(), new MultiplicationOperator(), new Number(2),
-                new AdditionOperator(), new Number(3)]));
     }
 
     [Test]

@@ -3,14 +3,6 @@
 namespace Calculator.Operators;
 
 /// <summary>
-/// Represents a type of <see cref="ILeftSideUnaryOperator"/>, denoted by the <see cref="PlusToken"/>.
-/// </summary>
-public readonly record struct PositiveValueOperator : ILeftSideUnaryOperator;
-/// <summary>
-/// Represents a type of <see cref="ILeftSideUnaryOperator"/>, denoted by the <see cref="MinusToken"/>.
-/// </summary>
-public readonly record struct NegationOperator : ILeftSideUnaryOperator;
-/// <summary>
 /// Represents a type of <see cref="ILeftSideUnaryOperator"/>, denoted by the <see cref="SqrtToken"/>.
 /// </summary>
 public readonly struct SquareRootOperator : ILeftSideUnaryOperator;

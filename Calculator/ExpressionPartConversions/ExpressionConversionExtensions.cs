@@ -5,33 +5,33 @@ using Essentials.Calculator;
 namespace Calculator.ExpressionPartConversions;
 
 /// <summary>
-/// Represents an extension class for conversions 
+/// Represents an extension class for conversions
 /// for <see cref="IExpressionPart"/> descendants.
 /// </summary>
 internal static class ExpressionPartConversionExtensions
 {
     /// <summary>
-    /// Transforms an <see cref="ImmutableList{T}"/> of type 
+    /// Transforms an <see cref="ImmutableList{T}"/> of type
     /// <see cref="IExpressionPart"/> into an <see cref="Expression"/>
     /// object by attaching a given <see cref="AngleMode"/>.
     /// </summary>
     /// <param name="parts">A list to transform.</param>
     /// <param name="mode">A mode to use.</param>
     /// <returns>
-    /// A new <see cref="Expression"/> object with given 
+    /// A new <see cref="Expression"/> object with given
     /// <paramref name="parts"/> and <paramref name="mode"/>.
     /// </returns>
-    public static Expression AttachAngleMode(this 
+    public static Expression AttachAngleMode(this
         ImmutableList<IExpressionPart> parts, AngleMode mode) => new(parts, mode);
 
     /// <summary>
-    /// Wraps an <see cref="IExpressionPart"/> around an 
+    /// Wraps an <see cref="IExpressionPart"/> around an
     /// <see cref="ImplicitMultiplicationOperator"/>.
     /// </summary>
     /// <param name="part">A part to transform.</param>
     /// <returns>
     /// A new instance of <see cref="ImplicitMultiplicationOperator"/>
-    /// with <see cref="ImplicitMultiplicationOperator.InnerPart"/> set 
+    /// with <see cref="ImplicitMultiplicationOperator.InnerPart"/> set
     /// to <paramref name="part"/>.
     /// </returns>
     public static IExpressionPart WrapForImplicitMultiplication
@@ -50,11 +50,11 @@ internal static class ExpressionPartConversionExtensions
             SubtractionOperator => MinusToken.Instance,
             MultiplicationOperator => TimesToken.Instance,
             DivisionOperator => DivToken.Instance,
-            ExponentiationOperator or NegativeExponentiationOperator => CaretToken.Instance,
+            ExponentiationOperator => CaretToken.Instance,
             ModuloOperator => PercentToken.Instance,
             _ => throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null)
         };
-    
+
     /// <summary>
     /// Converts a given <see cref="ILeftSideUnaryOperator"/> to a <see cref="string"/>.
     /// </summary>
@@ -70,21 +70,21 @@ internal static class ExpressionPartConversionExtensions
             CotangentOperator => CotToken.Instance,
             SecantOperator => SecToken.Instance,
             CosecantOperator => CscToken.Instance,
-            
+
             ArcsineOperator => AsinToken.Instance,
             ArccosineOperator => AcosToken.Instance,
             ArctangentOperator => AtanToken.Instance,
             ArccotangentOperator => AcotToken.Instance,
             ArcsecantOperator => AsecToken.Instance,
             ArccosecantOperator => AcscToken.Instance,
-            
+
             HyperbolicSineOperator => SinhToken.Instance,
             HyperbolicCosineOperator => CoshToken.Instance,
             HyperbolicTangentOperator => TanhToken.Instance,
             HyperbolicCotangentOperator => CothToken.Instance,
             HyperbolicSecantOperator => SechToken.Instance,
             HyperbolicCosecantOperator => CschToken.Instance,
-            
+
             HyperbolicArcsineOperator => AsinhToken.Instance,
             HyperbolicArccosineOperator => AcoshToken.Instance,
             HyperbolicArctangentOperator => AtanhToken.Instance,
@@ -92,13 +92,11 @@ internal static class ExpressionPartConversionExtensions
             HyperbolicArcsecantOperator => AsechToken.Instance,
             HyperbolicArccosecantOperator => AcschToken.Instance,
 
-            PositiveValueOperator => PlusToken.Instance,
-            NegationOperator => MinusToken.Instance,
             SquareRootOperator => SqrtToken.Instance,
             CubeRootOperator => CbrtToken.Instance,
             LogarithmOperator => LogToken.Instance,
             NaturalLogarithmOperator => LnToken.Instance,
-            
+
             _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, null)
         };
 

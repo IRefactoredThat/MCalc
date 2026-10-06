@@ -26,7 +26,7 @@ internal static class BinaryOperatorsExtensions
     /// <see cref="InvalidOperation"/> |
     /// <see cref="UndefinedOperation"/>.
     /// </returns>
-    public static Result<IOperand> Apply(this IBinaryOperator binaryOperator, 
+    public static Result<IOperand> Apply(this IBinaryOperator binaryOperator,
         IOperand leftOperand, IOperand rightOperand)
     {
         var result = binaryOperator switch
@@ -49,12 +49,6 @@ internal static class BinaryOperatorsExtensions
                 rightOperand.Value < 0 => new InvalidOperation(CaretToken.Instance),
             ExponentiationOperator => new Number(
                 double.Pow(leftOperand.Value, rightOperand.Value)),
-
-            NegativeExponentiationOperator when 
-                leftOperand.Value == 0 && rightOperand.Value < 0 => 
-                    new InvalidOperation(CaretToken.Instance),
-            NegativeExponentiationOperator => new Number(
-                -double.Pow(leftOperand.Value, rightOperand.Value)),
 
             ModuloOperator => leftOperand.Modulo(rightOperand).ToResult(),
 

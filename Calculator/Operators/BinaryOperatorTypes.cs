@@ -23,11 +23,6 @@ public readonly record struct DivisionOperator : IBinaryOperator;
 /// </summary>
 public readonly record struct ExponentiationOperator : IBinaryOperator;
 /// <summary>
-/// Represents a type of <see cref="IBinaryOperator"/>, denoted by the <see cref="CaretToken"/>,
-/// used to correct the behavior of the evaluation for examples like -1^-2.
-/// </summary>
-public readonly record struct NegativeExponentiationOperator : IBinaryOperator;
-/// <summary>
 /// Represents a type of <see cref="IBinaryOperator"/>, denoted by the <see cref="ModuloOperator"/>.
 /// </summary>
 public readonly record struct ModuloOperator : IBinaryOperator;

@@ -7,7 +7,7 @@ using Essentials.ResultType;
 namespace Calculator.ExpressionSolving;
 
 /// <summary>
-/// Represents an extension class containing methods for 
+/// Represents an extension class containing methods for
 /// evaluating an <see cref="Expression"/> completely.
 /// </summary>
 public static class ExpressionEvaluatingExtensions
@@ -40,17 +40,16 @@ public static class ExpressionEvaluatingExtensions
     /// <b>Note</b>: Invoke
     /// <see cref="ParenthesesSubstitutionExtensions.SubstituteAllParentheses(Expression)"/>
     /// on the starting <see cref="Expression"/>
-    /// before invoking this method or make sure there are no parentheses in 
+    /// before invoking this method or make sure there are no parentheses in
     /// <paramref name="expression"/>.
     /// </remarks>
     public static Result<IOperand> EvaluateAllOperators(this Expression expression) =>
         expression
-                .SubstituteAllExponentiationOperators()
                 .EvaluateRightSideUnaryOperators()
                 .Map(simplifiedExpression => simplifiedExpression
                     .EvaluateLeftSideUnaryOperators())
                 .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
-                    <ExponentiationOperator, NegativeExponentiationOperator>())
+                    <ExponentiationOperator, ExponentiationOperator>())
                 .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
                     <MultiplicationOperator, DivisionOperator, ModuloOperator>())
                 .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using Calculator.ExpressionPartConversions;
+using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -30,7 +31,7 @@ internal static class BinaryOperatorMappingExtensions
     /// </para>
     /// <para>
     /// 2) An <see cref="InvalidBinaryOperatorUse"/>,
-    /// when the mapping was successful, but the resulting instance cannot be 
+    /// when the mapping was successful, but the resulting instance cannot be
     /// preceded by previous <see cref="IExpressionPart"/>.
     /// </para>
     /// 3) A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> formed by
@@ -47,8 +48,12 @@ internal static class BinaryOperatorMappingExtensions
             IOperand or GroupingEndOperator or IRightSideUnaryOperator or
             ImplicitMultiplicationOperator(IOperand)) =>
             parts.Add(MapTokenToBinaryOperator(token)),
-        (PlusToken, _) => parts.Add(new PositiveValueOperator()),
-        (MinusToken, _) => parts.Add(new NegationOperator()),
+        (PlusToken, _) => parts.Add(new GroupingStartOperator())
+            .Add(new Number(0))
+            .Add(new AdditionOperator()),
+        (MinusToken, _) => parts.Add(new GroupingStartOperator())
+            .Add(new Number(0))
+            .Add(new SubtractionOperator()),
         (TimesToken, _) => new InvalidBinaryOperatorUse(TimesToken.Instance),
         (DivToken, _) => new InvalidBinaryOperatorUse(DivToken.Instance),
         (CaretToken, _) => new InvalidBinaryOperatorUse(CaretToken.Instance),

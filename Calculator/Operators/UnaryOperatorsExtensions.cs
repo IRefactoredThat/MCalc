@@ -64,9 +64,6 @@ internal static class UnaryOperatorsExtensions
     {
         return unaryOperator switch
         {
-            NegationOperator => new Number(-operand.Value),
-            PositiveValueOperator => operand.ToResult(),
-
             SquareRootOperator => new Number(double.Sqrt(operand.Value)),
             CubeRootOperator => new Number(double.Cbrt(operand.Value)),
 
