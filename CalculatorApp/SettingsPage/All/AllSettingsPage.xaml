@@ -12,6 +12,7 @@
     xmlns:animations="clr-namespace:CalculatorApp.SettingsPage.Animations"
     xmlns:layout="clr-namespace:CalculatorApp.SettingsPage.Layout"
     xmlns:app="clr-namespace:CalculatorApp.SettingsPage.App"
+    xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup"
     x:Class="CalculatorApp.SettingsPage.All.AllSettingsPage"
     Header="Settings">
     <base:SettingsBasePage.SettingsContent>
@@ -36,11 +37,17 @@
                 Icon="{x:Static fonts:MaterialSymbols.Layout}"
                 Route="{x:Type layout:LayoutSettingsPage}"/>
             <pageNavigation:PageNavigationSetting
-                CornerRadius="5, 5, 15, 15"
+                CornerRadius="5, 5, 5, 5"
                 Name="Animations"
                 Description="Interaction and motion"
                 Icon="{x:Static fonts:MaterialSymbols.Animation}"
                 Route="{x:Type animations:AnimationSettingsPage}"/>
+            <pageNavigation:PageNavigationSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Backup"
+                Description="Import and export app data"
+                Icon="{x:Static fonts:MaterialSymbols.Backup}"
+                Route="{x:Type backup:BackupSettingsPage}"/>
             <Label Style="{StaticResource SettingSubheader}" Text="Calculator"/>
             <pageNavigation:PageNavigationSetting
                 CornerRadius="15, 15, 5, 5"

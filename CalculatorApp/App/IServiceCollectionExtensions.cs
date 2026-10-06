@@ -10,6 +10,7 @@ using CalculatorApp.Platforms.Android.Extensions;
 using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
+using CalculatorApp.SettingsPage.Backup;
 using CalculatorApp.SettingsPage.Colors;
 using CalculatorApp.SettingsPage.CustomLayout;
 using CalculatorApp.SettingsPage.FontSize;
@@ -38,7 +39,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<FormattingSettings>()
             .AddSingleton<HistorySettings>()
             .AddSingleton<AnimationSettings>()
-            .AddSingleton<LayoutSettings>();
+            .AddSingleton<LayoutSettings>()
+            .AddSingleton<BackupSettings>();
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services.AddTransient<CalculatorOutputViewModel>()
@@ -59,5 +61,6 @@ public static class ServiceCollectionExtensions
             .AddTransient<HistorySettingsPage>()
             .AddTransient<LayoutSettingsPage>()
             .AddTransient<CustomLayoutSettingsPage>()
-            .AddTransient<AppSettingsPage>();
+            .AddTransient<AppSettingsPage>()
+            .AddTransient<BackupSettingsPage>();
 }

@@ -1,6 +1,7 @@
 ﻿using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
+using CalculatorApp.SettingsPage.Backup;
 using CalculatorApp.SettingsPage.Colors;
 using CalculatorApp.SettingsPage.CustomLayout;
 using CalculatorApp.SettingsPage.FontSize;
@@ -25,6 +26,7 @@ public partial class AppShell
         Routing.RegisterRoute(nameof(TypographySettingsPage), typeof(TypographySettingsPage));
         Routing.RegisterRoute(nameof(HistorySettingsPage), typeof(HistorySettingsPage));
         Routing.RegisterRoute(nameof(AnimationSettingsPage), typeof(AnimationSettingsPage));
+        Routing.RegisterRoute(nameof(BackupSettingsPage), typeof(BackupSettingsPage));
         Routing.RegisterRoute(nameof(LayoutSettingsPage), typeof(LayoutSettingsPage));
         Routing.RegisterRoute(nameof(CustomLayoutSettingsPage), typeof(CustomLayoutSettingsPage));
         Routing.RegisterRoute(nameof(AppSettingsPage), typeof(AppSettingsPage));
