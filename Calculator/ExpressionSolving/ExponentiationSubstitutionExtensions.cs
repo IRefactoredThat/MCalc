@@ -8,7 +8,7 @@ namespace Calculator.ExpressionSolving;
 internal static class ExponentiationSubstitutionExtensions
 {
     /// <summary>
-    /// Subsititues each <see cref="ExponentiationOperator"/> preceded by a specific
+    /// Substitutes each <see cref="ExponentiationOperator"/> preceded by a specific
     /// sequence of <see cref="IExpressionPart"/> instances with a
     /// <see cref="NegativeExponentiationOperator"/> inside <paramref name="expression"/>
     /// and inner expressions to prevent errors in calculations.
@@ -18,7 +18,7 @@ internal static class ExponentiationSubstitutionExtensions
     /// </summary>
     /// <param name="expression">The <see cref="Expression"/> used for substitution.</param>
     /// <returns>
-    /// A new <see cref="Expression"/> object with zero or more 
+    /// A new <see cref="Expression"/> object with zero or more
     /// <see cref="ExponentiationOperator"/> instances replaced with a
     /// <see cref="NegativeExponentiationOperator"/> instances.
     /// </returns>
@@ -27,13 +27,27 @@ internal static class ExponentiationSubstitutionExtensions
             .Aggregate(ImmutableList<IExpressionPart>.Empty,
             (newParts, part) =>
             {
-                if (part is ExponentiationOperator && newParts is
-                    [.., NegationOperator, IUnaryOperator, IOperand] or
-                    [.., NegationOperator, IUnaryOperator, Expression] or
-                    [.., NegationOperator, IOperand] or
-                    [.., NegationOperator, Expression])
+                if (part is ExponentiationOperator)
                 {
-                    return newParts.Add(new NegativeExponentiationOperator());
+                    var shouldTransform = false;
+                    if (newParts is [.., NegationOperator, IUnaryOperator, IOperand] or
+                        [.., NegationOperator, IUnaryOperator, Expression])
+                    {
+                        if (newParts is [.., not ExponentiationOperator, _, _, _])
+                        {
+                            shouldTransform = true;
+                        }
+                    }
+                    else if (newParts is ([.., NegationOperator, IOperand] or
+                             [.., NegationOperator, Expression]) and [.., not ExponentiationOperator, _, _])
+                    {
+                        shouldTransform = true;
+                    }
+                    if (shouldTransform)
+                    {
+                        return newParts.Add(new NegativeExponentiationOperator());
+                    }
+                    return newParts.Add(part);
                 }
                 if (part is Expression innerExpression)
                 {
@@ -42,4 +56,5 @@ internal static class ExponentiationSubstitutionExtensions
                 }
                 return newParts.Add(part);
             }, finalParts => finalParts.AttachAngleMode(expression.Mode));
+
 }
