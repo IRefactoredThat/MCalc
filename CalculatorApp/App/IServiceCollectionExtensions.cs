@@ -11,6 +11,7 @@ using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
 using CalculatorApp.SettingsPage.Backup;
+using CalculatorApp.SettingsPage.Base;
 using CalculatorApp.SettingsPage.Colors;
 using CalculatorApp.SettingsPage.CustomLayout;
 using CalculatorApp.SettingsPage.FontSize;
@@ -29,7 +30,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<Calculation>()
             .AddSingleton<TokenConverter>()
             .AddSingleton<NumberTokenConverter>()
-            .AddSingleton<IHistoryStorage, HistoryStorage>();
+            .AddSingleton<IHistoryStorage, HistoryStorage>()
+            .AddSingleton<IPreferences, SettingsPreferences>();
 
     public static IServiceCollection AddSettings(this IServiceCollection services) =>
         services.AddSingleton<SystemScheme>()
