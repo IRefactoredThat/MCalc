@@ -7,6 +7,7 @@ public enum CustomFonts { Inconsolata, FantasqueSansMono, SometypeMono }
 
 public class TypographySettings(IPreferences preferences) : INotifyPropertyChanged
 {
+    private ResourceDictionary _resources = null!;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -74,7 +75,7 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
         set
         {
             field = value;
-            Application.Current?.Resources[nameof(AppFont)] = AppFont;
+            _resources[nameof(AppFont)] = AppFont;
             preferences.Set(nameof(UseSystemFont), value);
             OnPropertyChanged();
         }
@@ -86,7 +87,7 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
         set
         {
             field = value;
-            Application.Current?.Resources[nameof(AppFont)] = AppFont;
+            _resources[nameof(AppFont)] = AppFont;
             preferences.Set(nameof(CustomAppFont), (int)value);
             OnPropertyChanged();
         }
@@ -275,8 +276,9 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
     public double ScaledInputMinSize => InputMinSize * GetSizeScale(nameof(InputScale));
     public double ScaledInputMaxSize => InputMaxSize * GetSizeScale(nameof(InputScale));
 
-    public void Initialize()
+    public void Initialize(ResourceDictionary resources)
     {
+        _resources = resources;
         foreach (var (_, factorKey, _) in FontSizes)
         {
             _factors[factorKey] = preferences.Get(factorKey, DefaultScale);
@@ -327,14 +329,9 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
 
     private void ApplyScale()
     {
-        if (Application.Current is not { } application)
-        {
-            return;
-        }
-
         foreach (var (key, factorKey, defaultSize) in FontSizes)
         {
-            application.Resources[key] = defaultSize *
+            _resources[key] = defaultSize *
                 (GlobalScaling ? GlobalScale : _factors[factorKey]);
         }
     }

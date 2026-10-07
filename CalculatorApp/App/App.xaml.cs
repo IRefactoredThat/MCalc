@@ -14,11 +14,12 @@ public partial class App
         TypographySettings typographySettings)
     {
         InitializeComponent();
-        appearanceSettings.Initialize(Resources);
         appSettings.Initialize();
-        typographySettings.Initialize();
+        appearanceSettings.Initialize(Resources);
+        typographySettings.Initialize(Resources);
         _appShell = new AppShell(appearanceSettings);
     }
 
-    protected override Window CreateWindow(IActivationState? activationState) => new(_appShell);
+    protected override Window CreateWindow(IActivationState?
+        activationState) => new(_appShell);
 }
