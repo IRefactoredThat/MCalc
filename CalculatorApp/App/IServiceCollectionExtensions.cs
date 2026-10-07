@@ -30,7 +30,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<Calculation>()
             .AddSingleton<TokenConverter>()
             .AddSingleton<NumberTokenConverter>()
-            .AddSingleton<IHistoryStorage, HistoryStorage>()
+            .AddSingleton<HistoryStorage>()
             .AddSingleton<CustomModelStorage>()
             .AddSingleton<IPreferences, SettingsPreferences>();
 

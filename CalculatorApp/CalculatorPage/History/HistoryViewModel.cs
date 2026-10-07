@@ -15,7 +15,7 @@ public class HistoryViewModel : INotifyPropertyChanged
     public ICommand DeleteAllCommand { get; }
     public ObservableCollection<HistoryItem> Items { get; }
 
-    private readonly IHistoryStorage _storage;
+    private readonly HistoryStorage _storage;
     private readonly HistorySettings _historySettings;
 
     public ItemsUpdatingScrollMode ScrollMode
@@ -28,12 +28,12 @@ public class HistoryViewModel : INotifyPropertyChanged
         }
     } = ItemsUpdatingScrollMode.KeepLastItemInView;
 
-    public HistoryViewModel(IHistoryStorage storage, HistorySettings historySettings)
+    public HistoryViewModel(HistoryStorage storage, HistorySettings historySettings)
     {
         _storage = storage;
         _historySettings = historySettings;
 
-        Items = storage.GetItems();
+        Items = storage.Get();
         Items.CollectionChanged += OnItemsCollectionChanged;
 
         DeleteCommand = new Command<HistoryItem>(DeleteItem);
@@ -49,7 +49,7 @@ public class HistoryViewModel : INotifyPropertyChanged
         await _saveGate.WaitAsync();
         try
         {
-            await _storage.SaveItems(Items);
+            await _storage.SaveAsync(Items);
         }
         finally
         {

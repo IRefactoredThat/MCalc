@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CalculatorApp.CalculatorPage.History.Converters;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.CalculatorPage.History.Storage;
 
@@ -10,7 +11,7 @@ namespace CalculatorApp.CalculatorPage.History.Storage;
 internal sealed partial class HistoryJsonContext : JsonSerializerContext { }
 
 public class HistoryStorage(TokenConverter tokenConverter, NumberTokenConverter numberTokenConverter)
-    : IHistoryStorage
+    : IStorage<ObservableCollection<HistoryItem>>
 {
     private readonly HistoryJsonContext _context = new(new JsonSerializerOptions
     {
@@ -18,7 +19,7 @@ public class HistoryStorage(TokenConverter tokenConverter, NumberTokenConverter 
     });
     private static readonly string HistoryPath = Path.Combine(FileSystem.AppDataDirectory, "history.json");
 
-    public ObservableCollection<HistoryItem> GetItems()
+    public ObservableCollection<HistoryItem> Get()
     {
         if (!File.Exists(HistoryPath))
         {
@@ -37,9 +38,17 @@ public class HistoryStorage(TokenConverter tokenConverter, NumberTokenConverter 
         }
     }
 
-    public async Task SaveItems(ObservableCollection<HistoryItem> items)
+    public async Task SaveAsync(ObservableCollection<HistoryItem> items)
     {
-        var json = JsonSerializer.Serialize(items, _context.ObservableCollectionHistoryItem);
+        var json = JsonSerializer.Serialize(items,
+            _context.ObservableCollectionHistoryItem);
         await File.WriteAllTextAsync(HistoryPath, json);
+    }
+
+    public void Save(ObservableCollection<HistoryItem> items)
+    {
+        var json = JsonSerializer.Serialize(items,
+            _context.ObservableCollectionHistoryItem);
+        File.WriteAllText(HistoryPath, json);
     }
 }

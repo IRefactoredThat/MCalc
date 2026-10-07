@@ -1,12 +1,13 @@
 using System.Text.Json;
 using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.CalculatorPage.MainGrid.Parts;
+using CalculatorApp.SettingsPage.Backup;
 using CalculatorApp.SettingsPage.Formatting;
 using CalculatorApp.SettingsPage.Layout;
 
 namespace CalculatorApp.CalculatorPage.MainGrid.Models;
 
-public class CustomModelStorage
+public class CustomModelStorage : IStorage<CustomGridViewModel>
 {
     private static readonly string CustomModelPath = Path.Combine(
         FileSystem.AppDataDirectory, "custom_model.json");
@@ -42,6 +43,13 @@ public class CustomModelStorage
             Delete();
             return new CustomGridViewModel();
         }
+    }
+
+    public async Task SaveAsync(CustomGridViewModel model)
+    {
+        var customModel = JsonSerializer.Serialize<CustomGridViewModel>(model,
+            _context.CustomGridViewModel);
+        await File.WriteAllTextAsync(CustomModelPath, customModel);
     }
 
     public void Save(CustomGridViewModel model)
