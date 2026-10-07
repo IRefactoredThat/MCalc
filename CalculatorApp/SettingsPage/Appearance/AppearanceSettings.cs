@@ -11,7 +11,7 @@ public enum Theme { Auto, Light, Dark }
 public enum Style { Vibrant, TonalSpot, Expressive,
     Rainbow, FruitSalad, Content, Fidelity }
 
-public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChanged
+public class AppearanceSettings(IPreferences preferences, SystemScheme systemScheme) : INotifyPropertyChanged
 {
     private const double ContrastLevel = 0.0;
     private const double SurfaceChroma = 30.0;
@@ -71,7 +71,7 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         get => GetTheme();
         set
         {
-            Preferences.Set(nameof(PreferredTheme), (int)value);
+            preferences.Set(nameof(PreferredTheme), (int)value);
             SetTheme(value);
             OnPropertyChanged();
 
@@ -102,7 +102,7 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         get;
         set
         {
-            Preferences.Set(nameof(AmoledEnabled), value);
+            preferences.Set(nameof(AmoledEnabled), value);
             field = value;
 
             Apply();
@@ -121,7 +121,7 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         set
         {
             field = value;
-            Preferences.Set(nameof(DynamicColors), value);
+            preferences.Set(nameof(DynamicColors), value);
 
             Apply();
 
@@ -136,7 +136,7 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         set
         {
             field = value;
-            Preferences.Set(nameof(Style), (int)value);
+            preferences.Set(nameof(Style), (int)value);
             Apply();
 
             OnPropertyChanged();
@@ -150,7 +150,7 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         set
         {
             field = value;
-            Preferences.Set(nameof(SeedColor), value.ToInt());
+            preferences.Set(nameof(SeedColor), value.ToInt());
             Apply();
 
             OnPropertyChanged();
@@ -242,12 +242,12 @@ public class AppearanceSettings(SystemScheme systemScheme) : INotifyPropertyChan
         _resources = resourceDictionary;
         _suspendApply = true;
 
-        SeedColor = Color.FromInt(Preferences.Get(nameof(SeedColor),
+        SeedColor = Color.FromInt(preferences.Get(nameof(SeedColor),
             FallbackSeed.ToInt()));
-        Style = (Style)Preferences.Get(nameof(Style), 0);
-        DynamicColors = Preferences.Get(nameof(DynamicColors), true);
-        PreferredTheme = (Theme)Preferences.Get(nameof(PreferredTheme), 0);
-        AmoledEnabled = Preferences.Get(nameof(AmoledEnabled), false);
+        Style = (Style)preferences.Get(nameof(Style), 0);
+        DynamicColors = preferences.Get(nameof(DynamicColors), true);
+        PreferredTheme = (Theme)preferences.Get(nameof(PreferredTheme), 0);
+        AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
 
         _suspendApply = false;
         Apply();

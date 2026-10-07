@@ -9,6 +9,7 @@ public enum TransitionAnimation { Fade, None }
 
 public class AnimationSettings : INotifyPropertyChanged
 {
+    private readonly IPreferences _preferences;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -21,7 +22,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            Preferences.Set(nameof(CalculatorClickAnimation), (int)value);
+            _preferences.Set(nameof(CalculatorClickAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -32,7 +33,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            Preferences.Set(nameof(CalculatorTransitionAnimation), (int)value);
+            _preferences.Set(nameof(CalculatorTransitionAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -43,7 +44,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            Preferences.Set(nameof(OutputToInputAnimation), (int)value);
+            _preferences.Set(nameof(OutputToInputAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -54,7 +55,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            Preferences.Set(nameof(SettingsClickAnimation), (int)value);
+            _preferences.Set(nameof(SettingsClickAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -65,23 +66,25 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            Preferences.Set(nameof(SettingsTransitionAnimation), (int)value);
+            _preferences.Set(nameof(SettingsTransitionAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
     }
 
-    public AnimationSettings()
+    public AnimationSettings(IPreferences preferences)
     {
+        _preferences = preferences;
+
         CalculatorClickAnimation = (ClickAnimation)
-            Preferences.Get(nameof(CalculatorClickAnimation), 0);
+            preferences.Get(nameof(CalculatorClickAnimation), 0);
         CalculatorTransitionAnimation = (TransitionAnimation)
-            Preferences.Get(nameof(CalculatorTransitionAnimation), 0);
+            preferences.Get(nameof(CalculatorTransitionAnimation), 0);
         OutputToInputAnimation = (OutputToInputAnimation)
-            Preferences.Get(nameof(OutputToInputAnimation), 0);
+            preferences.Get(nameof(OutputToInputAnimation), 0);
         SettingsClickAnimation = (ClickAnimation)
-            Preferences.Get(nameof(SettingsClickAnimation), 0);
+            preferences.Get(nameof(SettingsClickAnimation), 0);
         SettingsTransitionAnimation = (TransitionAnimation)
-            Preferences.Get(nameof(SettingsTransitionAnimation), 0);
+            preferences.Get(nameof(SettingsTransitionAnimation), 0);
     }
 }

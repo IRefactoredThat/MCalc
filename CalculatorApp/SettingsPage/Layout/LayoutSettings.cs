@@ -16,6 +16,7 @@ public enum ButtonShape { Circle, Square }
 
 public class LayoutSettings : INotifyPropertyChanged
 {
+    private readonly IPreferences _preferences;
     private readonly SimpleGridViewModel _simpleGridViewModel;
     private readonly MixedGridViewModel _mixedGridViewModel;
     private readonly CustomGridViewModel _customGridViewModel;
@@ -34,7 +35,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(GridLayout), (int)value);
+            _preferences.Set(nameof(GridLayout), (int)value);
             OnPropertyChanged();
             OnPropertyChanged(nameof(GridViewModel));
         }
@@ -145,7 +146,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(ButtonSpacing), value);
+            _preferences.Set(nameof(ButtonSpacing), value);
             OnPropertyChanged();
         }
     }
@@ -244,7 +245,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(ShowHelpVisible), value);
+            _preferences.Set(nameof(ShowHelpVisible), value);
             OnPropertyChanged();
         }
     }
@@ -284,8 +285,8 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
+            _preferences.Set(nameof(ActiveCategory), (int)ActiveCategory);
             OnPropertyChanged();
-            Preferences.Set(nameof(ActiveCategory), (int)ActiveCategory);
         }
     }
 
@@ -295,15 +296,17 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
+            _preferences.Set(nameof(ButtonShape), (int)ButtonShape);
             OnPropertyChanged();
-            Preferences.Set(nameof(ButtonShape), (int)ButtonShape);
         }
     }
 
-    public LayoutSettings(SimpleGridViewModel simpleViewModel,
+    public LayoutSettings(IPreferences preferences,
+        SimpleGridViewModel simpleViewModel,
         MixedGridViewModel mixedViewModel, CustomGridViewModel customViewModel,
         UserMessageDisplayer userMessageDisplayer)
     {
+        _preferences = preferences;
         _simpleGridViewModel = simpleViewModel;
         _mixedGridViewModel = mixedViewModel;
         _customGridViewModel = customViewModel;
@@ -330,10 +333,10 @@ public class LayoutSettings : INotifyPropertyChanged
             }
         }
 
-        ShowHelpVisible = Preferences.Get(nameof(ShowHelpVisible), true);
-        GridLayout = (GridLayout)Preferences.Get(nameof(GridLayout), 0);
-        ActiveCategory = (LayoutItemCategory)Preferences.Get(nameof(ActiveCategory), 0);
-        ButtonSpacing = Preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
-        ButtonShape = (ButtonShape)Preferences.Get(nameof(ButtonShape), 0);
+        ShowHelpVisible = _preferences.Get(nameof(ShowHelpVisible), true);
+        GridLayout = (GridLayout)_preferences.Get(nameof(GridLayout), 0);
+        ActiveCategory = (LayoutItemCategory)_preferences.Get(nameof(ActiveCategory), 0);
+        ButtonSpacing = _preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
+        ButtonShape = (ButtonShape)_preferences.Get(nameof(ButtonShape), 0);
     }
 }

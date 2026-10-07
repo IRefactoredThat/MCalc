@@ -8,6 +8,7 @@ public enum EntryDuplicationBehavior { Allow, Ignore, Move }
 
 public class HistorySettings : INotifyPropertyChanged
 {
+    private readonly IPreferences _preferences;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -21,7 +22,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(HistoryEnabled), value);
+            _preferences.Set(nameof(HistoryEnabled), value);
             OnPropertyChanged();
         }
     }
@@ -32,7 +33,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(MaxEntryCount), value);
+            _preferences.Set(nameof(MaxEntryCount), value);
             OnPropertyChanged();
         }
     }
@@ -43,7 +44,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(OverflowBehavior), (int)value);
+            _preferences.Set(nameof(OverflowBehavior), (int)value);
             OnPropertyChanged();
         }
     }
@@ -54,17 +55,18 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(DuplicationBehavior), (int)value);
+            _preferences.Set(nameof(DuplicationBehavior), (int)value);
             OnPropertyChanged();
         }
     }
 
     public const int DefaultMaxEntryCount = 50, MinMaxEntryCount = 25, MaxMaxEntryCount = 200, EntryCountStep = 25;
 
-    public HistorySettings()
+    public HistorySettings(IPreferences preferences)
     {
-        HistoryEnabled = Preferences.Get(nameof(HistoryEnabled), true);
-        MaxEntryCount = Preferences.Get(nameof(MaxEntryCount), DefaultMaxEntryCount);
-        OverflowBehavior = (EntryOverflowBehavior)Preferences.Get(nameof(OverflowBehavior), 0);
+        _preferences = preferences;
+        HistoryEnabled = preferences.Get(nameof(HistoryEnabled), true);
+        MaxEntryCount = preferences.Get(nameof(MaxEntryCount), DefaultMaxEntryCount);
+        OverflowBehavior = (EntryOverflowBehavior)preferences.Get(nameof(OverflowBehavior), 0);
     }
 }

@@ -5,7 +5,7 @@ namespace CalculatorApp.SettingsPage.Typography;
 
 public enum CustomFonts { Inconsolata, FantasqueSansMono, SometypeMono }
 
-public class TypographySettings : INotifyPropertyChanged
+public class TypographySettings(IPreferences preferences) : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -75,7 +75,7 @@ public class TypographySettings : INotifyPropertyChanged
         {
             field = value;
             Application.Current?.Resources[nameof(AppFont)] = AppFont;
-            Preferences.Set(nameof(UseSystemFont), value);
+            preferences.Set(nameof(UseSystemFont), value);
             OnPropertyChanged();
         }
     }
@@ -87,7 +87,7 @@ public class TypographySettings : INotifyPropertyChanged
         {
             field = value;
             Application.Current?.Resources[nameof(AppFont)] = AppFont;
-            Preferences.Set(nameof(CustomAppFont), (int)value);
+            preferences.Set(nameof(CustomAppFont), (int)value);
             OnPropertyChanged();
         }
     }
@@ -98,7 +98,7 @@ public class TypographySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(DynamicTextScaling), value);
+            preferences.Set(nameof(DynamicTextScaling), value);
             OnPropertyChanged();
         }
     }
@@ -109,7 +109,7 @@ public class TypographySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            Preferences.Set(nameof(GlobalScaling), value);
+            preferences.Set(nameof(GlobalScaling), value);
             ApplyScale();
             OnPropertyChanged();
             NotifyAllSizeScales();
@@ -129,7 +129,7 @@ public class TypographySettings : INotifyPropertyChanged
             }
 
             field = value;
-            Preferences.Set(nameof(GlobalScale), value);
+            preferences.Set(nameof(GlobalScale), value);
             ApplyScale();
             OnPropertyChanged();
 
@@ -279,14 +279,14 @@ public class TypographySettings : INotifyPropertyChanged
     {
         foreach (var (_, factorKey, _) in FontSizes)
         {
-            _factors[factorKey] = Preferences.Get(factorKey, DefaultScale);
+            _factors[factorKey] = preferences.Get(factorKey, DefaultScale);
         }
 
-        UseSystemFont = Preferences.Get(nameof(UseSystemFont), false);
-        CustomAppFont = (CustomFonts)Preferences.Get(nameof(CustomAppFont), 0);
-        GlobalScale = Preferences.Get(nameof(GlobalScale), DefaultScale);
-        GlobalScaling = Preferences.Get(nameof(GlobalScaling), true);
-        DynamicTextScaling = Preferences.Get(nameof(DynamicTextScaling), true);
+        UseSystemFont = preferences.Get(nameof(UseSystemFont), false);
+        CustomAppFont = (CustomFonts)preferences.Get(nameof(CustomAppFont), 0);
+        GlobalScale = preferences.Get(nameof(GlobalScale), DefaultScale);
+        GlobalScaling = preferences.Get(nameof(GlobalScaling), true);
+        DynamicTextScaling = preferences.Get(nameof(DynamicTextScaling), true);
     }
 
     private double GetSizeScale(string factorKey) =>
@@ -308,7 +308,7 @@ public class TypographySettings : INotifyPropertyChanged
         }
 
         _factors[factorKey] = value;
-        Preferences.Set(factorKey, value);
+        preferences.Set(factorKey, value);
         ApplyScale();
         OnPropertyChanged(factorKey);
     }
