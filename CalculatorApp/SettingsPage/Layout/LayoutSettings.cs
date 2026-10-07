@@ -16,6 +16,7 @@ public enum ButtonShape { Circle, Square }
 
 public class LayoutSettings : INotifyPropertyChanged
 {
+    private readonly CustomModelStorage _customModelStorage;
     private readonly IPreferences _preferences;
     private readonly SimpleGridViewModel _simpleGridViewModel;
     private readonly MixedGridViewModel _mixedGridViewModel;
@@ -66,6 +67,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             _customGridViewModel.UnitWidth = Math.Clamp(value, 0, MaxUnitWidth);
+            _customModelStorage.Save(_customGridViewModel);
             OnPropertyChanged(nameof(IsCellOccupied));
             OnPropertyChanged(nameof(GridDefined));
         }
@@ -77,6 +79,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             _customGridViewModel.UnitHeight = Math.Clamp(value, 0, MaxUnitHeight);
+            _customModelStorage.Save(_customGridViewModel);
             OnPropertyChanged(nameof(IsCellOccupied));
             OnPropertyChanged(nameof(GridDefined));
         }
@@ -109,11 +112,13 @@ public class LayoutSettings : INotifyPropertyChanged
             {
                 part.Add(model);
                 _customGridViewModel.Update(SelectedCell, part);
+                _customModelStorage.Save(_customGridViewModel);
             }
             else
             {
                 var newPart = new GridViewModelPart(LayoutMode) { model };
                 _customGridViewModel.Add(SelectedCell, newPart);
+                _customModelStorage.Save(_customGridViewModel);
             }
 
             LayoutItems.Remove(model);
@@ -157,6 +162,7 @@ public class LayoutSettings : INotifyPropertyChanged
     {
         LayoutItems.RestoreToInitialState();
         _customGridViewModel.Clear();
+        _customModelStorage.Delete();
         OnPropertyChanged(nameof(SelectingSubgrid));
         OnPropertyChanged(nameof(IsCellOccupied));
     }
@@ -166,6 +172,7 @@ public class LayoutSettings : INotifyPropertyChanged
         var part = _customGridViewModel.Parts[SelectedCell];
         part.RowSpanExtension = Math.Clamp(part.RowSpanExtension + 1, 0, SelectedCell.RowSpan);
         _customGridViewModel.Update(SelectedCell, part);
+        _customModelStorage.Save(_customGridViewModel);
     }
     public ICommand DecreaseRowSpanCommand { get; }
     private void DecreaseRowSpan()
@@ -173,6 +180,7 @@ public class LayoutSettings : INotifyPropertyChanged
         var part = _customGridViewModel.Parts[SelectedCell];
         part.RowSpanExtension = Math.Clamp(part.RowSpanExtension - 1, 0, SelectedCell.RowSpan);
         _customGridViewModel.Update(SelectedCell, part);
+        _customModelStorage.Save(_customGridViewModel);
     }
     public ICommand IncreaseColumnSpanCommand { get; }
     private void IncreaseColumnSpan()
@@ -180,6 +188,7 @@ public class LayoutSettings : INotifyPropertyChanged
         var part = _customGridViewModel.Parts[SelectedCell];
         part.ColumnSpanExtension = Math.Clamp(part.ColumnSpanExtension + 1, 0, SelectedCell.ColumnSpan);
         _customGridViewModel.Update(SelectedCell, part);
+        _customModelStorage.Save(_customGridViewModel);
     }
     public ICommand DecreaseColumnSpanCommand { get; }
     private void DecreaseColumnSpan()
@@ -187,6 +196,7 @@ public class LayoutSettings : INotifyPropertyChanged
         var part = _customGridViewModel.Parts[SelectedCell];
         part.ColumnSpanExtension = Math.Clamp(part.ColumnSpanExtension - 1, 0, SelectedCell.ColumnSpan);
         _customGridViewModel.Update(SelectedCell, part);
+        _customModelStorage.Save(_customGridViewModel);
     }
     public ICommand ClearPartCommand { get; }
     private void ClearPart()
@@ -198,6 +208,7 @@ public class LayoutSettings : INotifyPropertyChanged
         _customGridViewModel.Remove(SelectedCell);
         OnPropertyChanged(nameof(SelectingSubgrid));
         OnPropertyChanged(nameof(IsCellOccupied));
+        _customModelStorage.Save(_customGridViewModel);
     }
     public ICommand ToggleLayoutModeCommand { get; }
     private void ToggleLayoutMode()
@@ -207,6 +218,7 @@ public class LayoutSettings : INotifyPropertyChanged
         var part = _customGridViewModel.Parts[SelectedCell];
         part.LayoutMode = LayoutMode;
         _customGridViewModel.Update(SelectedCell, part);
+        _customModelStorage.Save(_customGridViewModel);
     }
 
     public ICommand RemoveButtonCommand { get; }
@@ -226,9 +238,10 @@ public class LayoutSettings : INotifyPropertyChanged
         {
             _customGridViewModel.Update(cell, part);
         }
-
         OnPropertyChanged(nameof(SelectingSubgrid));
         OnPropertyChanged(nameof(IsCellOccupied));
+
+        _customModelStorage.Save(_customGridViewModel);
     }
 
     public ICommand SelectCellCommand { get; }
@@ -302,14 +315,15 @@ public class LayoutSettings : INotifyPropertyChanged
     }
 
     public LayoutSettings(IPreferences preferences,
+        CustomModelStorage customModelStorage,
         SimpleGridViewModel simpleViewModel,
-        MixedGridViewModel mixedViewModel, CustomGridViewModel customViewModel,
+        MixedGridViewModel mixedViewModel,
         UserMessageDisplayer userMessageDisplayer)
     {
+        _customModelStorage = customModelStorage;
         _preferences = preferences;
         _simpleGridViewModel = simpleViewModel;
         _mixedGridViewModel = mixedViewModel;
-        _customGridViewModel = customViewModel;
         _userMessageDisplayer = userMessageDisplayer;
 
         FullClearCommand = new Command(FullClear);
@@ -323,8 +337,9 @@ public class LayoutSettings : INotifyPropertyChanged
         SelectCellCommand = new Command<IBaseButtonViewModel>(SelectCell);
         ShowHelpCommand = new Command(ShowHelp);
 
+        _customGridViewModel = customModelStorage.Get();
         LayoutItems = new ObservableSortedList<IBaseButtonViewModel>(
-            _customGridViewModel.Pool);
+            customModelStorage.Pool);
         foreach (var part in _customGridViewModel.Parts.Values)
         {
             foreach (var model in part)

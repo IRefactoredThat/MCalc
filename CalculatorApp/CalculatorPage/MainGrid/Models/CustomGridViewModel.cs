@@ -1,10 +1,6 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.CalculatorPage.MainGrid.Cells;
 using CalculatorApp.CalculatorPage.MainGrid.Parts;
-using CalculatorApp.SettingsPage.Formatting;
-using CalculatorApp.SettingsPage.Layout;
 
 namespace CalculatorApp.CalculatorPage.MainGrid.Models;
 
@@ -13,92 +9,27 @@ internal sealed partial class CustomGridViewModelJsonContext : JsonSerializerCon
 
 public class CustomGridViewModel : IGridViewModel
 {
-    private static readonly string CustomModelPath = Path.Combine(
-        FileSystem.AppDataDirectory, "custom_model.json");
-
     private readonly Dictionary<CellRange, GridViewModelPart> _parts = [];
 
-    private readonly CustomGridViewModelJsonContext _context;
-
-    [JsonIgnore]
-    public IBaseButtonViewModel[] Pool { get; }
-
-    public CustomGridViewModel(FormattingSettings formattingSettings)
-    {
-        Pool = LayoutExtensions.Create(formattingSettings);
-        _context = new CustomGridViewModelJsonContext(new JsonSerializerOptions
-        {
-            Converters = { new GridPartJsonConverter(Pool) },
-        });
-
-        if (!File.Exists(CustomModelPath))
-        {
-            return;
-        }
-
-        try
-        {
-            var customModel = File.ReadAllText(CustomModelPath);
-            var model = JsonSerializer.Deserialize<CustomGridViewModel>(customModel,
-                _context.CustomGridViewModel);
-            if (model is null)
-            {
-                return;
-            }
-
-            _unitWidth = model.UnitWidth;
-            _unitHeight = model.UnitHeight;
-            foreach (var (cell, part) in model.Parts)
-            {
-                _parts[cell] = part;
-            }
-        }
-        catch (JsonException)
-        {
-            File.Delete(CustomModelPath);
-        }
-    }
+    public CustomGridViewModel() { }
 
     [JsonConstructor]
     public CustomGridViewModel(
         IReadOnlyDictionary<CellRange, GridViewModelPart> parts,
         int unitWidth, int unitHeight)
     {
-        _unitWidth = unitWidth;
-        _unitHeight = unitHeight;
+        UnitWidth = unitWidth;
+        UnitHeight = unitHeight;
         foreach (var (cell, part) in parts)
         {
             _parts[cell] = part;
         }
-
-        Pool = null!;
-        _context = null!;
     }
 
     public event EventHandler<PartChangedEventArgs>? PartChanged;
 
-    private int _unitWidth;
-    private int _unitHeight;
-
-    public int UnitWidth
-    {
-        get => _unitWidth;
-        set
-        {
-            _unitWidth = value;
-            Save();
-        }
-    }
-
-    public int UnitHeight
-    {
-        get => _unitHeight;
-        set
-        {
-            _unitHeight = value;
-            Save();
-        }
-    }
+    public int UnitWidth { get; set; }
+    public int UnitHeight { get; set; }
 
     public IReadOnlyDictionary<CellRange, GridViewModelPart> Parts => _parts;
 
@@ -126,7 +57,6 @@ public class CustomGridViewModel : IGridViewModel
         _parts[cell] = part;
         PartChanged?.Invoke(this, new PartChangedEventArgs(cell,
             PartChangedAction.Add, part));
-        Save();
     }
 
     public void Update(CellRange cell, GridViewModelPart part)
@@ -134,7 +64,6 @@ public class CustomGridViewModel : IGridViewModel
         _parts[cell] = part;
         PartChanged?.Invoke(this, new PartChangedEventArgs(cell,
             PartChangedAction.Update, part));
-        Save();
     }
 
     public void Remove(CellRange cell)
@@ -142,7 +71,6 @@ public class CustomGridViewModel : IGridViewModel
         _parts.Remove(cell);
         PartChanged?.Invoke(this, new PartChangedEventArgs(cell,
             PartChangedAction.Remove));
-        Save();
     }
 
     public void Clear()
@@ -150,13 +78,5 @@ public class CustomGridViewModel : IGridViewModel
         _parts.Clear();
         PartChanged?.Invoke(this, new PartChangedEventArgs(default,
             PartChangedAction.Clear));
-        File.Delete(CustomModelPath);
-    }
-
-    private void Save()
-    {
-        var customModel = JsonSerializer.Serialize(this,
-            _context.CustomGridViewModel);
-        File.WriteAllText(CustomModelPath, customModel);
     }
 }
