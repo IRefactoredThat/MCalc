@@ -25,9 +25,11 @@ public static class UserMessageDisplayer
     {
         _platformSnackbar?.Dismiss();
 
-        var parentView = Platform.CurrentActivity?.Window?.DecorView
-            .FindViewById(global::Android.Resource.Id.Content)
-            ?? throw new InvalidOperationException("Unable to create snackbar");
+        var parentView = Application.Current?.Windows[0]
+            .Page?.Handler?.PlatformView as View ??
+                Platform.CurrentActivity?.Window?
+                    .DecorView.FindViewById(global::Android.Resource.Id.Content)
+             ?? throw new InvalidOperationException("Unable to create snackbar");
 
         _platformSnackbar = Snackbar.Make(parentView, message, duration);
 
