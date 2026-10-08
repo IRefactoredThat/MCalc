@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculatorApp.CalculatorPage.MainGrid.Models;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.SettingsPage.Layout;
 
@@ -14,7 +15,8 @@ public class LayoutSettings : INotifyPropertyChanged
     private readonly IPreferences _preferences;
     private readonly SimpleGridViewModel _simpleGridViewModel;
     private readonly MixedGridViewModel _mixedGridViewModel;
-    private readonly Lazy<CustomGridViewModel> _customGridViewModel;
+    private readonly CustomModelStorage _customModelStorage;
+    private Lazy<CustomGridViewModel> _customGridViewModel;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -95,18 +97,26 @@ public class LayoutSettings : INotifyPropertyChanged
         }
     }
 
-    public LayoutSettings(IPreferences preferences, CustomModelStorage modelStorage,
+    public LayoutSettings(IPreferences preferences, CustomModelStorage customModelStorage,
         SimpleGridViewModel simpleGridViewModel, MixedGridViewModel mixedGridViewModel)
     {
         _preferences = preferences;
         _simpleGridViewModel = simpleGridViewModel;
         _mixedGridViewModel = mixedGridViewModel;
-        _customGridViewModel = new Lazy<CustomGridViewModel>(modelStorage.Get);
+        _customModelStorage = customModelStorage;
+        _customGridViewModel = new
+            Lazy<CustomGridViewModel>(_customModelStorage.Get);
 
         ShowHelpVisible = _preferences.Get(nameof(ShowHelpVisible), true);
         GridLayout = (GridLayout)_preferences.Get(nameof(GridLayout), 0);
         ActiveCategory = (LayoutItemCategory)_preferences.Get(nameof(ActiveCategory), 0);
         ButtonSpacing = _preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
         ButtonShape = (ButtonShape)_preferences.Get(nameof(ButtonShape), 0);
+    }
+
+    public void Reload(BackupFile backup)
+    {
+        _customGridViewModel = new
+            Lazy<CustomGridViewModel>(_customModelStorage.Get);
     }
 }

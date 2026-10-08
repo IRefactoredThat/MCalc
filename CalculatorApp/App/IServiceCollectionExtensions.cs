@@ -32,7 +32,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<NumberTokenConverter>()
             .AddSingleton<HistoryStorage>()
             .AddSingleton<CustomModelStorage>()
-            .AddSingleton<IPreferences, SettingsPreferences>();
+            .AddSingleton<IPreferences, SettingsPreferences>()
+            .AddSingleton<SettingsPreferences>();
 
     public static IServiceCollection AddSettings(this IServiceCollection services) =>
         services.AddSingleton<SystemScheme>()

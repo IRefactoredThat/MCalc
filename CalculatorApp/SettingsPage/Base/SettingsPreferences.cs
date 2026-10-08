@@ -1,11 +1,11 @@
-using System.Collections;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.SettingsPage.Base;
 
 public readonly record struct Preference(string Key, object? Value);
 
 public class SettingsPreferences() :
-    IPreferences, IEnumerable<Preference>
+    IPreferences, IStorage<Preference[]>
 {
     private readonly Dictionary<string, object?> _entries = [];
     private readonly IPreferences _preferences = Preferences.Default;
@@ -38,10 +38,23 @@ public class SettingsPreferences() :
         return value;
     }
 
-    public IEnumerator<Preference> GetEnumerator() =>
-        _entries
-            .Select(pair => new Preference(pair.Key, pair.Value))
-            .GetEnumerator();
+    public Preference[] Get() =>
+    [
+        .. _entries.Select(x =>
+            new Preference(x.Key, x.Value))
+    ];
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    public void Save(Preference[] item)
+    {
+        foreach (var preference in item)
+        {
+            Set(preference.Key, preference.Value);
+        }
+    }
+
+    public Task SaveAsync(Preference[] item)
+    {
+        Save(item);
+        return Task.CompletedTask;
+    }
 }
