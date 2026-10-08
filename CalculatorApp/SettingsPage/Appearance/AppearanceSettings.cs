@@ -255,10 +255,15 @@ public class AppearanceSettings(IPreferences preferences,
         PreferredTheme = (Theme)preferences.Get(nameof(PreferredTheme), 0);
         AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
         _suspendApply = false;
-        Apply();
+        UpdateTheme();
     }
 
     private void OnThemeChanged(object? sender, AppThemeChangedEventArgs e)
+    {
+        UpdateTheme();
+    }
+
+    private void UpdateTheme()
     {
         systemScheme.UpdatePalettes();
         Apply();

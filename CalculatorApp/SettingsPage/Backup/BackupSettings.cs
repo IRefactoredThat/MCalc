@@ -3,8 +3,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
 using CalculatorApp.CalculatorPage.History;
+using CalculatorApp.CalculatorPage.History.Converters;
 using CalculatorApp.CalculatorPage.History.Storage;
 using CalculatorApp.CalculatorPage.MainGrid.Models;
+using CalculatorApp.CalculatorPage.MainGrid.Parts;
 using CalculatorApp.CalculatorPage.Page;
 using CalculatorApp.SettingsPage.Base;
 using CommunityToolkit.Maui.Storage;
@@ -67,7 +69,7 @@ public class BackupSettings
         }
         catch (Exception)
         {
-            _userMessageDisplayer.ShowMessage("Backup import cancelled", null);
+            _userMessageDisplayer.ShowMessage("Backup import failed", null);
         }
     }
 
@@ -96,21 +98,22 @@ public class BackupSettings
             );
 
             await using var stream = File.Create(BackupCachedPath);
-            await JsonSerializer.SerializeAsync(stream, backupFile,
-                BackupFileJsonContext.Default.BackupFile);
+            await JsonSerializer.SerializeAsync(stream,
+                backupFile, _jsonContext.BackupFile);
             stream.Position = 0;
             await FileSaver.SaveAsync(BackupName, stream);
             _userMessageDisplayer.ShowMessage("Backup exported", null);
         }
         catch (Exception)
         {
-            _userMessageDisplayer.ShowMessage("Backup export cancelled", null);
+            _userMessageDisplayer.ShowMessage("Backup export failed", null);
         }
     }
 
     public BackupSettings(UserMessageDisplayer userMessageDisplayer,
         HistoryStorage historyStorage, CustomModelStorage modelStorage,
-        SettingsPreferences preferences, IReadOnlyList<IReload> reloadableSettings)
+        SettingsPreferences preferences, IReadOnlyList<IReload> reloadableSettings,
+        TokenConverter tokenConverter, NumberTokenConverter numberTokenConverter)
     {
         _userMessageDisplayer = userMessageDisplayer;
         _historyStorage = historyStorage;
@@ -121,5 +124,15 @@ public class BackupSettings
 
         ImportCommand = new Command(Import);
         ExportCommand = new Command(Export);
+
+        _jsonContext = new BackupFileJsonContext(new JsonSerializerOptions
+        {
+            Converters =
+            {
+                new GridPartJsonConverter(modelStorage.Pool),
+                tokenConverter,
+                numberTokenConverter,
+            },
+        });
     }
 }
