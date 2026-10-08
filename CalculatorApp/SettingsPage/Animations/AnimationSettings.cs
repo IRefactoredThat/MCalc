@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.SettingsPage.Animations;
 
@@ -7,9 +8,9 @@ public enum OutputToInputAnimation { Morph, Push, None }
 public enum ClickAnimation { Scale, Spring, None }
 public enum TransitionAnimation { Fade, None }
 
-public class AnimationSettings : INotifyPropertyChanged
+public class AnimationSettings(IPreferences preferences) :
+    INotifyPropertyChanged, IReload
 {
-    private readonly IPreferences _preferences;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -22,7 +23,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            _preferences.Set(nameof(CalculatorClickAnimation), (int)value);
+            preferences.Set(nameof(CalculatorClickAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -33,7 +34,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            _preferences.Set(nameof(CalculatorTransitionAnimation), (int)value);
+            preferences.Set(nameof(CalculatorTransitionAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -44,7 +45,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            _preferences.Set(nameof(OutputToInputAnimation), (int)value);
+            preferences.Set(nameof(OutputToInputAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -55,7 +56,7 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            _preferences.Set(nameof(SettingsClickAnimation), (int)value);
+            preferences.Set(nameof(SettingsClickAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
@@ -66,16 +67,14 @@ public class AnimationSettings : INotifyPropertyChanged
         get;
         set
         {
-            _preferences.Set(nameof(SettingsTransitionAnimation), (int)value);
+            preferences.Set(nameof(SettingsTransitionAnimation), (int)value);
             field = value;
             OnPropertyChanged();
         }
     }
 
-    public AnimationSettings(IPreferences preferences)
+    public void Reload()
     {
-        _preferences = preferences;
-
         CalculatorClickAnimation = (ClickAnimation)
             preferences.Get(nameof(CalculatorClickAnimation), 0);
         CalculatorTransitionAnimation = (TransitionAnimation)

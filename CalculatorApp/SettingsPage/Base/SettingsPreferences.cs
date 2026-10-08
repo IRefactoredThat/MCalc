@@ -46,9 +46,9 @@ public class SettingsPreferences() :
 
     public void Save(Preference[] item)
     {
-        foreach (var preference in item)
+        foreach (var (key, value) in item)
         {
-            Set(preference.Key, preference.Value);
+            Set(key, value);
         }
     }
 

@@ -1,14 +1,14 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.SettingsPage.History;
 
 public enum EntryOverflowBehavior { Overwrite, Keep }
 public enum EntryDuplicationBehavior { Allow, Ignore, Move }
 
-public class HistorySettings : INotifyPropertyChanged
+public class HistorySettings(IPreferences preferences) : INotifyPropertyChanged, IReload
 {
-    private readonly IPreferences _preferences;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -22,7 +22,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(HistoryEnabled), value);
+            preferences.Set(nameof(HistoryEnabled), value);
             OnPropertyChanged();
         }
     }
@@ -33,7 +33,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(MaxEntryCount), value);
+            preferences.Set(nameof(MaxEntryCount), value);
             OnPropertyChanged();
         }
     }
@@ -44,7 +44,7 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(OverflowBehavior), (int)value);
+            preferences.Set(nameof(OverflowBehavior), (int)value);
             OnPropertyChanged();
         }
     }
@@ -55,18 +55,19 @@ public class HistorySettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(DuplicationBehavior), (int)value);
+            preferences.Set(nameof(DuplicationBehavior), (int)value);
             OnPropertyChanged();
         }
     }
 
-    public const int DefaultMaxEntryCount = 50, MinMaxEntryCount = 25, MaxMaxEntryCount = 200, EntryCountStep = 25;
+    public const int DefaultMaxEntryCount = 50, MinMaxEntryCount = 25,
+        MaxMaxEntryCount = 200, EntryCountStep = 25;
 
-    public HistorySettings(IPreferences preferences)
+    public void Reload()
     {
-        _preferences = preferences;
         HistoryEnabled = preferences.Get(nameof(HistoryEnabled), true);
         MaxEntryCount = preferences.Get(nameof(MaxEntryCount), DefaultMaxEntryCount);
         OverflowBehavior = (EntryOverflowBehavior)preferences.Get(nameof(OverflowBehavior), 0);
+        DuplicationBehavior = (EntryDuplicationBehavior)preferences.Get(nameof(DuplicationBehavior), 0);
     }
 }

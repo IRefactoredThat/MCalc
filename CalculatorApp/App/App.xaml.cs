@@ -1,5 +1,6 @@
 ﻿using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
+using CalculatorApp.SettingsPage.Backup;
 using CalculatorApp.SettingsPage.Typography;
 using CalculatorApp.Shell;
 
@@ -11,12 +12,20 @@ public partial class App
 
     public App(AppSettings appSettings,
         AppearanceSettings appearanceSettings,
-        TypographySettings typographySettings)
+        TypographySettings typographySettings,
+        IReadOnlyList<IReload> reloadableSettings)
     {
         InitializeComponent();
+
         appSettings.Initialize();
         appearanceSettings.Initialize(Resources);
         typographySettings.Initialize(Resources);
+
+        foreach (var reloadableSetting in reloadableSettings)
+        {
+            reloadableSetting.Reload();
+        }
+
         _appShell = new AppShell(appearanceSettings);
     }
 

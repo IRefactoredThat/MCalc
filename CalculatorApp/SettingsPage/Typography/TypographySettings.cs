@@ -1,11 +1,13 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using CalculatorApp.SettingsPage.Backup;
 
 namespace CalculatorApp.SettingsPage.Typography;
 
 public enum CustomFonts { Inconsolata, FantasqueSansMono, SometypeMono }
 
-public class TypographySettings(IPreferences preferences) : INotifyPropertyChanged
+public class TypographySettings(IPreferences preferences) :
+    INotifyPropertyChanged, IReload
 {
     private ResourceDictionary _resources = null!;
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -279,6 +281,10 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
     public void Initialize(ResourceDictionary resources)
     {
         _resources = resources;
+    }
+
+    public void Reload()
+    {
         foreach (var (_, factorKey, _) in FontSizes)
         {
             _factors[factorKey] = preferences.Get(factorKey, DefaultScale);
@@ -289,6 +295,9 @@ public class TypographySettings(IPreferences preferences) : INotifyPropertyChang
         GlobalScale = preferences.Get(nameof(GlobalScale), DefaultScale);
         GlobalScaling = preferences.Get(nameof(GlobalScaling), true);
         DynamicTextScaling = preferences.Get(nameof(DynamicTextScaling), true);
+
+        ApplyScale();
+        NotifyAllSizeScales();
     }
 
     private double GetSizeScale(string factorKey) =>

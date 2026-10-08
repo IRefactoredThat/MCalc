@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CalculatorApp.CalculatorPage.Page;
+using CalculatorApp.SettingsPage.Backup;
 using Google.Android.Material.Color.Utilities;
 
 namespace CalculatorApp.SettingsPage.Appearance;
@@ -11,7 +12,8 @@ public enum Theme { Auto, Light, Dark }
 public enum Style { Vibrant, TonalSpot, Expressive,
     Rainbow, FruitSalad, Content, Fidelity }
 
-public class AppearanceSettings(IPreferences preferences, SystemScheme systemScheme) : INotifyPropertyChanged
+public class AppearanceSettings(IPreferences preferences,
+    SystemScheme systemScheme) : INotifyPropertyChanged, IReload
 {
     private const double ContrastLevel = 0.0;
     private const double SurfaceChroma = 30.0;
@@ -240,18 +242,20 @@ public class AppearanceSettings(IPreferences preferences, SystemScheme systemSch
     public void Initialize(ResourceDictionary resourceDictionary)
     {
         _resources = resourceDictionary;
-        _suspendApply = true;
+        Application.Current!.RequestedThemeChanged += OnThemeChanged;
+    }
 
+    public void Reload()
+    {
+        _suspendApply = true;
         SeedColor = Color.FromInt(preferences.Get(nameof(SeedColor),
             FallbackSeed.ToInt()));
         Style = (Style)preferences.Get(nameof(Style), 0);
         DynamicColors = preferences.Get(nameof(DynamicColors), true);
         PreferredTheme = (Theme)preferences.Get(nameof(PreferredTheme), 0);
         AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
-
         _suspendApply = false;
         Apply();
-        Application.Current!.RequestedThemeChanged += OnThemeChanged;
     }
 
     private void OnThemeChanged(object? sender, AppThemeChangedEventArgs e)

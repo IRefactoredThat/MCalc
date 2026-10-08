@@ -3,15 +3,16 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Calculator.ExpressionParsing;
 using CalculatorApp.CalculatorPage.Buttons;
+using CalculatorApp.SettingsPage.Backup;
 using Essentials.Calculator;
 
 namespace CalculatorApp.SettingsPage.Formatting;
 
 public enum ENotation { Enabled, Auto, Disabled }
 
-public class FormattingSettings : INotifyPropertyChanged
+public class FormattingSettings(IPreferences preferences) :
+    INotifyPropertyChanged, IReload
 {
-    private readonly IPreferences _preferences;
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -25,13 +26,13 @@ public class FormattingSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(DecimalSeparator), (int)value);
+            preferences.Set(nameof(DecimalSeparator), (int)value);
             DecimalSeparatorButtonViewModel.Separator = value;
             OnPropertyChanged();
         }
     }
 
-    public DecimalSeparatorButtonViewModel DecimalSeparatorButtonViewModel { get; }
+    public DecimalSeparatorButtonViewModel DecimalSeparatorButtonViewModel { get; } = new();
 
     public ThousandSeparator ThousandSeparator
     {
@@ -51,7 +52,7 @@ public class FormattingSettings : INotifyPropertyChanged
             }
 
             field = value;
-            _preferences.Set(nameof(ThousandSeparator), (int)value);
+            preferences.Set(nameof(ThousandSeparator), (int)value);
             OnPropertyChanged();
         }
     }
@@ -62,7 +63,7 @@ public class FormattingSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(ENotation), (int)value);
+            preferences.Set(nameof(ENotation), (int)value);
             OnPropertyChanged();
             OnPropertyChanged(nameof(ENotationExponentThreshold));
         }
@@ -74,7 +75,7 @@ public class FormattingSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(AutoENotationDigits), value);
+            preferences.Set(nameof(AutoENotationDigits), value);
             OnPropertyChanged();
             OnPropertyChanged(nameof(ENotationExponentThreshold));
         }
@@ -88,15 +89,12 @@ public class FormattingSettings : INotifyPropertyChanged
     private const ThousandSeparator DefaultThousandSeparator = ThousandSeparator.Comma;
     private const ENotation DefaultENotation = ENotation.Auto;
 
-    public FormattingSettings(IPreferences preferences)
+    public void Reload()
     {
-        _preferences = preferences;
-
-        DecimalSeparatorButtonViewModel = new DecimalSeparatorButtonViewModel();
-        DecimalSeparator = (DecimalSeparator)_preferences.Get(nameof(DecimalSeparator), (int)DefaultDecimalSeparator);
-        ThousandSeparator = (ThousandSeparator)_preferences.Get(nameof(ThousandSeparator), (int)DefaultThousandSeparator);
-        ENotation = (ENotation)_preferences.Get(nameof(ENotation), (int)DefaultENotation);
-        AutoENotationDigits = _preferences.Get(nameof(AutoENotationDigits), DefaultAutoENotationDigits);
+        DecimalSeparator = (DecimalSeparator)preferences.Get(nameof(DecimalSeparator), (int)DefaultDecimalSeparator);
+        ThousandSeparator = (ThousandSeparator)preferences.Get(nameof(ThousandSeparator), (int)DefaultThousandSeparator);
+        ENotation = (ENotation)preferences.Get(nameof(ENotation), (int)DefaultENotation);
+        AutoENotationDigits = preferences.Get(nameof(AutoENotationDigits), DefaultAutoENotationDigits);
     }
 
     public NumberFormatInfo NumberFormatInfo => new()

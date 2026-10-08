@@ -10,13 +10,14 @@ public enum LayoutItemCategory { Numbers, Primary, Secondary,
     Trigonometric, Hyperbolic, Special }
 public enum ButtonShape { Circle, Square }
 
-public class LayoutSettings : INotifyPropertyChanged
+public class LayoutSettings(
+    IPreferences preferences,
+    CustomModelStorage customModelStorage,
+    SimpleGridViewModel simpleGridViewModel,
+    MixedGridViewModel mixedGridViewModel)
+    : INotifyPropertyChanged, IReload
 {
-    private readonly IPreferences _preferences;
-    private readonly SimpleGridViewModel _simpleGridViewModel;
-    private readonly MixedGridViewModel _mixedGridViewModel;
-    private readonly CustomModelStorage _customModelStorage;
-    private Lazy<CustomGridViewModel> _customGridViewModel;
+    private Lazy<CustomGridViewModel> _customGridViewModel = new(customModelStorage.Get);
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -31,7 +32,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(GridLayout), (int)value);
+            preferences.Set(nameof(GridLayout), (int)value);
             OnPropertyChanged();
             OnPropertyChanged(nameof(GridViewModel));
         }
@@ -41,8 +42,8 @@ public class LayoutSettings : INotifyPropertyChanged
 
     public IGridViewModel GridViewModel => GridLayout switch
     {
-        GridLayout.Simple => _simpleGridViewModel,
-        GridLayout.Mixed => _mixedGridViewModel,
+        GridLayout.Simple => simpleGridViewModel,
+        GridLayout.Mixed => mixedGridViewModel,
         _ => CustomGridViewModel
     };
 
@@ -59,7 +60,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(ButtonSpacing), value);
+            preferences.Set(nameof(ButtonSpacing), value);
             OnPropertyChanged();
         }
     }
@@ -70,7 +71,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(ShowHelpVisible), value);
+            preferences.Set(nameof(ShowHelpVisible), value);
             OnPropertyChanged();
         }
     }
@@ -81,7 +82,7 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(ActiveCategory), (int)ActiveCategory);
+            preferences.Set(nameof(ActiveCategory), (int)ActiveCategory);
             OnPropertyChanged();
         }
     }
@@ -92,31 +93,19 @@ public class LayoutSettings : INotifyPropertyChanged
         set
         {
             field = value;
-            _preferences.Set(nameof(ButtonShape), (int)ButtonShape);
+            preferences.Set(nameof(ButtonShape), (int)ButtonShape);
             OnPropertyChanged();
         }
     }
 
-    public LayoutSettings(IPreferences preferences, CustomModelStorage customModelStorage,
-        SimpleGridViewModel simpleGridViewModel, MixedGridViewModel mixedGridViewModel)
+    public void Reload()
     {
-        _preferences = preferences;
-        _simpleGridViewModel = simpleGridViewModel;
-        _mixedGridViewModel = mixedGridViewModel;
-        _customModelStorage = customModelStorage;
-        _customGridViewModel = new
-            Lazy<CustomGridViewModel>(_customModelStorage.Get);
-
-        ShowHelpVisible = _preferences.Get(nameof(ShowHelpVisible), true);
-        GridLayout = (GridLayout)_preferences.Get(nameof(GridLayout), 0);
-        ActiveCategory = (LayoutItemCategory)_preferences.Get(nameof(ActiveCategory), 0);
-        ButtonSpacing = _preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
-        ButtonShape = (ButtonShape)_preferences.Get(nameof(ButtonShape), 0);
-    }
-
-    public void Reload(BackupFile backup)
-    {
-        _customGridViewModel = new
-            Lazy<CustomGridViewModel>(_customModelStorage.Get);
+        _customGridViewModel = new Lazy<CustomGridViewModel>(customModelStorage.Get);
+        ShowHelpVisible = preferences.Get(nameof(ShowHelpVisible), true);
+        GridLayout = (GridLayout)preferences.Get(nameof(GridLayout), 0);
+        ActiveCategory = (LayoutItemCategory)preferences.Get(nameof(ActiveCategory), 0);
+        ButtonSpacing = preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
+        ButtonShape = (ButtonShape)preferences.Get(nameof(ButtonShape), 0);
+        OnPropertyChanged(nameof(GridViewModel));
     }
 }

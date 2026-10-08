@@ -32,7 +32,8 @@ public static class ServiceCollectionExtensions
             .AddSingleton<NumberTokenConverter>()
             .AddSingleton<HistoryStorage>()
             .AddSingleton<CustomModelStorage>()
-            .AddSingleton<IPreferences, SettingsPreferences>()
+            .AddSingleton<IPreferences>(sp =>
+                sp.GetRequiredService<SettingsPreferences>())
             .AddSingleton<SettingsPreferences>();
 
     public static IServiceCollection AddSettings(this IServiceCollection services) =>
@@ -44,7 +45,16 @@ public static class ServiceCollectionExtensions
             .AddSingleton<HistorySettings>()
             .AddSingleton<AnimationSettings>()
             .AddSingleton<LayoutSettings>()
-            .AddSingleton<BackupSettings>();
+            .AddSingleton<BackupSettings>()
+            .AddSingleton<IReadOnlyList<IReload>>(sp =>
+            [
+                sp.GetRequiredService<AppearanceSettings>(),
+                sp.GetRequiredService<TypographySettings>(),
+                sp.GetRequiredService<FormattingSettings>(),
+                sp.GetRequiredService<HistorySettings>(),
+                sp.GetRequiredService<AnimationSettings>(),
+                sp.GetRequiredService<LayoutSettings>()
+            ]);
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
         services.AddTransient<CalculatorOutputViewModel>()

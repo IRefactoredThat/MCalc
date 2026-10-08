@@ -20,6 +20,7 @@ internal sealed partial class BackupFileJsonContext : JsonSerializerContext { }
 
 public class BackupSettings
 {
+    private readonly IReadOnlyList<IReload> _reloadableSettings;
     private readonly UserMessageDisplayer _userMessageDisplayer;
     private readonly HistoryStorage _historyStorage;
     private readonly CustomModelStorage _modelStorage;
@@ -57,8 +58,8 @@ public class BackupSettings
                 return;
             }
 
-            _userMessageDisplayer.ShowMessage("Backup imported", null);
             Apply(backup);
+            _userMessageDisplayer.ShowMessage("Backup imported", null);
         }
         catch (JsonException)
         {
@@ -75,6 +76,11 @@ public class BackupSettings
         _modelStorage.Save(backup.CustomGridViewModel);
         _historyStorage.Save(backup.HistoryItems);
         _preferences.Save(backup.Preferences);
+
+        foreach (var service in _reloadableSettings)
+        {
+            service.Reload();
+        }
     }
 
     public ICommand ExportCommand { get; }
@@ -104,12 +110,13 @@ public class BackupSettings
 
     public BackupSettings(UserMessageDisplayer userMessageDisplayer,
         HistoryStorage historyStorage, CustomModelStorage modelStorage,
-        SettingsPreferences preferences)
+        SettingsPreferences preferences, IReadOnlyList<IReload> reloadableSettings)
     {
         _userMessageDisplayer = userMessageDisplayer;
         _historyStorage = historyStorage;
         _modelStorage = modelStorage;
         _preferences = preferences;
+        _reloadableSettings = reloadableSettings;
         _jsonContext = new BackupFileJsonContext();
 
         ImportCommand = new Command(Import);
