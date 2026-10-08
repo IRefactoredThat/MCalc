@@ -34,7 +34,6 @@ public class CustomModelStorage : IStorage<CustomGridViewModel>
         try
         {
             var modelText = File.ReadAllText(CustomModelPath);
-            Console.WriteLine(modelText);
             return JsonSerializer.Deserialize<CustomGridViewModel>(
                 modelText, _context.CustomGridViewModel) ?? new CustomGridViewModel();
         }
@@ -60,4 +59,21 @@ public class CustomModelStorage : IStorage<CustomGridViewModel>
     }
 
     public void Delete() => File.Delete(CustomModelPath);
+
+    public CustomGridViewModel? Import(string content)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<CustomGridViewModel>(content,
+                _context.CustomGridViewModel);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    public string Export() =>
+        JsonSerializer.Serialize(File.ReadAllText(CustomModelPath),
+            _context.CustomGridViewModel);
 }

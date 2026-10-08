@@ -51,4 +51,21 @@ public class HistoryStorage(TokenConverter tokenConverter, NumberTokenConverter 
             _context.ObservableCollectionHistoryItem);
         File.WriteAllText(HistoryPath, json);
     }
+
+    public ObservableCollection<HistoryItem>? Import(string content)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<ObservableCollection<HistoryItem>>(content,
+                _context.ObservableCollectionHistoryItem);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
+    public string Export() =>
+        JsonSerializer.Serialize(File.ReadAllText(HistoryPath),
+            _context.ObservableCollectionHistoryItem);
 }
