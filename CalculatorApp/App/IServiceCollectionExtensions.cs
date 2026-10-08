@@ -50,9 +50,9 @@ public static class ServiceCollectionExtensions
             .AddTransient<CalculatorInputViewModel>()
             .AddTransient<HistoryViewModel>()
             .AddTransient<CalculatorPageViewModel>()
-            .AddTransient<MixedGridViewModel>()
-            .AddTransient<SimpleGridViewModel>()
-            .AddTransient<CustomGridViewModel>()
+            .AddSingleton<MixedGridViewModel>()
+            .AddSingleton<SimpleGridViewModel>()
+            .AddTransient<CustomLayoutViewModel>()
             .AddTransient<UserMessageDisplayer>();
 
     public static IServiceCollection AddPages(this IServiceCollection services) =>

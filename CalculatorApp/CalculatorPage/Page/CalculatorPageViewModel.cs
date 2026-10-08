@@ -9,7 +9,6 @@ using CalculatorApp.CalculatorPage.History;
 using CalculatorApp.CalculatorPage.Input;
 using CalculatorApp.CalculatorPage.Output;
 using CalculatorApp.SettingsPage.Animations;
-using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Formatting;
 using CalculatorApp.SettingsPage.History;
 using CalculatorApp.SettingsPage.Layout;
@@ -23,6 +22,7 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     private readonly Tokens _tokens;
+    private readonly UserMessageDisplayer _userMessageDisplayer;
     private bool _isAnimating;
 
     public AnimationSettings AnimationSettings { get; }
@@ -32,7 +32,6 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
     public CalculatorInputViewModel InputViewModel { get; }
     public CalculatorOutputViewModel OutputViewModel { get; }
     public LayoutSettings LayoutSettings { get; }
-    public AppSettings AppSettings { get; }
 
     public AngleMode AngleMode
     {
@@ -66,7 +65,7 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
         CalculatorOutputViewModel outputViewModel, FormattingSettings formattingSettings,
         HistoryViewModel historyViewModel, HistorySettings historySettings,
         AnimationSettings animationSettings, LayoutSettings layoutSettings,
-        AppSettings appSettings, Tokens tokens)
+        UserMessageDisplayer userMessageDisplayer, Tokens tokens)
     {
         FormattingSettings = formattingSettings;
         AnimationSettings = animationSettings;
@@ -75,7 +74,8 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
         HistoryViewModel = historyViewModel;
         HistorySettings = historySettings;
         LayoutSettings = layoutSettings;
-        AppSettings = appSettings;
+
+        _userMessageDisplayer = userMessageDisplayer;
         _tokens = tokens;
 
         ToggleAngleModeCommand = new Command(ToggleAngleMode);
@@ -152,7 +152,7 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
             _isAnimating = false;
         }, error =>
         {
-            AppSettings.UserMessageDisplayer.ShowMessage(error.Message, null);
+            _userMessageDisplayer.ShowMessage(error.Message, null);
         });
     }
 

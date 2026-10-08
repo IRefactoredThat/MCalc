@@ -5,13 +5,10 @@ namespace CalculatorApp.SettingsPage.CustomLayout;
 
 public partial class CustomLayoutSettingsPage
 {
-    public LayoutSettings LayoutSettings { get; }
-
-    public CustomLayoutSettingsPage(LayoutSettings layoutSettings,
+    public CustomLayoutSettingsPage(CustomLayoutViewModel customLayoutViewModel,
         AnimationSettings animationSettings) : base(animationSettings)
     {
         InitializeComponent();
-        LayoutSettings = layoutSettings;
-        BindingContext = layoutSettings;
+        BindingContext = customLayoutViewModel;
     }
 }

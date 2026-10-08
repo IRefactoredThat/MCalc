@@ -27,7 +27,7 @@
                     ClickAnimation="{Binding Source={x:Reference DerivedRoot},
                     Path=AnimationSettings.CalculatorClickAnimation, x:DataType='base:SettingsBasePage'}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
-                    Path=LayoutSettings.ButtonShape, x:DataType='layout:LayoutSettingsPage'}"/>
+                    Path=BindingContext.ButtonShape, x:DataType='layout:LayoutSettingsPage'}"/>
             </DataTemplate>
             <DataTemplate x:Key="BackspaceButton" x:DataType="buttons:BackspaceButtonViewModel">
                 <buttons:CalculatorButton
@@ -37,7 +37,7 @@
                     x:DataType='base:SettingsBasePage',
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
-                    x:DataType='layout:LayoutSettingsPage', Path=LayoutSettings.ButtonShape}"/>
+                    x:DataType='layout:LayoutSettingsPage', Path=BindingContext.ButtonShape}"/>
             </DataTemplate>
             <DataTemplate x:Key="EqualButton" x:DataType="buttons:EqualButtonViewModel">
                 <buttons:CalculatorButton
@@ -48,7 +48,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"/>
+                    Path=BindingContext.ButtonShape}"/>
             </DataTemplate>
             <DataTemplate x:Key="InverseButton" x:DataType="buttons:InverseButtonViewModel">
                 <buttons:CalculatorButton
@@ -58,7 +58,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"
+                    Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
             <DataTemplate x:Key="NumberButton" x:DataType="buttons:ICalculatorButtonViewModel">
@@ -69,7 +69,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"
+                    Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
             <DataTemplate x:Key="TrigButton" x:DataType="buttons:ICalculatorButtonViewModel">
@@ -80,7 +80,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"
+                    Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
             <DataTemplate x:Key="PrimaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
@@ -91,7 +91,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"
+                    Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
             <DataTemplate x:Key="SecondaryButton" x:DataType="buttons:ICalculatorButtonViewModel">
@@ -102,7 +102,7 @@
                     Path=AnimationSettings.CalculatorClickAnimation}"
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     x:DataType='layout:LayoutSettingsPage',
-                    Path=LayoutSettings.ButtonShape}"
+                    Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
             <display:CalculatorButtonSelector

@@ -1,6 +1,5 @@
 using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.CalculatorPage.MainGrid.Cells;
-using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.Layout;
 using CalculatorApp.SharedElements.ContentButton;
 
@@ -11,15 +10,14 @@ public partial class LayoutBuilder
     public LayoutBuilder()
     {
         InitializeComponent();
-        BindableLayout.SetItemsSource(Categories,
-            Enum.GetValues<LayoutItemCategory>());
+        BindableLayout.SetItemsSource(Categories, Enum.GetValues<LayoutItemCategory>());
         Loaded += OnLoaded;
     }
 
     private void OnLoaded(object? sender, EventArgs e)
     {
         UpdateCheckedCategory(ActiveCategory);
-        Options.ScrollTo(GetFirstItem((LayoutSettings)BindingContext, ActiveCategory),
+        Options.ScrollTo(GetFirstItem((CustomLayoutViewModel)BindingContext, ActiveCategory),
             position: ScrollToPosition.Start, animate: false);
         Loaded -= OnLoaded;
     }
@@ -63,14 +61,14 @@ public partial class LayoutBuilder
 
     private void OnScrolled(object? sender, ItemsViewScrolledEventArgs e)
     {
-        var layoutSettings = (LayoutSettings)BindingContext;
+        var layoutModel = (CustomLayoutViewModel)BindingContext;
         if (e.FirstVisibleItemIndex < 0 ||
-            e.FirstVisibleItemIndex >= layoutSettings.LayoutItems.Count)
+            e.FirstVisibleItemIndex >= layoutModel.LayoutItems.Count)
         {
             return;
         }
 
-        var item = layoutSettings.LayoutItems[e.FirstVisibleItemIndex];
+        var item = layoutModel.LayoutItems[e.FirstVisibleItemIndex];
         var category = item.Category;
         if (ActiveCategory != category)
         {
@@ -80,20 +78,20 @@ public partial class LayoutBuilder
 
     private void OnCategoryClicked(object? sender, EventArgs e)
     {
-        if (BindingContext is not LayoutSettings layoutSettings ||
+        if (BindingContext is not CustomLayoutViewModel layoutModel ||
             sender is not BindableObject { BindingContext: LayoutItemCategory category })
         {
             return;
         }
 
-        Options.ScrollTo(GetFirstItem(layoutSettings, category),
+        Options.ScrollTo(GetFirstItem(layoutModel, category),
             position: ScrollToPosition.Start, animate: true);
     }
 
     private static IBaseButtonViewModel? GetFirstItem(
-        LayoutSettings layoutSettings, LayoutItemCategory category)
+        CustomLayoutViewModel layoutModel, LayoutItemCategory category)
     {
-        var items = layoutSettings.LayoutItems;
+        var items = layoutModel.LayoutItems;
         var low = 0;
         var high = items.Count - 1;
         var firstIndex = -1;

@@ -8,8 +8,9 @@
     xmlns:layoutBuilder="clr-namespace:CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder"
     xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
     xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:customLayout="clr-namespace:CalculatorApp.SettingsPage.CustomLayout"
     x:Class="CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder.LayoutBuilder"
-    x:DataType="layout:LayoutSettings"
+    x:DataType="customLayout:CustomLayoutViewModel"
     x:Name="Root">
     <contentButton:ContentButton.Resources>
         <layoutBuilder:LayoutModeConverter x:Key="LayoutModeConverter"/>
@@ -26,13 +27,13 @@
                 TotalColumns="{Binding UnitWidth}"
                 SelectedCell="{Binding SelectedCell}"
                 GridDefined="{Binding GridDefined}"
-                GridViewModel="{Binding GridViewModel}"/>
+                GridViewModel="{Binding CustomGridViewModel}"/>
             <display:CalculatorLayout
                 CarouselTapped="OnCarouselTapped"
                 Selector="{Binding Source={x:Reference Root},
                 Path=Selector, x:DataType='layoutBuilder:LayoutBuilder'}"
-                ButtonSpacing="{Binding ButtonSpacing}"
-                GridViewModel="{Binding GridViewModel}"
+                ButtonSpacing="{Binding LayoutSettings.ButtonSpacing}"
+                GridViewModel="{Binding CustomGridViewModel}"
                 EnableCarouselInteraction="True"/>
             <VerticalStackLayout
                 Spacing="8"
@@ -42,7 +43,7 @@
                 <contentButton:ContentButton
                     Style="{StaticResource PrimaryButton}"
                     Command="{Binding ShowHelpCommand}"
-                    IsVisible="{Binding ShowHelpVisible}">
+                    IsVisible="{Binding LayoutSettings.ShowHelpVisible}">
                     <Label
                         Text="{x:Static fonts:MaterialSymbols.Help}"
                         Style="{StaticResource PrimaryIcon}"
