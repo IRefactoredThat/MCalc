@@ -4,50 +4,11 @@ public partial class BackupOptions
 {
     public BackupOptions() => InitializeComponent();
 
-    public static readonly BindableProperty IncludePreferencesProperty =
-        BindableProperty.Create(
-            nameof(IncludePreferences),
-            typeof(bool),
-            typeof(BackupSetting),
-            defaultBindingMode: BindingMode.TwoWay);
-
-    public bool IncludePreferences
-    {
-        get => (bool)GetValue(IncludePreferencesProperty);
-        set => SetValue(IncludePreferencesProperty, value);
-    }
-
-    public static readonly BindableProperty IncludeHistoryProperty =
-        BindableProperty.Create(
-            nameof(IncludeHistory),
-            typeof(bool),
-            typeof(BackupSetting),
-            defaultBindingMode: BindingMode.TwoWay);
-
-    public bool IncludeHistory
-    {
-        get => (bool)GetValue(IncludeHistoryProperty);
-        set => SetValue(IncludeHistoryProperty, value);
-    }
-
-    public static readonly BindableProperty IncludeCustomModelProperty =
-        BindableProperty.Create(
-            nameof(IncludeCustomModel),
-            typeof(bool),
-            typeof(BackupSetting),
-            defaultBindingMode: BindingMode.TwoWay);
-
-    public bool IncludeCustomModel
-    {
-        get => (bool)GetValue(IncludeCustomModelProperty);
-        set => SetValue(IncludeCustomModelProperty, value);
-    }
-
     public static readonly BindableProperty IconProperty =
         BindableProperty.Create(
             nameof(Icon),
             typeof(string),
-            typeof(BackupSetting),
+            typeof(BackupOptions),
             defaultBindingMode: BindingMode.TwoWay);
 
     public string Icon
@@ -60,7 +21,7 @@ public partial class BackupOptions
         BindableProperty.Create(
             nameof(Name),
             typeof(string),
-            typeof(BackupSetting),
+            typeof(BackupOptions),
             defaultBindingMode: BindingMode.TwoWay);
 
     public string Name
@@ -73,7 +34,7 @@ public partial class BackupOptions
         BindableProperty.Create(
             nameof(Description),
             typeof(string),
-            typeof(BackupSetting),
+            typeof(BackupOptions),
             defaultBindingMode: BindingMode.TwoWay);
 
     public string Description

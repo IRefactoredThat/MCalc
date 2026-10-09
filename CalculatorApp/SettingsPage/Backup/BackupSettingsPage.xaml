@@ -13,10 +13,7 @@
                 CornerRadius="15, 15, 5, 5"
                 Name="Backup items"
                 Description="This items will be included in the backup"
-                Icon="{x:Static fonts:MaterialSymbols.SaveOptions}"
-                IncludePreferences="{Binding BackupSettings.BackupPreferences}"
-                IncludeHistory="{Binding BackupSettings.BackupHistory}"
-                IncludeCustomModel="{Binding BackupSettings.BackupCustomModel}"/>
+                Icon="{x:Static fonts:MaterialSymbols.SaveOptions}"/>
             <backup:BackupSetting
                 CornerRadius="5, 5, 5, 5"
                 Name="Import backup"
