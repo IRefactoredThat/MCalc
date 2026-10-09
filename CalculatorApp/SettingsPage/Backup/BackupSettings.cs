@@ -46,6 +46,8 @@ public class BackupSettings : INotifyPropertyChanged, IReload
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    public ICommand ToggleBackupPreferencesCommand { get; }
+    private void ToggleBackupPreferences() => BackupPreferences = !BackupPreferences;
     public bool BackupPreferences
     {
         get;
@@ -57,6 +59,8 @@ public class BackupSettings : INotifyPropertyChanged, IReload
         }
     }
 
+    public ICommand ToggleBackupHistoryCommand { get; }
+    private void ToggleBackupHistory() => BackupHistory = !BackupHistory;
     public bool BackupHistory
     {
         get;
@@ -68,6 +72,8 @@ public class BackupSettings : INotifyPropertyChanged, IReload
         }
     }
 
+    public ICommand ToggleBackupCustomModelCommand { get; }
+    private void ToggleBackupCustomModel() => BackupCustomModel = !BackupCustomModel;
     public bool BackupCustomModel
     {
         get;
@@ -186,6 +192,9 @@ public class BackupSettings : INotifyPropertyChanged, IReload
 
         ImportCommand = new Command(Import);
         ExportCommand = new Command(Export);
+        ToggleBackupPreferencesCommand = new Command(ToggleBackupPreferences);
+        ToggleBackupHistoryCommand = new Command(ToggleBackupHistory);
+        ToggleBackupCustomModelCommand = new Command(ToggleBackupCustomModel);
     }
 
     public void Reload()

@@ -31,17 +31,29 @@
                           Margin="0, 4, 0, 4"
                           IsChecked="{Binding BackupPreferences}"/>
                 <Label Grid.Row="0" Grid.Column="1"
-                       Style="{StaticResource OptionBackup}" Text="Preferences"/>
+                       Style="{StaticResource OptionBackup}" Text="Preferences">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleBackupPreferencesCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
                 <CheckBox Grid.Row="1" Grid.Column="0"
                           Margin="0, 4, 0, 4"
                           IsChecked="{Binding BackupHistory}"/>
                 <Label Grid.Row="1" Grid.Column="1"
-                       Style="{StaticResource OptionBackup}" Text="History"/>
+                       Style="{StaticResource OptionBackup}" Text="History">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleBackupHistoryCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
                 <CheckBox Grid.Row="2" Grid.Column="0"
                           Margin="0, 4, 0, 4"
                           IsChecked="{Binding BackupCustomModel}"/>
                 <Label Grid.Row="2" Grid.Column="1"
-                       Style="{StaticResource OptionBackup}" Text="Custom model"/>
+                       Style="{StaticResource OptionBackup}" Text="Custom model">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ToggleBackupCustomModelCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
             </Grid>
         </VerticalStackLayout>
     </Grid>
