@@ -4,22 +4,29 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:base="clr-namespace:CalculatorApp.SettingsPage.Base"
     xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup"
-    xmlns:export="clr-namespace:CalculatorApp.SettingsPage.Types.Export"
-    xmlns:import="clr-namespace:CalculatorApp.SettingsPage.Types.Import"
+    xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
     x:Class="CalculatorApp.SettingsPage.Backup.BackupSettingsPage"
     x:DataType="backup:BackupSettings" Header="Backup">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <import:ImportSetting
+            <backup:BackupSetting
                 CornerRadius="15, 15, 5, 5"
                 Name="Import backup"
                 Description="Get app data back into it"
-                Command="{Binding ImportCommand}"/>
-            <export:ExportSetting
+                Icon="{x:Static fonts:MaterialSymbols.Import}"
+                Command="{Binding ImportCommand}"
+                IncludePreferences="{Binding ImportPreferences}"
+                IncludeHistory="{Binding ImportHistory}"
+                IncludeCustomModel="{Binding ImportCustomModel}"/>
+            <backup:BackupSetting
                 CornerRadius="5, 5, 15, 15"
                 Name="Export backup"
                 Description="Share or save copy of app's data"
-                Command="{Binding ExportCommand}"/>
+                Icon="{x:Static fonts:MaterialSymbols.Export}"
+                Command="{Binding ExportCommand}"
+                IncludePreferences="{Binding ExportPreferences}"
+                IncludeHistory="{Binding ExportHistory}"
+                IncludeCustomModel="{Binding ExportCustomModel}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

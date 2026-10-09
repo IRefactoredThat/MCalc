@@ -18,7 +18,8 @@
     xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
     xmlns:bottomSheet="clr-namespace:CalculatorApp.SharedElements.BottomSheet"
     xmlns:formatting="clr-namespace:CalculatorApp.SettingsPage.Formatting"
-    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons">
+    xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
+    xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup">
     <Style x:Key="PrimaryPreset" TargetType="buttons:CalculatorButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource Primary}"/>
         <Setter Property="TextColor" Value="{DynamicResource OnPrimary}"/>
@@ -141,6 +142,9 @@
                 </VisualStateGroupList>
             </Setter.Value>
         </Setter>
+    </Style>
+    <Style TargetType="CheckBox">
+        <Setter Property="Color" Value="{DynamicResource Primary}"/>
     </Style>
     <Style TargetType="IndicatorView">
         <Setter Property="SelectedIndicatorColor" Value="{DynamicResource Primary}"/>
@@ -321,6 +325,9 @@
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
     <Style x:Key="LayoutPreview" TargetType="contentButton:ContentButton">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
+    </Style>
+    <Style TargetType="backup:BackupSetting">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
     <Style x:Key="ExceptionLogHeader" TargetType="contentButton:ContentButton">

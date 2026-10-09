@@ -13,6 +13,7 @@ public partial class App
     public App(AppSettings appSettings,
         AppearanceSettings appearanceSettings,
         TypographySettings typographySettings,
+        BackupSettings backupSettings,
         IReadOnlyList<IReload> reloadableSettings)
     {
         InitializeComponent();
@@ -25,6 +26,7 @@ public partial class App
         {
             reloadableSetting.Reload();
         }
+        backupSettings.Reload();
 
         _appShell = new AppShell(appearanceSettings);
     }

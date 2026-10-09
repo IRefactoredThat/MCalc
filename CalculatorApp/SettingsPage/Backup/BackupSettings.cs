@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows.Input;
@@ -13,14 +15,14 @@ using CommunityToolkit.Maui.Storage;
 
 namespace CalculatorApp.SettingsPage.Backup;
 
-public record BackupFile(Preference[] Preferences,
-    CustomGridViewModel CustomGridViewModel,
-    ObservableCollection<HistoryItem> HistoryItems);
+public record BackupFile(Preference[]? Preferences,
+    CustomGridViewModel? CustomGridViewModel,
+    ObservableCollection<HistoryItem>? HistoryItems);
 
 [JsonSerializable(typeof(BackupFile))]
 internal sealed partial class BackupFileJsonContext : JsonSerializerContext { }
 
-public class BackupSettings
+public class BackupSettings : INotifyPropertyChanged, IReload
 {
     private readonly IReadOnlyList<IReload> _reloadableSettings;
     private readonly UserMessageDisplayer _userMessageDisplayer;
@@ -33,10 +35,82 @@ public class BackupSettings
     {
         PickerTitle = "Select MCalc backup"
     };
-
     private const string BackupName = "mcalc.mcbak";
     private static readonly string BackupCachedPath =
         Path.Combine(FileSystem.CacheDirectory, BackupName);
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    public bool ImportPreferences
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ImportPreferences), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ImportHistory
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ImportHistory), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ImportCustomModel
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ImportCustomModel), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ExportPreferences
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ExportPreferences), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ExportHistory
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ExportHistory), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool ExportCustomModel
+    {
+        get;
+        set
+        {
+            field = value;
+            _preferences.Set(nameof(ExportCustomModel), value);
+            OnPropertyChanged();
+        }
+    }
 
     public ICommand ImportCommand { get; }
 
@@ -60,7 +134,7 @@ public class BackupSettings
                 return;
             }
 
-            Apply(backup);
+            ImportFrom(backup);
             _userMessageDisplayer.ShowMessage("Backup imported", null);
         }
         catch (JsonException)
@@ -73,16 +147,26 @@ public class BackupSettings
         }
     }
 
-    private void Apply(BackupFile backup)
+    private void ImportFrom(BackupFile backup)
     {
-        _modelStorage.Save(backup.CustomGridViewModel);
-        _historyStorage.Save(backup.HistoryItems);
-        _preferences.Save(backup.Preferences);
+        if (ImportPreferences && backup.Preferences is { } preferences)
+        {
+            _preferences.Save(preferences);
+        }
+        if (ImportCustomModel && backup.CustomGridViewModel is { } customModel)
+        {
+            _modelStorage.Save(customModel);
+        }
+        if (ImportHistory && backup.HistoryItems is { } historyItems)
+        {
+            _historyStorage.Save(historyItems);
+        }
 
         foreach (var service in _reloadableSettings)
         {
             service.Reload();
         }
+        Reload();
     }
 
     public ICommand ExportCommand { get; }
@@ -92,9 +176,12 @@ public class BackupSettings
         try
         {
             var backupFile = new BackupFile(
-                Preferences: _preferences.Get(),
-                CustomGridViewModel: _modelStorage.Get(),
-                HistoryItems: _historyStorage.Get()
+                Preferences: ExportPreferences ?
+                    _preferences.Get() : null,
+                CustomGridViewModel: ExportCustomModel ?
+                    _modelStorage.Get() : null,
+                HistoryItems: ExportHistory ?
+                    _historyStorage.Get() : null
             );
 
             await using var stream = File.Create(BackupCachedPath);
@@ -120,11 +207,6 @@ public class BackupSettings
         _modelStorage = modelStorage;
         _preferences = preferences;
         _reloadableSettings = reloadableSettings;
-        _jsonContext = new BackupFileJsonContext();
-
-        ImportCommand = new Command(Import);
-        ExportCommand = new Command(Export);
-
         _jsonContext = new BackupFileJsonContext(new JsonSerializerOptions
         {
             Converters =
@@ -134,5 +216,18 @@ public class BackupSettings
                 numberTokenConverter,
             },
         });
+
+        ImportCommand = new Command(Import);
+        ExportCommand = new Command(Export);
+    }
+
+    public void Reload()
+    {
+        ImportPreferences = _preferences.Get(nameof(ImportPreferences), true);
+        ImportHistory = _preferences.Get(nameof(ImportHistory), true);
+        ImportCustomModel = _preferences.Get(nameof(ImportCustomModel), true);
+        ExportPreferences = _preferences.Get(nameof(ExportPreferences), true);
+        ExportHistory = _preferences.Get(nameof(ExportHistory), true);
+        ExportCustomModel = _preferences.Get(nameof(ExportCustomModel), true);
     }
 }

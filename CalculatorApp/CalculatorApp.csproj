@@ -241,8 +241,8 @@
 	    <DependentUpon>ExportSetting.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
-	  <Compile Update="SettingsPage\Types\Import\ImportSetting.xaml.cs">
-	    <DependentUpon>ExportSetting.xaml</DependentUpon>
+	  <Compile Update="SettingsPage\Backup\BackupSetting.xaml.cs">
+	    <DependentUpon>BackupSetting.xaml</DependentUpon>
 	    <SubType>Code</SubType>
 	  </Compile>
 	</ItemGroup>
@@ -360,7 +360,7 @@
 	  <MauiXaml Update="SettingsPage\Types\Export\ExportSetting.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
-	  <MauiXaml Update="SettingsPage\Types\Import\ImportSetting.xaml">
+	  <MauiXaml Update="SettingsPage\Backup\BackupSetting.xaml">
 	    <SubType>Designer</SubType>
 	  </MauiXaml>
 	</ItemGroup>
