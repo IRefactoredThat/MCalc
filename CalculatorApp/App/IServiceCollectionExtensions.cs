@@ -53,7 +53,8 @@ public static class ServiceCollectionExtensions
                 sp.GetRequiredService<FormattingSettings>(),
                 sp.GetRequiredService<HistorySettings>(),
                 sp.GetRequiredService<AnimationSettings>(),
-                sp.GetRequiredService<LayoutSettings>()
+                sp.GetRequiredService<LayoutSettings>(),
+                sp.GetRequiredService<BackupSettings>()
             ]);
 
     public static IServiceCollection AddViewModels(this IServiceCollection services) =>
