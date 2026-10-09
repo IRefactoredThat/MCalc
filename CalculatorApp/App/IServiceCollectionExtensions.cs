@@ -64,6 +64,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<MixedGridViewModel>()
             .AddSingleton<SimpleGridViewModel>()
             .AddTransient<CustomLayoutViewModel>()
+            .AddTransient<BackupViewModel>()
             .AddTransient<UserMessageDisplayer>();
 
     public static IServiceCollection AddPages(this IServiceCollection services) =>

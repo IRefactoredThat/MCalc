@@ -4,11 +4,12 @@ namespace CalculatorApp.SettingsPage.Backup;
 
 public partial class BackupSettingsPage
 {
-    public BackupSettingsPage(AnimationSettings animationSettings, BackupSettings backupSettings)
+    public BackupSettingsPage(AnimationSettings animationSettings,
+        BackupViewModel backupViewModel)
         : base(animationSettings)
     {
         InitializeComponent();
-        BindingContext = backupSettings;
+        BindingContext = backupViewModel;
     }
 }
 

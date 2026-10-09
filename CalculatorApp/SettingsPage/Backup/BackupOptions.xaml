@@ -5,7 +5,7 @@
                              xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
                              xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup"
                              x:Class="CalculatorApp.SettingsPage.Backup.BackupOptions"
-                             x:Name="Root" x:DataType="backup:BackupSettings">
+                             x:Name="Root" x:DataType="backup:BackupViewModel">
     <Grid RowDefinitions="Auto, Auto, Auto"
           ColumnDefinitions="Auto, *, Auto"
           Padding="0, 10, 0, 10">
@@ -29,7 +29,7 @@
             <Grid RowDefinitions="1*, 1*, 1*" ColumnDefinitions="Auto, Auto">
                 <CheckBox Grid.Row="0" Grid.Column="0"
                           Margin="0, 4, 0, 4"
-                          IsChecked="{Binding BackupPreferences}"/>
+                          IsChecked="{Binding BackupSettings.BackupPreferences}"/>
                 <Label Grid.Row="0" Grid.Column="1"
                        Style="{StaticResource OptionBackup}" Text="Preferences">
                     <Label.GestureRecognizers>
@@ -38,7 +38,7 @@
                 </Label>
                 <CheckBox Grid.Row="1" Grid.Column="0"
                           Margin="0, 4, 0, 4"
-                          IsChecked="{Binding BackupHistory}"/>
+                          IsChecked="{Binding BackupSettings.BackupHistory}"/>
                 <Label Grid.Row="1" Grid.Column="1"
                        Style="{StaticResource OptionBackup}" Text="History">
                     <Label.GestureRecognizers>
@@ -47,7 +47,7 @@
                 </Label>
                 <CheckBox Grid.Row="2" Grid.Column="0"
                           Margin="0, 4, 0, 4"
-                          IsChecked="{Binding BackupCustomModel}"/>
+                          IsChecked="{Binding BackupSettings.BackupCustomModel}"/>
                 <Label Grid.Row="2" Grid.Column="1"
                        Style="{StaticResource OptionBackup}" Text="Custom model">
                     <Label.GestureRecognizers>
