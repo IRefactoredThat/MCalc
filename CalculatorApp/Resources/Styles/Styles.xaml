@@ -330,6 +330,9 @@
     <Style TargetType="backup:BackupSetting">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
+    <Style TargetType="backup:BackupOptions">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
+    </Style>
     <Style x:Key="ExceptionLogHeader" TargetType="contentButton:ContentButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
         <Setter Property="CornerRadius" Value="15, 15, 0, 0"/>
@@ -419,6 +422,12 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+    <Style x:Key="OptionBackup" TargetType="Label">
+        <Setter Property="FontSize" Value="{DynamicResource SettingOptionSize}"/>
+        <Setter Property="HorizontalTextAlignment" Value="Start"/>
+        <Setter Property="VerticalTextAlignment" Value="Center"/>
+        <Setter Property="TextColor" Value="{DynamicResource OnSurface}"/>
     </Style>
     <Style
         x:Key="ColorPreset"

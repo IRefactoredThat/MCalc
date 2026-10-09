@@ -9,24 +9,26 @@
     x:DataType="backup:BackupSettings" Header="Backup">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <backup:BackupSetting
+            <backup:BackupOptions
                 CornerRadius="15, 15, 5, 5"
+                Name="Backup items"
+                Description="This items will be included in the backup"
+                Icon="{x:Static fonts:MaterialSymbols.SaveOptions}"
+                IncludePreferences="{Binding BackupPreferences}"
+                IncludeHistory="{Binding BackupHistory}"
+                IncludeCustomModel="{Binding BackupCustomModel}"/>
+            <backup:BackupSetting
+                CornerRadius="5, 5, 5, 5"
                 Name="Import backup"
                 Description="Get app data back into it"
                 Icon="{x:Static fonts:MaterialSymbols.Import}"
-                Command="{Binding ImportCommand}"
-                IncludePreferences="{Binding ImportPreferences}"
-                IncludeHistory="{Binding ImportHistory}"
-                IncludeCustomModel="{Binding ImportCustomModel}"/>
+                Command="{Binding ImportCommand}"/>
             <backup:BackupSetting
                 CornerRadius="5, 5, 15, 15"
                 Name="Export backup"
-                Description="Share or save copy of app's data"
+                Description="Save a copy of app's data"
                 Icon="{x:Static fonts:MaterialSymbols.Export}"
-                Command="{Binding ExportCommand}"
-                IncludePreferences="{Binding ExportPreferences}"
-                IncludeHistory="{Binding ExportHistory}"
-                IncludeCustomModel="{Binding ExportCustomModel}"/>
+                Command="{Binding ExportCommand}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

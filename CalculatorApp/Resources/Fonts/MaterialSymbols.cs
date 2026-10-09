@@ -12,7 +12,8 @@ public static class MaterialSymbols
     public const string Web = "\ue894";
     public const string Import = "\uf09b";
     public const string Export = "\ue255";
-    public const string Backup = "\ue161";
+    public const string Backup = "\ue864";
+    public const string SaveOptions = "\ue161";
     public const string Notifications = "\ue7f4";
     public const string Help = "\ue887";
     public const string GoToPage = "\ue5c8";

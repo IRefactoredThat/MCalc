@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<contentButton:ContentButton xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                             xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+                             xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup"
+                             x:Class="CalculatorApp.SettingsPage.Backup.BackupOptions"
+                             x:Name="Root" x:DataType="backup:BackupSettings">
+    <Grid RowDefinitions="Auto, Auto, Auto"
+          ColumnDefinitions="Auto, *, Auto"
+          Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}" />
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}" />
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}" />
+        <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid RowDefinitions="1*, 1*, 1*" ColumnDefinitions="Auto, Auto">
+                <CheckBox Grid.Row="0" Grid.Column="0"
+                          Margin="0, 4, 0, 4"
+                          IsChecked="{Binding BackupPreferences}"/>
+                <Label Grid.Row="0" Grid.Column="1"
+                       Style="{StaticResource OptionBackup}" Text="Preferences"/>
+                <CheckBox Grid.Row="1" Grid.Column="0"
+                          Margin="0, 4, 0, 4"
+                          IsChecked="{Binding BackupHistory}"/>
+                <Label Grid.Row="1" Grid.Column="1"
+                       Style="{StaticResource OptionBackup}" Text="History"/>
+                <CheckBox Grid.Row="2" Grid.Column="0"
+                          Margin="0, 4, 0, 4"
+                          IsChecked="{Binding BackupCustomModel}"/>
+                <Label Grid.Row="2" Grid.Column="1"
+                       Style="{StaticResource OptionBackup}" Text="Custom model"/>
+            </Grid>
+        </VerticalStackLayout>
+    </Grid>
+</contentButton:ContentButton>

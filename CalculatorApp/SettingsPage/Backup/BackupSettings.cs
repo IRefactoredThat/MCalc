@@ -46,68 +46,35 @@ public class BackupSettings : INotifyPropertyChanged, IReload
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public bool ImportPreferences
+    public bool BackupPreferences
     {
         get;
         set
         {
             field = value;
-            _preferences.Set(nameof(ImportPreferences), value);
+            _preferences.Set(nameof(BackupPreferences), value);
             OnPropertyChanged();
         }
     }
 
-    public bool ImportHistory
+    public bool BackupHistory
     {
         get;
         set
         {
             field = value;
-            _preferences.Set(nameof(ImportHistory), value);
+            _preferences.Set(nameof(BackupHistory), value);
             OnPropertyChanged();
         }
     }
 
-    public bool ImportCustomModel
+    public bool BackupCustomModel
     {
         get;
         set
         {
             field = value;
-            _preferences.Set(nameof(ImportCustomModel), value);
-            OnPropertyChanged();
-        }
-    }
-
-    public bool ExportPreferences
-    {
-        get;
-        set
-        {
-            field = value;
-            _preferences.Set(nameof(ExportPreferences), value);
-            OnPropertyChanged();
-        }
-    }
-
-    public bool ExportHistory
-    {
-        get;
-        set
-        {
-            field = value;
-            _preferences.Set(nameof(ExportHistory), value);
-            OnPropertyChanged();
-        }
-    }
-
-    public bool ExportCustomModel
-    {
-        get;
-        set
-        {
-            field = value;
-            _preferences.Set(nameof(ExportCustomModel), value);
+            _preferences.Set(nameof(BackupCustomModel), value);
             OnPropertyChanged();
         }
     }
@@ -149,15 +116,15 @@ public class BackupSettings : INotifyPropertyChanged, IReload
 
     private void ImportFrom(BackupFile backup)
     {
-        if (ImportPreferences && backup.Preferences is { } preferences)
+        if (BackupPreferences && backup.Preferences is { } preferences)
         {
             _preferences.Save(preferences);
         }
-        if (ImportCustomModel && backup.CustomGridViewModel is { } customModel)
+        if (BackupCustomModel && backup.CustomGridViewModel is { } customModel)
         {
             _modelStorage.Save(customModel);
         }
-        if (ImportHistory && backup.HistoryItems is { } historyItems)
+        if (BackupHistory && backup.HistoryItems is { } historyItems)
         {
             _historyStorage.Save(historyItems);
         }
@@ -176,11 +143,11 @@ public class BackupSettings : INotifyPropertyChanged, IReload
         try
         {
             var backupFile = new BackupFile(
-                Preferences: ExportPreferences ?
+                Preferences: BackupPreferences ?
                     _preferences.Get() : null,
-                CustomGridViewModel: ExportCustomModel ?
+                CustomGridViewModel: BackupCustomModel ?
                     _modelStorage.Get() : null,
-                HistoryItems: ExportHistory ?
+                HistoryItems: BackupHistory ?
                     _historyStorage.Get() : null
             );
 
@@ -223,11 +190,8 @@ public class BackupSettings : INotifyPropertyChanged, IReload
 
     public void Reload()
     {
-        ImportPreferences = _preferences.Get(nameof(ImportPreferences), true);
-        ImportHistory = _preferences.Get(nameof(ImportHistory), true);
-        ImportCustomModel = _preferences.Get(nameof(ImportCustomModel), true);
-        ExportPreferences = _preferences.Get(nameof(ExportPreferences), true);
-        ExportHistory = _preferences.Get(nameof(ExportHistory), true);
-        ExportCustomModel = _preferences.Get(nameof(ExportCustomModel), true);
+        BackupPreferences = _preferences.Get(nameof(BackupPreferences), true);
+        BackupHistory = _preferences.Get(nameof(BackupHistory), true);
+        BackupCustomModel = _preferences.Get(nameof(BackupCustomModel), true);
     }
 }
