@@ -240,6 +240,54 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
+    public void NegationAfterExponentEvaluatesBeforeTheFollowingAddition()
+    {
+        _session.Type("2^-3+4");
+
+        Assert.That(_session.Value(), Is.EqualTo(4.125));
+    }
+
+    [Test]
+    public void NegationAfterExponentEvaluatesBeforeTheFollowingSubtraction()
+    {
+        _session.Type("2^-3-4");
+
+        Assert.That(_session.Value(), Is.EqualTo(-3.875));
+    }
+
+    [Test]
+    public void NegationAfterExponentEvaluatesBeforeTheFollowingMultiplication()
+    {
+        _session.Type("2^-3*4");
+
+        Assert.That(_session.Value(), Is.EqualTo(0.5));
+    }
+
+    [Test]
+    public void NegationAfterExponentEvaluatesBeforeTheFollowingDivision()
+    {
+        _session.Type("2^-3/4");
+
+        Assert.That(_session.Value(), Is.EqualTo(0.03125));
+    }
+
+    [Test]
+    public void NegationAfterExponentEvaluatesBeforeTheFollowingModulo()
+    {
+        _session.Type("2^-3%2");
+
+        Assert.That(_session.Value(), Is.EqualTo(0.125));
+    }
+
+    [Test]
+    public void ExponentiationInsideNegationGroupKeepsItsPrecedence()
+    {
+        _session.Type("2^-3^2");
+
+        Assert.That(_session.Value(), Is.EqualTo(0.001953125));
+    }
+
+    [Test]
     public void RepeatedNegationCancelsOut()
     {
         _session.Type("--5");
