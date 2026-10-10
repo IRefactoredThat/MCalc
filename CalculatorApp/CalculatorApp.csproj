@@ -44,6 +44,7 @@
 		<RuntimeIdentifier>android-arm64</RuntimeIdentifier>
 	  	<AndroidLinkMode>SdkOnly</AndroidLinkMode>
 	  	<AndroidLinkTool>r8</AndroidLinkTool>
+        <RunAOTCompilation>true</RunAOTCompilation>
 	  	<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
