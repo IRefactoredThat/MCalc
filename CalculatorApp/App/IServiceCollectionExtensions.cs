@@ -39,6 +39,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddSettings(this IServiceCollection services) =>
         services.AddSingleton<SystemScheme>()
             .AddSingleton<AppearanceSettings>()
+            .AddSingleton<AppearanceSchemeStorage>()
             .AddSingleton<TypographySettings>()
             .AddSingleton<TextExtensions>()
             .AddSingleton<FormattingSettings>()

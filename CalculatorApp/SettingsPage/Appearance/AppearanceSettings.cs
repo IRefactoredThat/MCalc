@@ -13,7 +13,8 @@ public enum Style { Vibrant, TonalSpot, Expressive,
     Rainbow, FruitSalad, Content, Fidelity }
 
 public class AppearanceSettings(IPreferences preferences,
-    SystemScheme systemScheme) : INotifyPropertyChanged, IReload
+    SystemScheme systemScheme, AppearanceSchemeStorage schemeStorage) :
+    INotifyPropertyChanged, IReload
 {
     private const double ContrastLevel = 0.0;
     private const double SurfaceChroma = 30.0;
@@ -172,12 +173,20 @@ public class AppearanceSettings(IPreferences preferences,
         }
 
         var isDark = IsDark;
+        var currentKey = $"{Style}{SeedColor.ToInt()}|{isDark}|{DynamicColors}|{AmoledEnabled}";
 
-        var scheme = DynamicColors && systemScheme.ToScheme(isDark) is { } system
+        if (schemeStorage.Cache is
+                { Key: var key, RoleColors: { Count: > 0 } roleColors }
+            && key == currentKey)
+        {
+            ApplyCachedColors(roleColors);
+            return;
+        }
+        var scheme = DynamicColors && systemScheme.ToScheme(IsDark) is { } system
             ? system
             : GetSeedScheme(SeedColor.ToInt(), isDark);
-
         ApplyColors(scheme, isDark);
+        _ = Task.Run(schemeStorage.Save);
     }
 
     private MaterialScheme GetSeedScheme(int argb, bool isDark)
@@ -194,18 +203,26 @@ public class AppearanceSettings(IPreferences preferences,
         return _currentScheme;
     }
 
+    private void ApplyCachedColors(IReadOnlyDictionary<string, int> roleColors)
+    {
+        foreach (var (name, value) in roleColors)
+        {
+            _resources[name] = Color.FromInt(value);
+        }
+    }
+
     private void ApplyColors(MaterialScheme scheme, bool isDark)
     {
         var amoled = AmoledEnabled && isDark;
         var neutral = scheme.Neutral;
 
-        foreach (var (name, value) in scheme.Enumerate())
+        foreach (var (name, value) in scheme.Colors)
         {
             var color = value;
 
             if (amoled && AmoledColors.TryGetValue(name, out var tone))
             {
-                color = Tint(MaterialScheme.ToColor(neutral.Tone(tone)));
+                color = Tint(neutral.Tone(tone));
             }
             else if (TintedRoles.Contains(name))
             {
@@ -215,16 +232,18 @@ public class AppearanceSettings(IPreferences preferences,
             if (!_resources.TryGetValue(name, out var current) ||
                 !color.Equals(current))
             {
-                _resources[name] = color;
+                _resources[name] = Color.FromInt(color);
             }
+
+            schemeStorage.SetColorRole(name, color);
         }
     }
 
-    private static Color Tint(Color color)
+    private static int Tint(int color)
     {
-        var hct = Hct.FromInt(color.ToInt());
-        return hct is null ? color : MaterialScheme.ToColor(
-            TonalPalette.FromHueAndChroma(hct.Hue, SurfaceChroma)!.Tone((int)hct.Tone));
+        var hct = Hct.FromInt(color);
+        return hct is null ? color :
+            TonalPalette.FromHueAndChroma(hct.Hue, SurfaceChroma)!.Tone((int)hct.Tone);
     }
 
     private DynamicScheme CreateScheme(Hct source, bool isDark) => Style switch

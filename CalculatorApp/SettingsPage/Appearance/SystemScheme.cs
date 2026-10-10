@@ -56,12 +56,11 @@ public sealed class SystemScheme
         return true;
     }
 
-    private static Color Tone(TonalPalette palette, int tone) =>
-        MaterialScheme.ToColor(palette.Tone(tone));
+    private static int Tone(TonalPalette palette, int tone) => palette.Tone(tone);
 
-    private static Color Error(int tone) => Tone(ErrorPalette, tone);
+    private static int Error(int tone) => Tone(ErrorPalette, tone);
 
-    private Dictionary<string, Color> Colors(bool isDark) => new()
+    private Dictionary<string, int> Colors(bool isDark) => new()
     {
         [nameof(MaterialScheme.Primary)] = Tone(_primary, isDark ? 80 : 40),
         [nameof(MaterialScheme.OnPrimary)] = Tone(_primary, isDark ? 20 : 100),
