@@ -1,5 +1,5 @@
-﻿using System.Collections.Immutable;
-using System.Globalization;
+﻿using System.Globalization;
+using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -41,23 +41,24 @@ internal static class GroupingOperatorMappingExtensions
     /// delegating the request to the <see cref="UnaryOperatorMappingExtensions"/> class,
     /// when the mapping was not successful.
     /// </returns>
-    public static Result<ImmutableArray<IExpressionPart>> MapToProperPart(ImmutableArray<IExpressionPart> parts,
-        NumberFormatInfo info, IToken token) => (token, parts[^1]) switch
+    public static Result<Expression> MapToProperPart(Expression expression,
+        NumberFormatInfo info, IToken token) => (token, expression.Parts[^1]) switch
         {
             (OpenBracketToken, IOperand or GroupingEndOperator or
                 IRightSideUnaryOperator or
                 ImplicitMultiplicationOperator(IOperand))
-                => parts.Add(new ImplicitMultiplicationOperator(new GroupingStartOperator())),
+                => expression.AddPart(
+                    new GroupingStartOperator().WrapForImplicitMultiplication()),
 
             (ClosedBracketToken, IBinaryOperator or ILeftSideUnaryOperator or
                 NegativeValueOperator or PositiveValueOperator)
                 => new InvalidGroupingEndOperatorUse(),
             (ClosedBracketToken, GroupingStartOperator)
                 => new ExpressionContainsEmptyGrouping(),
-            (ClosedBracketToken, _) => parts.Add(new GroupingEndOperator()),
-            (OpenBracketToken, _) => parts.Add(new GroupingStartOperator()),
+            (ClosedBracketToken, _) => expression.AddPart(new GroupingEndOperator()),
+            (OpenBracketToken, _) => expression.AddPart(new GroupingStartOperator()),
 
             _ => UnaryOperatorMappingExtensions.
-                   UnaryOperatorMappings(parts, info, token),
+                   UnaryOperatorMappings(expression, info, token),
         };
 }

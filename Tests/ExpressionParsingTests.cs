@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
@@ -79,9 +78,9 @@ public class ExpressionParsingTests
 
     private void Paste(IReadOnlyList<IToken> sequence) => _session.Paste(sequence);
 
-    private ImmutableList<IExpressionPart> Parts()
+    private IReadOnlyList<IExpressionPart> Parts()
     {
-        ImmutableList<IExpressionPart>? parts = null;
+        IReadOnlyList<IExpressionPart>? parts = null;
         string? failure = null;
 
         Parse().Switch(expression => parts = expression.Parts,

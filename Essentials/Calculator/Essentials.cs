@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Essentials.Calculator;
+﻿namespace Essentials.Calculator;
 
 /// <summary>
 /// Represents the base for all expression parts.
@@ -78,17 +76,6 @@ public interface IConstant : IOperand;
 /// Represents a non-existent <see cref="IExpressionPart"/>.
 /// </summary>
 public readonly record struct EmptyPart : IExpressionPart;
-
-/// <summary>
-/// Represents an expression object consisting of multiple parts.
-/// <see cref="Expression"/> can also be a part of <see cref="Parts"/> i.e. it
-/// is a type of <see cref="IExpressionPart"/>.
-/// </summary>
-/// <param name="Parts">A <see cref="ImmutableList{T}"/> of type
-/// <see cref="IExpressionPart"/> instances used to determine the
-/// expression object.</param>
-/// <param name="Mode">An <see cref="AngleMode"/> used for trigonometric functions.</param>
-public record Expression(ImmutableList<IExpressionPart> Parts, AngleMode Mode) : IExpressionPart;
 
 /// <summary>
 /// Represents a way angle values are interpreted in <see cref="Expression"/>.

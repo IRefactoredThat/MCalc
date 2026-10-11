@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Globalization;
+﻿using System.Globalization;
 using Calculator.ExpressionPartConversions;
 using Calculator.Operands;
 using Calculator.Operators;
@@ -29,8 +28,8 @@ internal static class OperandMappingExtensions
     /// A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> being
     /// an <see cref="IOperand"/> instance or <see cref="ImplicitMultiplicationOperator"/> that wraps it.
     /// </returns>
-    public static Result<ImmutableArray<IExpressionPart>> OperandMappings(
-        ImmutableArray<IExpressionPart> parts, NumberFormatInfo info, IToken token)
+    public static Result<Expression> OperandMappings(
+        Expression expression, NumberFormatInfo info, IToken token)
     {
         Result<IOperand> operand = token switch
         {
@@ -45,15 +44,15 @@ internal static class OperandMappingExtensions
                 $"Invalid argument of type {token.GetType().Name}", nameof(token))
         };
 
-        return operand.Map<IOperand, ImmutableArray<IExpressionPart>>(value =>
-            parts[^1] switch
+        return operand.Map<IOperand, Expression>(value =>
+            expression.Parts[^1] switch
             {
-                GroupingEndOperator => parts.Add(
+                GroupingEndOperator => expression.AddPart(
                     value.WrapForImplicitMultiplication()),
                 AdditionOperator or SubtractionOperator when
-                    parts[^2] is not IOperand => parts.Add(
-                    value).Add(new GroupingEndOperator()),
-                _ => parts.Add(value)
+                    expression.Parts[^2] is not IOperand => expression.AddPart(
+                    value).AddPart(new GroupingEndOperator()),
+                _ => expression.AddPart(value)
             });
     }
 }

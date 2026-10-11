@@ -38,14 +38,14 @@ internal static class OperandExtensions
 
         z -= 1;
 
-        double x = LanczosGammaCoefficients[0];
+        var x = LanczosGammaCoefficients[0];
 
-        for (int i = 1; i < LanczosGammaCoefficients.Length; i++)
+        for (var i = 1; i < LanczosGammaCoefficients.Length; i++)
         {
             x += LanczosGammaCoefficients[i] / (z + i);
         }
 
-        double t = z + 7.5;
+        var t = z + 7.5;
 
         return double.Sqrt(2 * double.Pi)
                * double.Pow(t, z + 0.5)

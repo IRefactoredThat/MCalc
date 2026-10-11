@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Globalization;
+﻿using System.Globalization;
 using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
@@ -47,23 +46,23 @@ internal static class BinaryOperatorMappingExtensions
     /// the mapping was not successful.
     /// </para>
     /// </returns>
-    public static Result<ImmutableArray<IExpressionPart>> BinaryOperatorMappings(
-        ImmutableArray<IExpressionPart> parts, NumberFormatInfo info,
-        IToken token) => (token, parts[^1]) switch
+    public static Result<Expression> BinaryOperatorMappings(
+        Expression expression, NumberFormatInfo info,
+        IToken token) => (token, expression.Parts[^1]) switch
     {
         (TimesToken or DivToken or CaretToken or PercentToken, ILeftSideUnaryOperator unaryOperator)
             => new InvalidUnaryOperatorUse(unaryOperator.ToToken()),
         (PlusToken or MinusToken or TimesToken or DivToken or CaretToken or PercentToken,
             IOperand or GroupingEndOperator or IRightSideUnaryOperator or
             ImplicitMultiplicationOperator(IOperand)) =>
-            parts.Add(MapTokenToBinaryOperator(token)),
-        (PlusToken, _) => parts.Add(new PositiveValueOperator()),
-        (MinusToken, _) => parts.Add(new NegativeValueOperator()),
+            expression.AddPart(MapTokenToBinaryOperator(token)),
+        (PlusToken, _) => expression.AddPart(new PositiveValueOperator()),
+        (MinusToken, _) => expression.AddPart(new NegativeValueOperator()),
         (TimesToken, _) => new InvalidBinaryOperatorUse(TimesToken.Instance),
         (DivToken, _) => new InvalidBinaryOperatorUse(DivToken.Instance),
         (CaretToken, _) => new InvalidBinaryOperatorUse(CaretToken.Instance),
         (PercentToken, _) => new InvalidBinaryOperatorUse(PercentToken.Instance),
-        _ => OperandMappingExtensions.OperandMappings(parts, info, token)
+        _ => OperandMappingExtensions.OperandMappings(expression, info, token)
     };
 
     private static IBinaryOperator MapTokenToBinaryOperator(IToken token) => token switch

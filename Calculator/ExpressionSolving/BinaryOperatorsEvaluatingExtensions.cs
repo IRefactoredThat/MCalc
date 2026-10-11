@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-using Calculator.ExpressionPartConversions;
-using Calculator.Operators;
+﻿using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
 using Essentials.ResultType;
@@ -54,8 +52,7 @@ internal static class BinaryOperatorEvaluatingExtensions
         where T1 : IBinaryOperator
         where T2 : IBinaryOperator
         where T3 : IBinaryOperator =>
-        expression.Parts.ReducePortions<T1, T2, T3>(fromRight: false)
-            .Map(parts => parts.AttachAngleMode(expression.Mode).ToResult());
+        expression.ReducePortions<T1, T2, T3>(fromRight: false);
 
     /// <summary>
     /// Evaluates <typeparamref name="T"/> inside of the <paramref name="expression"/> right-to-left.
@@ -71,78 +68,159 @@ internal static class BinaryOperatorEvaluatingExtensions
     /// </returns>
     public static Result<Expression> EvaluateRightAssociativeBinaryOperators<T>
         (this Expression expression) where T : IBinaryOperator =>
-        expression.Parts.ReducePortions<T, T, T>(fromRight: true)
-            .Map(parts => parts.AttachAngleMode(expression.Mode).ToResult());
+        expression.ReducePortions<T, T, T>(fromRight: true);
 
     /// <summary>
-    /// Reduces <typeparamref name="T1"/>, <typeparamref name="T2"/> and
-    /// <typeparamref name="T3"/> operations that have evaluatable neighbors in
-    /// <paramref name="parts"/>, one at a time, until no such operation remains.
-    /// Operations are reduced from the left when <paramref name="fromRight"/> is
+    /// Reduces every <typeparamref name="T1"/>, <typeparamref name="T2"/> and
+    /// <typeparamref name="T3"/> operation that has evaluatable neighbors in a
+    /// single pass over the parts of the <paramref name="expression"/>. Operations
+    /// are reduced from the left when <paramref name="fromRight"/> is
     /// <see langword="false"/> and from the right otherwise, which is what makes an
     /// operator associative to the left or to the right respectively.
     /// </summary>
     /// <typeparam name="T1">The type of the first operator to reduce.</typeparam>
     /// <typeparam name="T2">The type of the second operator to reduce.</typeparam>
     /// <typeparam name="T3">The type of the third operator to reduce.</typeparam>
-    /// <param name="parts">The list of parts being evaluated.</param>
+    /// <param name="expression">The expression whose parts are reduced.</param>
     /// <param name="fromRight">
-    /// Whether to reduce the rightmost operation that has evaluatable neighbors
-    /// instead of the leftmost one.
+    /// Whether to reduce the operations right-to-left instead of left-to-right.
     /// </param>
     /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="ImmutableList{T}"/> representing
-    /// either the reduced list of parts or one <see cref="Error"/> from the
+    /// A <see cref="Result{T}"/> of type <see cref="Expression"/> representing
+    /// either the reduced expression or one <see cref="Error"/> from the
     /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
     /// method.
     /// </returns>
-    private static Result<ImmutableList<IExpressionPart>> ReducePortions<T1, T2, T3>(this
-        ImmutableList<IExpressionPart> parts, bool fromRight)
+    private static Result<Expression> ReducePortions<T1, T2, T3>(this
+        Expression expression, bool fromRight)
+        where T1 : IBinaryOperator
+        where T2 : IBinaryOperator
+        where T3 : IBinaryOperator =>
+        fromRight
+            ? expression.ReducePortionsFromRight<T1, T2, T3>()
+            : expression.ReducePortionsFromLeft<T1, T2, T3>();
+
+    /// <summary>
+    /// Folds the <typeparamref name="T1"/>, <typeparamref name="T2"/> and
+    /// <typeparamref name="T3"/> operations of the <paramref name="expression"/>
+    /// left-to-right in a single pass, so that grouped operations are evaluated
+    /// from the left.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first operator to reduce.</typeparam>
+    /// <typeparam name="T2">The type of the second operator to reduce.</typeparam>
+    /// <typeparam name="T3">The type of the third operator to reduce.</typeparam>
+    /// <param name="expression">The expression whose parts are reduced.</param>
+    /// <returns>
+    /// A <see cref="Result{T}"/> of type <see cref="Expression"/> representing
+    /// either the reduced expression or one <see cref="Error"/> produced while
+    /// evaluating an operand.
+    /// </returns>
+    private static Result<Expression> ReducePortionsFromLeft<T1, T2, T3>(this Expression expression)
         where T1 : IBinaryOperator
         where T2 : IBinaryOperator
         where T3 : IBinaryOperator
     {
-        var step = fromRight ? -1 : 1;
+        var parts = expression.Parts;
+        var newExpression = Expression.Create(expression.Mode);
+        var result = newExpression.ToResult();
+        var index = 0;
 
-        for (var index = fromRight ? parts.Count - 2 : 1;
-            index > 0 && index < parts.Count - 1;
-            index += step)
+        while (index < parts.Count)
         {
-            if (parts[index] is T1 or T2 or T3 &&
-                parts[index - 1] is IOperand or Expression &&
-                parts[index + 1] is IOperand or Expression)
+            if (parts[index] is not (IOperand or Expression))
             {
-                return parts.SplicePortion(index, (IBinaryOperator)parts[index])
-                    .Map(reducedParts => reducedParts.ReducePortions<T1, T2, T3>(fromRight));
+                newExpression.AddPart(parts[index]);
+                index++;
+                continue;
             }
+
+            var operand = parts[index].EvaluateOperand();
+            index++;
+
+            while (index + 1 < parts.Count &&
+                (parts[index] is T1 or T2 or T3) &&
+                (parts[index + 1] is IOperand or Expression))
+            {
+                var @operator = (IBinaryOperator)parts[index];
+                var right = parts[index + 1].EvaluateOperand();
+                operand = operand.Map(left =>
+                    right.Map(rightOperand => @operator.Apply(left, rightOperand)));
+                index += 2;
+            }
+
+            result = result.Map(current =>
+                operand.Map(value => current.AddPart(value).ToResult()));
         }
 
-        return parts.ToResult();
+        return result;
     }
 
     /// <summary>
-    /// Replaces the operation formed by the part at <paramref name="operatorIndex"/>
-    /// and its two neighboring parts with the evaluated result.
+    /// Folds the <typeparamref name="T1"/>, <typeparamref name="T2"/> and
+    /// <typeparamref name="T3"/> operations of the <paramref name="expression"/>
+    /// right-to-left in a single pass, so that grouped operations are evaluated
+    /// from the right.
     /// </summary>
-    /// <param name="parts">The list containing the operation.</param>
-    /// <param name="operatorIndex">The index of the operator in <paramref name="parts"/>.</param>
-    /// <param name="operator">The operator applied to the neighboring parts.</param>
+    /// <typeparam name="T1">The type of the first operator to reduce.</typeparam>
+    /// <typeparam name="T2">The type of the second operator to reduce.</typeparam>
+    /// <typeparam name="T3">The type of the third operator to reduce.</typeparam>
+    /// <param name="expression">The expression whose parts are reduced.</param>
     /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="ImmutableList{T}"/> representing
-    /// either the list with the operation replaced by its result or one
-    /// <see cref="Error"/> from the
-    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
-    /// method.
+    /// A <see cref="Result{T}"/> of type <see cref="Expression"/> representing
+    /// either the reduced expression or one <see cref="Error"/> produced while
+    /// evaluating an operand.
     /// </returns>
-    private static Result<ImmutableList<IExpressionPart>> SplicePortion(this
-        ImmutableList<IExpressionPart> parts, int operatorIndex, IBinaryOperator @operator) =>
-        parts[operatorIndex - 1].EvaluateOperand().Map(left =>
-            parts[operatorIndex + 1].EvaluateOperand().Map(right =>
-                @operator.Apply(left, right).Map(operand => parts
-                    .RemoveAt(operatorIndex + 1)
-                    .RemoveAt(operatorIndex)
-                    .RemoveAt(operatorIndex - 1)
-                    .Insert(operatorIndex - 1, operand).ToResult())));
+    private static Result<Expression> ReducePortionsFromRight<T1, T2, T3>(this Expression expression)
+        where T1 : IBinaryOperator
+        where T2 : IBinaryOperator
+        where T3 : IBinaryOperator
+    {
+        var parts = expression.Parts;
+        var reversedParts = new List<IExpressionPart>();
+        var result = reversedParts.ToResult();
+        var index = parts.Count - 1;
+
+        while (index >= 0)
+        {
+            if (parts[index] is not (IOperand or Expression))
+            {
+                reversedParts.Add(parts[index]);
+                index--;
+                continue;
+            }
+
+            var operand = parts[index].EvaluateOperand();
+            index--;
+
+            while (index - 1 >= 0 &&
+                (parts[index] is T1 or T2 or T3) &&
+                (parts[index - 1] is IOperand or Expression))
+            {
+                var @operator = (IBinaryOperator)parts[index];
+                var left = parts[index - 1].EvaluateOperand();
+                operand = operand.Map(right =>
+                    left.Map(leftOperand => @operator.Apply(leftOperand, right)));
+                index -= 2;
+            }
+
+            result = result.Map(current => operand.Map(value =>
+            {
+                current.Add(value);
+                return current.ToResult();
+            }));
+        }
+
+        return result.Map(finalParts =>
+        {
+            finalParts.Reverse();
+            var newExpression = Expression.Create(expression.Mode);
+            foreach (var part in finalParts)
+            {
+                newExpression.AddPart(part);
+            }
+            return newExpression.ToResult();
+        });
+    }
 
     /// <summary>
     /// Evaluates <paramref name="part"/> to an <see cref="IOperand"/> by taking it as
@@ -161,5 +239,4 @@ internal static class BinaryOperatorEvaluatingExtensions
             Expression expression => expression.EvaluateAllOperators(),
             _ => new ExpressionNotEvaluated()
         };
-
 }

@@ -80,8 +80,6 @@ public class ContentButtonHandler() :
 
     private void OnCardLongClick(object? sender, View.LongClickEventArgs e)
     {
-        // A long press that runs something has already consumed the click, but one that
-        // cannot (no long command, or its CanExecute is false) would otherwise do nothing.
         if (!VirtualView.SendLongClicked())
         {
             VirtualView.SendClicked();

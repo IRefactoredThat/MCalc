@@ -995,7 +995,7 @@ public class ExpressionEvaluatingTests
     [Test]
     public void EmptyExpressionCannotBeEvaluated()
     {
-        var expression = new Expression([], AngleMode.RAD);
+        var expression = Expression.Create(AngleMode.RAD);
 
         var error = default(Error);
 

@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Globalization;
-using Calculator.ExpressionPartConversions;
+﻿using System.Globalization;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -41,21 +39,20 @@ internal static class ExpressionParsingExtensions
         {
             return new EmptyExpression();
         }
-        var validatedParts = tokens
-            .Aggregate(ImmutableArray.Create<IExpressionPart>(
-                new EmptyPart()).ToResult(),
-            (accumulatedParts, token) => accumulatedParts
-                .SelfMap(parts => MapToProperPart(parts, info, token)),
-            finalParts => finalParts.SelfMap(parts => parts.RemoveAt(0)));
 
-        return validatedParts
-            .Map(parts => parts
+        var validatedExpression = tokens
+            .Aggregate(Expression.Create(mode)
+                    .AddPart(new EmptyPart()).ToResult(),
+            (accumulatedParts, token) => accumulatedParts.Map(
+                expression => MapToProperPart(expression, info, token)),
+            expression => expression.SelfMap(finalExpression =>
+                finalExpression.RemovePart(0)));
+
+        return validatedExpression
+            .SelfMap(expression => expression
                 .SubstituteImplicitMultiplications()
-                .ToImmutableArray()
                 .CloseSignedNumberGroups()
-                .ExpandChainedOperands()
-                .AttachAngleMode(mode)
-                .ToResult())
+                .ExpandChainedOperands())
             .SelfMap(finalExpression => finalExpression.Parts switch
             {
                 [] => new EmptyExpression(),

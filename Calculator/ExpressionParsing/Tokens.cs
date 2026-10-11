@@ -301,13 +301,13 @@ public class Tokens : IReadOnlyList<IToken>
         var firstToken = sequence[0] as NumberToken;
         var lastToken = sequence[^1] as NumberToken;
 
-        bool mergeLeft =
+        var mergeLeft =
             firstToken != null &&
             _tokenIndex >= 0 &&
             _tokenIndex < _tokens.Count &&
             (left = _tokens[_tokenIndex] as NumberToken) != null;
 
-        bool mergeRight =
+        var mergeRight =
             lastToken != null &&
             insertIndex < _tokens.Count &&
             (right = _tokens[insertIndex] as NumberToken) != null;

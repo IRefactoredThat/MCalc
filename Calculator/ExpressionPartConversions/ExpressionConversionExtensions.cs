@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Calculator.Operators;
+﻿using Calculator.Operators;
 using Essentials.Calculator;
 
 namespace Calculator.ExpressionPartConversions;
@@ -10,20 +9,6 @@ namespace Calculator.ExpressionPartConversions;
 /// </summary>
 internal static class ExpressionPartConversionExtensions
 {
-    /// <summary>
-    /// Transforms an <see cref="ImmutableList{T}"/> of type
-    /// <see cref="IExpressionPart"/> into an <see cref="Expression"/>
-    /// object by attaching a given <see cref="AngleMode"/>.
-    /// </summary>
-    /// <param name="parts">A list to transform.</param>
-    /// <param name="mode">A mode to use.</param>
-    /// <returns>
-    /// A new <see cref="Expression"/> object with given
-    /// <paramref name="parts"/> and <paramref name="mode"/>.
-    /// </returns>
-    public static Expression AttachAngleMode(this
-        ImmutableList<IExpressionPart> parts, AngleMode mode) => new(parts, mode);
-
     /// <summary>
     /// Wraps an <see cref="IExpressionPart"/> around an
     /// <see cref="ImplicitMultiplicationOperator"/>.
