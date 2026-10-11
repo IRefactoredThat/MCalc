@@ -23,7 +23,7 @@ internal static class ExpressionParsingExtensions
     /// <param name="mode">An <see cref="AngleMode"/> for <see cref="Expression"/>.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="Expression"/> either representing
-    /// a new, partially validated <see cref="Expression"/> object 
+    /// a new, partially validated <see cref="Expression"/> object
     /// or one <see cref="Error"/> listed here:
     /// <see cref="InvalidBinaryOperatorUse"/> |
     /// <see cref="InvalidGroupingEndOperatorUse"/> |
@@ -52,6 +52,7 @@ internal static class ExpressionParsingExtensions
             .Map(parts => parts
                 .SubstituteImplicitMultiplications()
                 .ToImmutableArray()
+                .CloseSignedNumberGroups()
                 .EvaluateChainedOperands()
                 .AttachAngleMode(mode)
                 .ToResult())
