@@ -200,19 +200,27 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
-    public void ExponentiationIsEvaluatedLeftToRight()
+    public void ExponentiationIsEvaluatedRightToLeft()
     {
         _session.Type("2^2^3");
 
-        Assert.That(_session.Value(), Is.EqualTo(64));
+        Assert.That(_session.Value(), Is.EqualTo(256));
     }
 
     [Test]
-    public void ExponentiationChainIsEvaluatedAppliedLeftToRight()
+    public void ExponentiationChainIsEvaluatedRightToLeft()
     {
         _session.Type("2^3^2");
 
-        Assert.That(_session.Value(), Is.EqualTo(64));
+        Assert.That(_session.Value(), Is.EqualTo(512));
+    }
+
+    [Test]
+    public void RightAssociativeExponentiationStopsAtLowerPrecedenceOperators()
+    {
+        _session.Type("2^3^2+1");
+
+        Assert.That(_session.Value(), Is.EqualTo(513));
     }
 
     [Test]
