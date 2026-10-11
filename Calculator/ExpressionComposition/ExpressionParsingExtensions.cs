@@ -53,7 +53,7 @@ internal static class ExpressionParsingExtensions
                 .SubstituteImplicitMultiplications()
                 .ToImmutableArray()
                 .CloseSignedNumberGroups()
-                .EvaluateChainedOperands()
+                .ExpandChainedOperands()
                 .AttachAngleMode(mode)
                 .ToResult())
             .SelfMap(finalExpression => finalExpression.Parts switch

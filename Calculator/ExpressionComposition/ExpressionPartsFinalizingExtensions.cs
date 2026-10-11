@@ -30,25 +30,24 @@ internal static class ExpressionPartsFinalizingExtensions
             );
 
     /// <summary>
-    /// Evaluates each <see cref="IOperand"/> chain inside of <paramref name="parts"/>
-    /// sequence by multiplying <see cref="IOperand"/> values, effectively removing
-    /// all constants from sequence and converting these chains into single
-    /// <see cref="Number"/> instances.
+    /// Expands each <see cref="IOperand"/> chain inside of <paramref name="parts"/>
+    /// sequence by inserting <see cref="MultiplicationOperator"/>s in between
+    /// <see cref="IOperand"/> values.
     /// </summary>
-    /// <param name="parts">The <see cref="ImmutableArray"/> of type <see cref="IExpressionPart"/> to evaluate.</param>
+    /// <param name="parts">The <see cref="ImmutableArray"/> of type <see cref="IExpressionPart"/> to expand.</param>
     /// <returns>
     /// A new <see cref="ImmutableList{T}"/> of type <see cref="IExpressionPart"/>
-    /// with all constants evaluated.
+    /// with explicit multiplication chains.
     /// </returns>
-    public static ImmutableList<IExpressionPart> EvaluateChainedOperands(
+    public static ImmutableList<IExpressionPart> ExpandChainedOperands(
         this ImmutableArray<IExpressionPart> parts) =>
         parts.IsDefaultOrEmpty ? ImmutableList<IExpressionPart>.Empty : parts[1..]
-             .Aggregate(ImmutableList.Create(parts[0]), (newParts, part) =>
+            .Aggregate(ImmutableList.Create(parts[0]), (newParts, part) =>
                 (part, newParts[^1]) switch
                 {
-                     (IOperand first, IOperand second) => newParts.SetItem
-                        (newParts.Count - 1, new Number(first.Value * second.Value)),
-                     _ => newParts.Add(part)
+                     (IOperand operand, IOperand) => newParts
+                         .Add(new MultiplicationOperator()).Add(operand),
+                     var (anyPart, _) => newParts.Add(anyPart)
                 });
 
     /// <summary>
