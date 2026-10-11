@@ -49,7 +49,8 @@ internal static class GroupingOperatorMappingExtensions
                 ImplicitMultiplicationOperator(IOperand))
                 => parts.Add(new ImplicitMultiplicationOperator(new GroupingStartOperator())),
 
-            (ClosedBracketToken, IBinaryOperator or ILeftSideUnaryOperator)
+            (ClosedBracketToken, IBinaryOperator or ILeftSideUnaryOperator or
+                NegativeValueOperator or PositiveValueOperator)
                 => new InvalidGroupingEndOperatorUse(),
             (ClosedBracketToken, GroupingStartOperator)
                 => new ExpressionContainsEmptyGrouping(),

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Globalization;
 using Calculator.ExpressionPartConversions;
-using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -11,12 +10,15 @@ namespace Calculator.ExpressionPartsMapping;
 
 /// <summary>
 /// Represents a class containing a method used for mapping a token
-/// to an <see cref="IBinaryOperator"/> instance.
+/// to an <see cref="IBinaryOperator"/> instance or, when a <see cref="PlusToken"/>
+/// or <see cref="MinusToken"/> appears in operand position, to a
+/// <see cref="PositiveValueOperator"/> or <see cref="NegativeValueOperator"/> marker.
 /// </summary>
 internal static class BinaryOperatorMappingExtensions
 {
     /// <summary>
     /// Maps a <paramref name="token"/> into an <see cref="IBinaryOperator"/> instance
+    /// or a <see cref="PositiveValueOperator"/> / <see cref="NegativeValueOperator"/> marker
     /// based on <see cref="IExpressionPart"/> type and <see cref="IExpressionPart"/> formed
     /// by previous invocation of <see cref="ExpressionPartsMapping"/> method chain
     /// or delegates this request to the
@@ -30,13 +32,20 @@ internal static class BinaryOperatorMappingExtensions
     /// 1) An <see cref="IBinaryOperator"/> instance, when the mapping was successful.
     /// </para>
     /// <para>
-    /// 2) An <see cref="InvalidBinaryOperatorUse"/>,
+    /// 2) A <see cref="PositiveValueOperator"/> or <see cref="NegativeValueOperator"/> marker,
+    /// when a <see cref="PlusToken"/> or <see cref="MinusToken"/> appears in operand
+    /// position and therefore represents a negation of the operand it precedes.
+    /// </para>
+    /// <para>
+    /// 3) An <see cref="InvalidBinaryOperatorUse"/>,
     /// when the mapping was successful, but the resulting instance cannot be
     /// preceded by previous <see cref="IExpressionPart"/>.
     /// </para>
-    /// 3) A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> formed by
+    /// <para>
+    /// 4) A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> formed by
     /// delegating the request to the <see cref="OperandMappingExtensions"/> class, when
     /// the mapping was not successful.
+    /// </para>
     /// </returns>
     public static Result<ImmutableArray<IExpressionPart>> BinaryOperatorMappings(
         ImmutableArray<IExpressionPart> parts, NumberFormatInfo info,
@@ -48,12 +57,8 @@ internal static class BinaryOperatorMappingExtensions
             IOperand or GroupingEndOperator or IRightSideUnaryOperator or
             ImplicitMultiplicationOperator(IOperand)) =>
             parts.Add(MapTokenToBinaryOperator(token)),
-        (PlusToken, _) => parts.Add(new GroupingStartOperator())
-            .Add(new Number(0))
-            .Add(new AdditionOperator()),
-        (MinusToken, _) => parts.Add(new GroupingStartOperator())
-            .Add(new Number(0))
-            .Add(new SubtractionOperator()),
+        (PlusToken, _) => parts.Add(new PositiveValueOperator()),
+        (MinusToken, _) => parts.Add(new NegativeValueOperator()),
         (TimesToken, _) => new InvalidBinaryOperatorUse(TimesToken.Instance),
         (DivToken, _) => new InvalidBinaryOperatorUse(DivToken.Instance),
         (CaretToken, _) => new InvalidBinaryOperatorUse(CaretToken.Instance),
