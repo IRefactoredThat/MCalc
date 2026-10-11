@@ -48,11 +48,11 @@ public static class ExpressionEvaluatingExtensions
                 .EvaluateRightSideUnaryOperators()
                 .Map(simplifiedExpression => simplifiedExpression
                     .EvaluateLeftSideUnaryOperators())
-                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
-                    <ExponentiationOperator, ExponentiationOperator>())
-                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
+                .Map(simplifiedExpression => simplifiedExpression
+                    .EvaluateRightAssociativeBinaryOperators<ExponentiationOperator>())
+                .Map(simplifiedExpression => simplifiedExpression.EvaluateLeftAssociateBinaryOperators
                     <MultiplicationOperator, DivisionOperator, ModuloOperator>())
-                .Map(simplifiedExpression => simplifiedExpression.EvaluateBinaryOperators
+                .Map(simplifiedExpression => simplifiedExpression.EvaluateLeftAssociateBinaryOperators
                     <AdditionOperator, SubtractionOperator>())
                 .Map(value => value.Parts is
                     [IOperand operand]
