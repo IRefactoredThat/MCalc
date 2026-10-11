@@ -637,44 +637,49 @@ public class ExpressionParsingTests
     }
 
     [Test]
-    public void ConstantAfterOperandIsMultipliedIntoSingleNumber()
+    public void ConstantAfterOperandBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(PiToken.Instance);
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new Number(2 * Math.PI)]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
+            [new Number(2), new MultiplicationOperator(), new PiConstant()]));
     }
 
     [Test]
-    public void ConstantBeforeOperandIsMultipliedIntoSingleNumber()
+    public void ConstantBeforeOperandBecomesExplicitMultiplication()
     {
         Add(PiToken.Instance);
         TypeNumber("2");
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new Number(2 * Math.PI)]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
+            [new PiConstant(), new MultiplicationOperator(), new Number(2)]));
     }
 
     [Test]
-    public void ConsecutiveConstantsAreMultipliedIntoSingleNumber()
+    public void ConsecutiveConstantsBecomeExplicitMultiplication()
     {
         Add(PiToken.Instance);
         Add(PiToken.Instance);
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new Number(Math.PI * Math.PI)]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
+            [new PiConstant(), new MultiplicationOperator(), new PiConstant()]));
     }
 
     [Test]
-    public void OperandChainAroundConstantIsMultipliedIntoSingleNumber()
+    public void OperandChainAroundConstantBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(PiToken.Instance);
         TypeNumber("3");
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new Number(6 * Math.PI)]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
+            [new Number(2), new MultiplicationOperator(), new PiConstant(),
+                new MultiplicationOperator(), new Number(3)]));
     }
 
     [Test]
-    public void ConstantChainIsMultipliedIntoSingleNumber()
+    public void ConstantChainBecomesExplicitMultiplication()
     {
         TypeNumber("3");
         Add(EToken.Instance);
@@ -683,7 +688,9 @@ public class ExpressionParsingTests
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(3 * Math.E * Math.E), new AdditionOperator(), new Number(1)]));
+            [new Number(3), new MultiplicationOperator(), new EConstant(),
+                new MultiplicationOperator(), new EConstant(),
+                new AdditionOperator(), new Number(1)]));
     }
 
     [Test]

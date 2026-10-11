@@ -152,11 +152,27 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
-    public void RightSideUnaryOperatorAppliedBeforeExponentiation()
+    public void LeftSideUnaryOperatorAppliedBeforeExponentiation()
+    {
+        _session.Type("2^sin2");
+
+        Assert.That(_session.Value(), Is.EqualTo(1.8781306511987292));
+    }
+
+    [Test]
+    public void RightSideUnaryOperatorBeforeExponentiationAppliedBeforeIt()
     {
         _session.Type("3!^2");
 
         Assert.That(_session.Value(), Is.EqualTo(36));
+    }
+
+    [Test]
+    public void RightSideUnaryOperatorAfterExponentiationAppliedBeforeIt()
+    {
+        _session.Type("2^3!");
+
+        Assert.That(_session.Value(), Is.EqualTo(64));
     }
 
     [Test]
@@ -168,7 +184,7 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
-    public void NegationAppliedAfterThanExponentiation()
+    public void NegationAppliedAfterExponentiation()
     {
         _session.Type("-2^2");
 
@@ -296,6 +312,30 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
+    public void LeadingNegationAppliesToTheWholeRightAssociativeChain()
+    {
+        _session.Type("-2^2^3");
+
+        Assert.That(_session.Value(), Is.EqualTo(-256));
+    }
+
+    [Test]
+    public void ExponentiationAfterChainedOperandsOnlyAppliesToLastOne()
+    {
+        _session.Type("2p^2");
+
+        Assert.That(_session.Value(), Is.EqualTo(19.739208802178716));
+    }
+
+    [Test]
+    public void ExponentiationBeforeChainedOperandsOnlyAppliesToFirstOne()
+    {
+        _session.Type("2^2p");
+
+        Assert.That(_session.Value(), Is.EqualTo(12.566370614359172));
+    }
+
+    [Test]
     public void RepeatedNegationCancelsOut()
     {
         _session.Type("--5");
@@ -373,6 +413,14 @@ public class ExpressionEvaluatingTests
         _session.Type("(2+(3*4)");
 
         Assert.That(_session.Value(), Is.EqualTo(14));
+    }
+
+    [Test]
+    public void UserTypedZeroMinusGroupIsEvaluatedCorrectly()
+    {
+        _session.Type("(0-3*4)");
+
+        Assert.That(_session.Value(), Is.EqualTo(-12));
     }
 
     [Test]
@@ -802,6 +850,14 @@ public class ExpressionEvaluatingTests
     }
 
     [Test]
+    public void UnaryOperatorBeforeChainedOperandsAppliesToTheFirstOneOnly()
+    {
+        _session.Type("sin2p");
+
+        Assert.That(_session.Value(), Is.EqualTo(2.856642116043664));
+    }
+
+    [Test]
     public void EConstantIsEvaluated()
     {
         _session.Type("E");
@@ -888,6 +944,14 @@ public class ExpressionEvaluatingTests
         _session.Type("9^999");
 
         Assert.That(_session.Error(), Is.TypeOf<NumberOverflow>());
+    }
+
+    [Test]
+    public void ZeroToANegativeExponentIsRejected()
+    {
+        _session.Type("0^-1");
+
+        Assert.That(_session.Error(), Is.TypeOf<InvalidOperation>());
     }
 
     [Test]
