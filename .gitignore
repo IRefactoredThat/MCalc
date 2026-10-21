@@ -369,3 +369,11 @@ FodyWeavers.xsd
 *.jks
 *.p12
 *.pfx
+
+# Nix / direnv
+.direnv/
+result
+result-*
+
+# Local NuGet cache (see .envrc)
+.nuget/
