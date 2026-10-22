@@ -46,22 +46,20 @@ A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc p
 | <img src="Screenshots/display.png" width="230" alt="Main calculator display"> | <img src="Screenshots/settings.png" width="230" alt="Settings page"> | <img src="Screenshots/formatting.png" width="230" alt="Number formatting settings"> |
 | <img src="Screenshots/layout.png" width="230" alt="Custom layout editor"> | <img src="Screenshots/history.png" width="230" alt="Expression history"> | |
 
-## Development
+## Development (with nix)
 
-The build toolchain (the .NET SDK with the Android workload baked into its
+The build toolchain (the .NET SDK with the Android workload inside its
 store root, the pinned Android SDK, and a JDK) is provided by a Nix flake in
-this repository — nothing needs to be installed system-wide.
+this repository.
 
 ```sh
 direnv allow .      # once: auto-activates the shell on cd (needs direnv)
-# or enter it explicitly:
-nix develop
 ```
 
-Then build as usual:
+Then build with a script from project root:
 
 ```sh
-dotnet build CalculatorApp/CalculatorApp.csproj -c Debug
+./nix/build-android.sh
 ```
 
 The flake pins `nixpkgs` and `tadfisher/android-nixpkgs`, so the toolchain is
@@ -69,28 +67,12 @@ reproducible and cached after the first build.
 
 ### Updating the toolchain
 
-The .NET Android workload is store-packaged from a hash-pinned lock
-(`nix/android-workload-packs.nix`), and the SDK line the toolchain is built
-from is pinned in `nix/sdk-pin.nix`. One command per operation refreshes the
-lock and rebuilds the toolchain, so the two can never drift apart:
-
 ```sh
-nix run .#update-workload    # newest published .NET Android workload
-nix run .#update-sdk         # newest .NET SDK patch of the pinned line
-nix run .#upgrade-sdk 11     # move the toolchain to another .NET SDK line
-nix run .#status             # what is pinned, and whether an update exists
+nix run .#update-workload           # newest published .NET Android workload
+nix run .#update-sdk                # newest .NET SDK patch of the pinned line
+nix run .#upgrade-sdk {version}     # move the toolchain to another .NET SDK line
+nix run .#status                    # what is pinned, and whether an update exists
 ```
-
-`update-workload` bootstraps a throwaway workload state with
-`dotnet workload restore`, so it always picks up the newest published packs;
-`update-sdk` first moves the `nixpkgs` pin forward; `upgrade-sdk` rewrites the
-SDK line. Each command ends by rebuilding the store-packaged SDK, so an
-inconsistent lock is caught right away — and if an update fails half-way, the
-pin and the lock are restored.
-
-Moving to another SDK line also touches the project: the target frameworks and
-the MAUI package versions follow the new SDK. The tool prints what is left to
-change.
 
 To lock an existing workload state instead of bootstrapping a new one, run the
 generator directly:
