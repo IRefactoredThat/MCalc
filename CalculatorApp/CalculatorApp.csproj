@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net10.0-android</TargetFramework>
@@ -14,7 +14,7 @@
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningsNotAsErrors>XC0045;</WarningsNotAsErrors>
-		<!-- Relying on Google.Android.Material theming so supress the Obsolete warnings-->
+		<!-- Relying on Google.Android.Material theming so suppress the Obsolete warnings-->
 		<NoWarn>$(NoWarn);XAOBS001</NoWarn>
 
 		<!-- Display name -->
@@ -36,15 +36,17 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-		<RuntimeIdentifiers>android-arm;android-arm64;android-x86;android-x64</RuntimeIdentifiers>
-	  	<AndroidLinkMode>None</AndroidLinkMode>
+        <RuntimeIdentifiers>android-arm64;</RuntimeIdentifiers>
+        <AndroidLinkMode>None</AndroidLinkMode>
+        <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
+        <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-		<RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+        <RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+        <RunAOTCompilation>true</RunAOTCompilation>
 	  	<AndroidLinkMode>SdkOnly</AndroidLinkMode>
 	  	<AndroidLinkTool>r8</AndroidLinkTool>
-        <RunAOTCompilation>true</RunAOTCompilation>
 	  	<PlatformTarget>AnyCPU</PlatformTarget>
 	</PropertyGroup>
 
