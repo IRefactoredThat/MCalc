@@ -61,6 +61,17 @@
                     Path=BindingContext.ButtonShape}"
                     Text="{Binding Text}"/>
             </DataTemplate>
+            <DataTemplate x:Key="ClearButton" x:DataType="buttons:ClearButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource ErrorPreset}"
+                    ClickAnimation="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='base:SettingsBasePage',
+                    Path=AnimationSettings.CalculatorClickAnimation}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    x:DataType='layout:LayoutSettingsPage',
+                    Path=BindingContext.ButtonShape}"
+                    Text="{Binding Text}"/>
+            </DataTemplate>
             <DataTemplate x:Key="NumberButton" x:DataType="buttons:ICalculatorButtonViewModel">
                 <buttons:CalculatorButton
                     Style="{StaticResource SurfaceFrontPreset}"

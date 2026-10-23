@@ -87,6 +87,22 @@
                 Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
                 ButtonShape="{Binding Source={x:Reference Grid},
                 x:DataType='display:CalculatorLayout',
+                 Path=BindingContext.LayoutSettings.ButtonShape}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="ClearButton" x:DataType="buttons:ClearButtonViewModel">
+            <buttons:CalculatorButton
+                Style="{StaticResource ErrorPreset}"
+                Command="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.ClearInputCommand}"
+                ClickAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorClickAnimation}"
+                TransitionAnimation="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
+                Path=BindingContext.AnimationSettings.CalculatorTransitionAnimation}"
+                ButtonShape="{Binding Source={x:Reference Grid},
+                x:DataType='display:CalculatorLayout',
                 Path=BindingContext.LayoutSettings.ButtonShape}"/>
         </DataTemplate>
         <DataTemplate x:Key="NumbersButton" x:DataType="buttons:ICalculatorButtonViewModel">
@@ -169,6 +185,7 @@
             BackspaceButtonTemplate="{StaticResource BackspaceButton}"
             EqualButtonTemplate="{StaticResource EqualButton}"
             InverseButtonTemplate="{StaticResource InverseButton}"
+            ClearButtonTemplate="{StaticResource ClearButton}"
             NumberButtonTemplate="{StaticResource NumbersButton}"
             TrigButtonTemplate="{StaticResource TrigButton}"
             PrimaryButtonTemplate="{StaticResource PrimaryButton}"

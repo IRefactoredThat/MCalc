@@ -66,6 +66,19 @@
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     Path=BindingContext.LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
             </DataTemplate>
+            <DataTemplate x:Key="ClearButton" x:DataType="buttons:InverseButtonViewModel">
+                <buttons:CalculatorButton
+                    Style="{StaticResource ErrorPreset}"
+                    Text="{Binding Text}"
+                    Command="{Binding Source={x:Reference DerivedRoot},
+                    Path=BindingContext.RemoveButtonCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    CommandParameter="{Binding .}"
+                    LongCommand="{Binding Source={x:Reference DerivedRoot},
+                    Path=BindingContext.SelectCellCommand, x:DataType='customLayout:CustomLayoutSettingsPage'}"
+                    LongCommandParameter="{Binding .}"
+                    ButtonShape="{Binding Source={x:Reference DerivedRoot},
+                    Path=BindingContext.LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
+            </DataTemplate>
             <DataTemplate x:Key="NumberButton" x:DataType="buttons:ICalculatorButtonViewModel">
                 <buttons:CalculatorButton
                     Style="{StaticResource SurfaceFrontPreset}"

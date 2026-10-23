@@ -2,7 +2,7 @@ using CalculatorApp.CalculatorPage.Page;
 
 namespace CalculatorApp.CalculatorPage.MainGrid.Display;
 
-public partial class CalculatorGrid
+public partial class CalculatorGrid : CalculatorLayout
 {
     public CalculatorGrid() => InitializeComponent();
 
