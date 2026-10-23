@@ -8,6 +8,7 @@ public class CalculatorButtonSelector : DataTemplateSelector
     public required DataTemplate BackspaceButtonTemplate { get; init; }
     public required DataTemplate EqualButtonTemplate { get; init; }
     public required DataTemplate InverseButtonTemplate { get; init; }
+    public required DataTemplate ClearButtonTemplate { get; init; }
     public required DataTemplate NumberButtonTemplate { get; init; }
     public required DataTemplate PrimaryButtonTemplate { get; init; }
     public required DataTemplate SecondaryButtonTemplate { get; init; }
@@ -24,6 +25,7 @@ public class CalculatorButtonSelector : DataTemplateSelector
             PrimaryButtonViewModel => PrimaryButtonTemplate,
             SecondaryButtonViewModel => SecondaryButtonTemplate,
             AlternateButtonViewModel => TrigButtonTemplate,
+            ClearButtonViewModel => ClearButtonTemplate,
             DecimalSeparatorButtonViewModel => NumberButtonTemplate,
             _ => throw new ArgumentOutOfRangeException(nameof(item), item, null)
         };

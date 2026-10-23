@@ -34,6 +34,10 @@
     <Style x:Key="SurfaceFrontPreset" TargetType="buttons:CalculatorButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainer}"/>
     </Style>
+    <Style x:Key="ErrorPreset" TargetType="buttons:CalculatorButton">
+        <Setter Property="BackgroundColor" Value="{DynamicResource Error}"/>
+        <Setter Property="TextColor" Value="{DynamicResource OnError}"/>
+    </Style>
     <Style TargetType="display:CalculatorLayout" ApplyToDerivedTypes="True">
         <Setter Property="SafeAreaEdges" Value="Container"/>
     </Style>

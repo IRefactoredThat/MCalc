@@ -22,6 +22,12 @@ public class AngleModeButtonViewModel : IBaseButtonViewModel
     public LayoutItemCategory Category => LayoutItemCategory.Special;
 }
 
+public class ClearButtonViewModel : IBaseButtonViewModel
+{
+    public string Text => "AC";
+    public LayoutItemCategory Category => LayoutItemCategory.Special;
+}
+
 public class InverseButtonViewModel : IBaseButtonViewModel
 {
     public string Text => "1/2";
