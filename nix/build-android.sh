@@ -54,5 +54,4 @@ exec dotnet run \
   -c "$CONFIG" \
   --device "$DEVICE" \
   -p:UseSharedCompilation=false \
-  # AOT not supported with nix packaged SDK
   -p:RunAOTCompilation=false
