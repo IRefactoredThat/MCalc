@@ -67,6 +67,7 @@ public static class LayoutExtensions
             new AngleModeButtonViewModel(),
             new BackspaceButtonViewModel(),
             new EqualButtonViewModel(),
-            new InverseButtonViewModel()
+            new InverseButtonViewModel(),
+            new ClearButtonViewModel()
         ];
 }
