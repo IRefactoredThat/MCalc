@@ -122,6 +122,7 @@
                 BackspaceButtonTemplate="{StaticResource BackspaceButton}"
                 EqualButtonTemplate="{StaticResource EqualButton}"
                 InverseButtonTemplate="{StaticResource InverseButton}"
+                ClearButtonTemplate="{StaticResource ClearButton}"
                 NumberButtonTemplate="{StaticResource NumberButton}"
                 PrimaryButtonTemplate="{StaticResource PrimaryButton}"
                 SecondaryButtonTemplate="{StaticResource SecondaryButton}"

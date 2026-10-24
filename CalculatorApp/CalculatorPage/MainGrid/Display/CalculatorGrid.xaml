@@ -92,6 +92,7 @@
         <DataTemplate x:Key="ClearButton" x:DataType="buttons:ClearButtonViewModel">
             <buttons:CalculatorButton
                 Style="{StaticResource ErrorPreset}"
+                Text="{Binding Text}"
                 Command="{Binding Source={x:Reference Grid},
                 x:DataType='display:CalculatorLayout',
                 Path=BindingContext.ClearInputCommand}"

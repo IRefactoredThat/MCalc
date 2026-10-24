@@ -66,7 +66,7 @@
                     ButtonShape="{Binding Source={x:Reference DerivedRoot},
                     Path=BindingContext.LayoutSettings.ButtonShape, x:DataType='customLayout:CustomLayoutSettingsPage'}"/>
             </DataTemplate>
-            <DataTemplate x:Key="ClearButton" x:DataType="buttons:InverseButtonViewModel">
+            <DataTemplate x:Key="ClearButton" x:DataType="buttons:ClearButtonViewModel">
                 <buttons:CalculatorButton
                     Style="{StaticResource ErrorPreset}"
                     Text="{Binding Text}"
@@ -137,6 +137,7 @@
                 BackspaceButtonTemplate="{StaticResource BackspaceButton}"
                 EqualButtonTemplate="{StaticResource EqualButton}"
                 InverseButtonTemplate="{StaticResource InverseButton}"
+                ClearButtonTemplate="{StaticResource ClearButton}"
                 NumberButtonTemplate="{StaticResource NumberButton}"
                 PrimaryButtonTemplate="{StaticResource PrimaryButton}"
                 SecondaryButtonTemplate="{StaticResource SecondaryButton}"
