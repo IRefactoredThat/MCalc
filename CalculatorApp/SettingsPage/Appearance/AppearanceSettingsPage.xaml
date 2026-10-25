@@ -9,6 +9,7 @@
     xmlns:colors="clr-namespace:CalculatorApp.SettingsPage.Colors"
     xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
     xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
     x:Class="CalculatorApp.SettingsPage.Appearance.AppearanceSettingsPage"
     x:DataType="appearance:AppearanceSettings"
     Header="Appearance">
@@ -39,11 +40,21 @@
                 IsToggled="{Binding DynamicColors}"/>
             <pageNavigation:PageNavigationSetting
                 x:Name="ColorsPage"
-                CornerRadius="5, 5, 15, 15"
+                CornerRadius="5, 5, 5, 5"
                 Name="Custom colors"
                 Description="Choose seed color from presets"
                 Icon="{x:Static fonts:MaterialSymbols.CustomColors}"
                 Route="{x:Type colors:ColorSettingsPage}"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Chroma"
+                Description="Adjust color intensity"
+                Icon="{x:Static fonts:MaterialSymbols.Chroma}"
+                Maximum="{x:Static appearance:AppearanceSettings.MaxSurfaceChroma}"
+                Minimum="{x:Static appearance:AppearanceSettings.MinSurfaceChroma}"
+                Step="{x:Static appearance:AppearanceSettings.SurfaceChromaStep}"
+                ResetValue="{x:Static appearance:AppearanceSettings.DefaultSurfaceChroma}"
+                Value="{Binding SurfaceChroma}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

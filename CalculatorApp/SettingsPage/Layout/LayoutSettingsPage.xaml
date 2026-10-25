@@ -168,7 +168,7 @@
                 x:Name="ACButton"
                 CornerRadius="5, 5, 5, 5"
                 Name="Include AC button"
-                Description="Add AC button in first row, first column of simple/mixed layouts"
+                Description="Prepend clear all button to layout"
                 Icon="{x:Static fonts:MaterialSymbols.AC}"
                 IsToggled="{Binding IncludeACButton}"/>
             <stepSlider:StepSliderSetting

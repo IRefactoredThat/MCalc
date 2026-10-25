@@ -17,7 +17,10 @@ public class AppearanceSettings(IPreferences preferences,
     INotifyPropertyChanged, IReload
 {
     private const double ContrastLevel = 0.0;
-    private const double SurfaceChroma = 30.0;
+    public const double MinSurfaceChroma = 0.0;
+    public const double MaxSurfaceChroma = 100.0;
+    public const double DefaultSurfaceChroma = 50.0;
+    public const double SurfaceChromaStep = 1.0;
     private static readonly Color FallbackSeed = SeedPresets.
         Presets[DefaultColorIndex];
 
@@ -161,6 +164,19 @@ public class AppearanceSettings(IPreferences preferences,
         }
     } = FallbackSeed;
 
+    public double SurfaceChroma
+    {
+        get;
+        set
+        {
+            field = value;
+            preferences.Set(nameof(SurfaceChroma), value);
+            Apply();
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(ShellColor));
+        }
+    } = DefaultSurfaceChroma;
+
     public Color ShellColor => Shell.Current?.CurrentPage is CalculatorGridPage
         ? (Color)_resources[nameof(MaterialScheme.SurfaceContainerHighest)]
         : (Color)_resources[nameof(MaterialScheme.Surface)];
@@ -239,7 +255,7 @@ public class AppearanceSettings(IPreferences preferences,
         }
     }
 
-    private static int Tint(int color)
+    private int Tint(int color)
     {
         var hct = Hct.FromInt(color);
         return hct is null ? color :
@@ -273,6 +289,7 @@ public class AppearanceSettings(IPreferences preferences,
         DynamicColors = preferences.Get(nameof(DynamicColors), true);
         PreferredTheme = (Theme)preferences.Get(nameof(PreferredTheme), 0);
         AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
+        SurfaceChroma = preferences.Get(nameof(SurfaceChroma), DefaultSurfaceChroma);
         _suspendApply = false;
         UpdateTheme();
     }

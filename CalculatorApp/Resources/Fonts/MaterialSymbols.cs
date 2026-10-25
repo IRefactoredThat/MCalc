@@ -45,6 +45,7 @@ public static class MaterialSymbols
     public const string EDigits = "\uf4b2";
     public const string Amoled = "\ue51c";
     public const string DynamicColors = "\ue3b8";
+    public const string Chroma = "\ue91c";
     public const string ColorStyle = "\ue997";
     public const string CustomColors = "\ue3ae";
     public const string ColorPresets = "\ue9b4";
