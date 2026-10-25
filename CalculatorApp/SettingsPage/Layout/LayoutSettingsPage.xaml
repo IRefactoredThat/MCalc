@@ -148,6 +148,7 @@
                 Icon="{x:Static fonts:MaterialSymbols.Grid}"
                 ExpandableValues="{x:Static layout:LayoutSettings.RequiredLayoutForCustomModel}"
                 ExpandableView="{x:Reference CustomLayout}"
+                NonExpandableView="{x:Reference ACButton}"
                 SelectedOption="{Binding GridLayout}"/>
             <VerticalStackLayout x:Name="CustomLayout">
                 <pageNavigation:PageNavigationSetting
@@ -163,6 +164,13 @@
                     Icon="{x:Static fonts:MaterialSymbols.Help}"
                     IsToggled="{Binding ShowHelpVisible}"/>
             </VerticalStackLayout>
+            <toggle:ToggleSetting
+                x:Name="ACButton"
+                CornerRadius="5, 5, 5, 5"
+                Name="Include AC button"
+                Description="Add AC button in first row, first column of simple/mixed layouts"
+                Icon="{x:Static fonts:MaterialSymbols.AC}"
+                IsToggled="{Binding IncludeACButton}"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
                 Name="Spacing"

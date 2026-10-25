@@ -8,19 +8,18 @@ namespace CalculatorApp.CalculatorPage.MainGrid.Models;
 
 public class SimpleGridViewModel(FormattingSettings formattingSettings) : IGridViewModel
 {
-    public int UnitWidth => 4;
-    public int UnitHeight => 5;
-
-    public IReadOnlyDictionary<CellRange, GridViewModelPart> Parts { get; } =
-        new Dictionary<CellRange, GridViewModelPart>()
+    private Dictionary<CellRange, GridViewModelPart> _parts =
+        new()
         {
-            [new CellRange(0, 0, 5, 4)] = new(SubgridLayoutMode.Grid)
+            [new CellRange(0, 0, 1, 4)] = new(SubgridLayoutMode.Grid)
             {
                 new PrimaryButtonViewModel(OpenBracketToken.Instance),
                 new PrimaryButtonViewModel(PercentToken.Instance),
                 new PrimaryButtonViewModel(ClosedBracketToken.Instance),
                 new PrimaryButtonViewModel(DivToken.Instance),
-
+            },
+            [new CellRange(1, 0, 4, 4)] = new(SubgridLayoutMode.Grid)
+            {
                 new NumberButtonViewModel(NumberToken.Seven),
                 new NumberButtonViewModel(NumberToken.Eight),
                 new NumberButtonViewModel(NumberToken.Nine),
@@ -42,4 +41,32 @@ public class SimpleGridViewModel(FormattingSettings formattingSettings) : IGridV
                 new EqualButtonViewModel()
             }
         };
+
+    public event EventHandler<PartChangedEventArgs>? PartChanged;
+
+    public int UnitWidth => 4;
+    public int UnitHeight => 5;
+
+    public IReadOnlyDictionary<CellRange, GridViewModelPart> Parts => _parts;
+
+    public void Update(bool includeClearButton)
+    {
+        var (affectedCell, affectedPart) = _parts.First();
+        var hasClearButton = affectedPart.FirstOrDefault() is ClearButtonViewModel;
+
+        if (includeClearButton && !hasClearButton)
+        {
+            affectedPart.ColumnSpanExtension++;
+            affectedPart.Insert(0, new ClearButtonViewModel());
+        }
+
+        if (!includeClearButton && hasClearButton)
+        {
+            affectedPart.ColumnSpanExtension--;
+            affectedPart.RemoveAt(0);
+        }
+
+        PartChanged?.Invoke(this, new PartChangedEventArgs(
+            affectedCell, PartChangedAction.Update, affectedPart));
+    }
 }

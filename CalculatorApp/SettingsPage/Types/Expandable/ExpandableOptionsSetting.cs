@@ -11,21 +11,32 @@ public class ExpandableOptionsSetting : OptionsSetting
     private async void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName is nameof(SelectedOption) or nameof(ExpandableValues)
-            or nameof(ExpandableView))
+            or nameof(ExpandableView) or nameof(NonExpandableView))
         {
             var shouldShowContent = ExpandableValues.Contains(SelectedOption);
             ExpandableView?.InputTransparent = !shouldShowContent;
+            NonExpandableView?.InputTransparent = shouldShowContent;
 
             if (TransitionAnimation is TransitionAnimation.Fade)
             {
-                await (ExpandableView?.FadeToAsync(
-                    shouldShowContent ? 1d : 0.3d,
-                    250,
-                    shouldShowContent ? Easing.SinIn : Easing.SinOut) ?? Task.CompletedTask);
+                await Task.WhenAll(
+                    ExpandableView?.FadeToAsync(
+                        shouldShowContent ? 1d : 0.3d,
+                        250,
+                        shouldShowContent ? Easing.SinIn : Easing.SinOut
+                    ) ?? Task.CompletedTask,
+
+                    NonExpandableView?.FadeToAsync(
+                        !shouldShowContent ? 1d : 0.3d,
+                        250,
+                        !shouldShowContent ? Easing.SinIn : Easing.SinOut
+                    ) ?? Task.CompletedTask
+                );
             }
-            if (TransitionAnimation is TransitionAnimation.None)
+            else if (TransitionAnimation is TransitionAnimation.None)
             {
                 ExpandableView?.Opacity = shouldShowContent ? 1d : 0.3d;
+                NonExpandableView?.Opacity = !shouldShowContent ? 1d : 0.3d;
             }
         }
     }
@@ -40,6 +51,18 @@ public class ExpandableOptionsSetting : OptionsSetting
     {
         get => (VisualElement?)GetValue(ExpandableViewProperty);
         set => SetValue(ExpandableViewProperty, value);
+    }
+
+   public static readonly BindableProperty NonExpandableViewProperty =
+        BindableProperty.Create(
+            nameof(NonExpandableView),
+            typeof(VisualElement),
+            typeof(ExpandableOptionsSetting));
+
+    public VisualElement? NonExpandableView
+    {
+        get => (VisualElement?)GetValue(NonExpandableViewProperty);
+        set => SetValue(NonExpandableViewProperty, value);
     }
 
     public static readonly BindableProperty ExpandableValuesProperty =

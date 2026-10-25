@@ -5,6 +5,7 @@ public static class MaterialSymbols
     public const string History = "\ue889";
     public const string HistoryHeader = "\uf3e6";
     public const string HistoryOff = "\uf4da";
+    public const string AC = "\uf230";
     public const string HistoryEntries = "\uf381";
     public const string Trashcan = "\ue872";
     public const string Delete = "\ue5cd";

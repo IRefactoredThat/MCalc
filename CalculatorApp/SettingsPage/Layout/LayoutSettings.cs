@@ -35,6 +35,7 @@ public class LayoutSettings(
             preferences.Set(nameof(GridLayout), (int)value);
             OnPropertyChanged();
             OnPropertyChanged(nameof(GridViewModel));
+            GridViewModel.Update(IncludeACButton);
         }
     }
 
@@ -61,6 +62,18 @@ public class LayoutSettings(
         {
             field = value;
             preferences.Set(nameof(ButtonSpacing), value);
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IncludeACButton
+    {
+        get;
+        set
+        {
+            field = value;
+            preferences.Set(nameof(IncludeACButton), value);
+            GridViewModel.Update(value);
             OnPropertyChanged();
         }
     }
@@ -106,6 +119,7 @@ public class LayoutSettings(
         ActiveCategory = (LayoutItemCategory)preferences.Get(nameof(ActiveCategory), 0);
         ButtonSpacing = preferences.Get(nameof(ButtonSpacing), DefaultButtonSpacing);
         ButtonShape = (ButtonShape)preferences.Get(nameof(ButtonShape), 0);
+        IncludeACButton = preferences.Get(nameof(IncludeACButton), false);
         OnPropertyChanged(nameof(GridViewModel));
     }
 }

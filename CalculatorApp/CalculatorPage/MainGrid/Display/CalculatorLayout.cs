@@ -103,20 +103,17 @@ public class CalculatorLayout : Grid
         object oldValue, object newValue)
     {
         if (bindable is not CalculatorLayout layout ||
-            newValue is not IGridViewModel model)
+            newValue is not IGridViewModel newModel)
         {
             return;
         }
 
-        layout.UpdateLayout(model);
-        if (oldValue is CustomGridViewModel oldModel)
+        layout.UpdateLayout(newModel);
+        if (oldValue is IGridViewModel oldModel)
         {
             oldModel.PartChanged -= layout.OnPartChanged;
         }
-        if (newValue is CustomGridViewModel newModel)
-        {
-            newModel.PartChanged += layout.OnPartChanged;
-        }
+        newModel.PartChanged += layout.OnPartChanged;
     }
 
     protected override void OnHandlerChanged()

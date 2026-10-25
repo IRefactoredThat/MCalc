@@ -35,6 +35,9 @@ public sealed class GridViewModelPart(SubgridLayoutMode layoutMode,
 
     public void Add(IBaseButtonViewModel model) => _parts.Add(model);
     public void Remove(IBaseButtonViewModel model) => _parts.Remove(model);
+    public void Insert(int index, IBaseButtonViewModel model) =>
+        _parts.Insert(index, model);
+    public void RemoveAt(int index) => _parts.RemoveAt(index);
 
     public IEnumerator<IBaseButtonViewModel> GetEnumerator() => _parts.GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

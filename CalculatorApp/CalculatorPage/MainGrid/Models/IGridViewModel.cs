@@ -8,4 +8,6 @@ public interface IGridViewModel
     int UnitHeight { get; }
     int UnitWidth { get; }
     IReadOnlyDictionary<CellRange, GridViewModelPart> Parts { get; }
+    void Update(bool includeClearButton);
+    event EventHandler<PartChangedEventArgs>? PartChanged;
 }

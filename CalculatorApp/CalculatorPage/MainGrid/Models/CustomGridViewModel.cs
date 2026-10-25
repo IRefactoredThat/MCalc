@@ -79,4 +79,7 @@ public class CustomGridViewModel : IGridViewModel
         PartChanged?.Invoke(this, new PartChangedEventArgs(default,
             PartChangedAction.Clear));
     }
+
+    // Clear button should only be explicitly added by user
+    public void Update(bool includeClearButton) { }
 }

@@ -9,10 +9,7 @@ namespace CalculatorApp.CalculatorPage.MainGrid.Models;
 
 public class MixedGridViewModel(FormattingSettings formattingSettings) : IGridViewModel
 {
-    public int UnitHeight => 8;
-    public int UnitWidth => 4;
-
-    public IReadOnlyDictionary<CellRange, GridViewModelPart> Parts { get; } =
+   private Dictionary<CellRange, GridViewModelPart> _parts =
         new Dictionary<CellRange, GridViewModelPart>()
         {
             [new CellRange(0, 0, 1, 4)] = new(SubgridLayoutMode.Grid, columnSpanExtension: 1)
@@ -100,4 +97,33 @@ public class MixedGridViewModel(FormattingSettings formattingSettings) : IGridVi
                 new EqualButtonViewModel()
             }
         };
+
+    public event EventHandler<PartChangedEventArgs>? PartChanged;
+
+    public int UnitHeight => 8;
+    public int UnitWidth => 4;
+
+    public IReadOnlyDictionary<CellRange, GridViewModelPart> Parts => _parts;
+
+    public void Update(bool includeClearButton)
+    {
+        var (affectedCell, affectedPart) = _parts.First();
+        var hasClearButton = affectedPart.FirstOrDefault() is ClearButtonViewModel;
+
+        if (includeClearButton && !hasClearButton)
+        {
+            affectedPart.ColumnSpanExtension++;
+            affectedPart.Insert(0, new ClearButtonViewModel());
+        }
+
+        if (!includeClearButton && hasClearButton)
+        {
+            affectedPart.ColumnSpanExtension--;
+            affectedPart.RemoveAt(0);
+        }
+
+        PartChanged?.Invoke(this, new PartChangedEventArgs(
+            affectedCell, PartChangedAction.Update, affectedPart));
+    }
+
 }
