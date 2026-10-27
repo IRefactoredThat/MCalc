@@ -1,6 +1,5 @@
 using CalculatorApp.Platforms.Android.Behaviors;
 using CalculatorApp.SettingsPage.Animations;
-using CalculatorApp.SettingsPage.Colors.ColorChooser;
 using CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder;
 using CalculatorApp.SettingsPage.Types.Expandable;
 using CalculatorApp.SettingsPage.Types.Options;
@@ -113,11 +112,6 @@ public partial class SettingsBasePage
                     break;
                 case LayoutBuilder builder:
                     builder.SetBinding(ContentButton.ClickAnimationProperty,
-                        new Binding(nameof(AnimationSettings.SettingsClickAnimation),
-                            source: AnimationSettings));
-                    break;
-                case ColorChooser chooser:
-                    chooser.SetBinding(ContentButton.ClickAnimationProperty,
                         new Binding(nameof(AnimationSettings.SettingsClickAnimation),
                             source: AnimationSettings));
                     break;

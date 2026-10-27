@@ -13,7 +13,6 @@
     xmlns:page="clr-namespace:CalculatorApp.CalculatorPage.Page"
     xmlns:toggle="clr-namespace:CalculatorApp.SettingsPage.Types.Toggle"
     xmlns:display="clr-namespace:CalculatorApp.CalculatorPage.MainGrid.Display"
-    xmlns:colorChooser="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorChooser"
     xmlns:layoutBuilder="clr-namespace:CalculatorApp.SettingsPage.CustomLayout.LayoutBuilder"
     xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
     xmlns:bottomSheet="clr-namespace:CalculatorApp.SharedElements.BottomSheet"
@@ -320,9 +319,6 @@
     <Style TargetType="options:OptionsSetting" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
-    <Style TargetType="colorChooser:ColorChooser" ApplyToDerivedTypes="True">
-        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
-    </Style>
     <Style TargetType="colorWheelSetting:ColorWheelSetting" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
@@ -436,26 +432,6 @@
         <Setter Property="HorizontalTextAlignment" Value="Start"/>
         <Setter Property="VerticalTextAlignment" Value="Center"/>
         <Setter Property="TextColor" Value="{DynamicResource OnSurface}"/>
-    </Style>
-    <Style
-        x:Key="ColorPreset"
-        x:DataType="colorChooser:ColorPreset"
-        TargetType="contentButton:ContentButton">
-        <Setter Property="BackgroundColor" Value="{Binding Color}"/>
-        <Setter Property="StrokeThickness" Value="0"/>
-        <Setter Property="WidthRequest" Value="56"/>
-        <Setter Property="HeightRequest" Value="56"/>
-        <Setter Property="Margin" Value="0, 5, 0, 5"/>
-        <Setter Property="CornerRadius" Value="24"/>
-        <Style.Triggers>
-            <DataTrigger
-                TargetType="contentButton:ContentButton"
-                Binding="{Binding IsSelected}"
-                Value="True">
-                <Setter Property="Stroke" Value="{DynamicResource Primary}"/>
-                <Setter Property="StrokeThickness" Value="3"/>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style x:Key="LayoutOption" TargetType="Label">
         <Setter Property="Margin" Value="0, 5, 5, 0"/>

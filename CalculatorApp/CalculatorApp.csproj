@@ -388,8 +388,4 @@
 	<ItemGroup>
 	  <Folder Include="Resources\Images\" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <AdditionalFiles Include="SettingsPage\Colors\ColorChooser\ColorChooser.xaml" />
-	</ItemGroup>
 </Project>
