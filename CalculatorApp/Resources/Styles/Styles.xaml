@@ -19,7 +19,8 @@
     xmlns:bottomSheet="clr-namespace:CalculatorApp.SharedElements.BottomSheet"
     xmlns:formatting="clr-namespace:CalculatorApp.SettingsPage.Formatting"
     xmlns:buttons="clr-namespace:CalculatorApp.CalculatorPage.Buttons"
-    xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup">
+    xmlns:backup="clr-namespace:CalculatorApp.SettingsPage.Backup"
+    xmlns:colorWheelSetting="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting">
     <Style x:Key="PrimaryPreset" TargetType="buttons:CalculatorButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource Primary}"/>
         <Setter Property="TextColor" Value="{DynamicResource OnPrimary}"/>
@@ -320,6 +321,9 @@
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
     <Style TargetType="colorChooser:ColorChooser" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
+    </Style>
+    <Style TargetType="colorWheelSetting:ColorWheelSetting" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
     </Style>
     <Style TargetType="formatting:NumberPreview" ApplyToDerivedTypes="True">

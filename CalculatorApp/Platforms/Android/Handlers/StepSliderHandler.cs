@@ -1,5 +1,4 @@
 using Android.Content;
-using CalculatorApp.SettingsPage.Types.StepSlider;
 using CalculatorApp.SharedElements.StepSlider;
 using Google.Android.Material.Slider;
 using Microsoft.Maui.Handlers;
