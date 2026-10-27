@@ -1,3 +1,4 @@
+using CalculatorApp.Platforms.Android.ColorWheel;
 using CalculatorApp.Platforms.Android.HueWheel;
 using CalculatorApp.SettingsPage.Appearance;
 
@@ -13,19 +14,19 @@ public partial class ColorWheelSetting
 
     public static readonly BindableProperty HueWheelDialogProperty =
         BindableProperty.Create(
-            nameof(HueWheelDialog),
-            typeof(HueWheelDialog),
+            nameof(ColorWheelDialog),
+            typeof(ColorWheelDialog),
             typeof(ColorWheelSetting));
 
-    public HueWheelDialog HueWheelDialog
+    public ColorWheelDialog ColorWheelDialog
     {
-        get => (HueWheelDialog)GetValue(HueWheelDialogProperty);
+        get => (ColorWheelDialog)GetValue(HueWheelDialogProperty);
         set => SetValue(HueWheelDialogProperty, value);
     }
 
     private void OnClicked(object? sender, EventArgs e)
     {
-        HueWheelDialog.ShowColorPicker(Color, selected => { Color = selected; });
+        ColorWheelDialog.ShowColorPicker(Color, selected => { Color = selected; });
     }
 
     public static readonly BindableProperty IconProperty =
