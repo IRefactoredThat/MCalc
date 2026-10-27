@@ -6,7 +6,9 @@ using CalculatorApp.CalculatorPage.Input;
 using CalculatorApp.CalculatorPage.MainGrid.Models;
 using CalculatorApp.CalculatorPage.Output;
 using CalculatorApp.CalculatorPage.Page;
+using CalculatorApp.Platforms.Android.Alerts;
 using CalculatorApp.Platforms.Android.Extensions;
+using CalculatorApp.Platforms.Android.HueWheel;
 using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
@@ -19,27 +21,30 @@ using CalculatorApp.SettingsPage.Formatting;
 using CalculatorApp.SettingsPage.History;
 using CalculatorApp.SettingsPage.Layout;
 using CalculatorApp.SettingsPage.Typography;
+using UserMessageDisplayer = CalculatorApp.CalculatorPage.Page.UserMessageDisplayer;
 
 namespace CalculatorApp.App;
 
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddPersistence(this IServiceCollection services) =>
-        services.AddSingleton<AppSettings>()
-            .AddSingleton<Tokens>()
+        services.AddSingleton<Tokens>()
             .AddSingleton<Calculation>()
             .AddSingleton<TokenConverter>()
             .AddSingleton<NumberTokenConverter>()
             .AddSingleton<HistoryStorage>()
+            .AddSingleton<SystemScheme>()
+            .AddSingleton<ClearHistoryDialog>()
+            .AddSingleton<HueWheelDialog>()
             .AddSingleton<CustomModelStorage>()
+            .AddSingleton<AppearanceSchemeStorage>()
             .AddSingleton<IPreferences>(sp =>
                 sp.GetRequiredService<SettingsPreferences>())
             .AddSingleton<SettingsPreferences>();
 
     public static IServiceCollection AddSettings(this IServiceCollection services) =>
-        services.AddSingleton<SystemScheme>()
-            .AddSingleton<AppearanceSettings>()
-            .AddSingleton<AppearanceSchemeStorage>()
+        services.AddSingleton<AppearanceSettings>()
+            .AddSingleton<AppSettings>()
             .AddSingleton<TypographySettings>()
             .AddSingleton<TextExtensions>()
             .AddSingleton<FormattingSettings>()
