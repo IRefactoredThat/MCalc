@@ -6,6 +6,8 @@ using Google.Android.Material.Snackbar;
 using Microsoft.Maui.Platform;
 using Font = Microsoft.Maui.Font;
 using View = Android.Views.View;
+using TypefaceStyle = Android.Graphics.TypefaceStyle;
+using Id = Android.Resource.Id;
 
 namespace CalculatorApp.Platforms.Android.Alerts;
 
@@ -28,7 +30,7 @@ public static class UserMessageDisplayer
         var parentView = Application.Current?.Windows[0]
             .Page?.Handler?.PlatformView as View ??
                 Platform.CurrentActivity?.Window?
-                    .DecorView.FindViewById(global::Android.Resource.Id.Content)
+                    .DecorView.FindViewById(Id.Content)
              ?? throw new InvalidOperationException("Unable to create snackbar");
 
         _platformSnackbar = Snackbar.Make(parentView, message, duration);
@@ -51,14 +53,14 @@ public static class UserMessageDisplayer
         {
             messageView.SetMaxLines(10);
             messageView.SetTextSize(ComplexUnitType.Dip, fontSize);
-            messageView.SetTypeface(platformFont, global::Android.Graphics.TypefaceStyle.Normal);
+            messageView.SetTypeface(platformFont, TypefaceStyle.Normal);
         }
 
         var actionView = _platformSnackbar.View.FindViewById<TextView>(ResourceConstant.Id.snackbar_action);
         if (actionView is not null)
         {
             actionView.SetTextSize(ComplexUnitType.Dip, fontSize);
-            actionView.SetTypeface(platformFont, global::Android.Graphics.TypefaceStyle.Normal);
+            actionView.SetTypeface(platformFont, TypefaceStyle.Normal);
         }
 
         SetLayoutParametersForView(_platformSnackbar.View);
@@ -66,7 +68,7 @@ public static class UserMessageDisplayer
         _platformSnackbar.Show();
     }
 
-    static void SetLayoutParametersForView(View snackbarView)
+    private static void SetLayoutParametersForView(View snackbarView)
     {
         if (Application.Current?.Windows[0].Page is not { } mainPage
             || mainPage.Navigation.ModalStack.Count == 0
