@@ -38,7 +38,7 @@
                 Icon="{x:Static fonts:MaterialSymbols.ClickAnimation}"
                 SelectedOption="{Binding SettingsClickAnimation}"/>
             <options:OptionsSetting
-                CornerRadius="5, 5, 5, 5"
+                CornerRadius="5, 5, 15, 15"
                 Name="Transition animation"
                 Description="Transition animation for settings that just became available"
                 Icon="{x:Static fonts:MaterialSymbols.TransitionAnimation}"

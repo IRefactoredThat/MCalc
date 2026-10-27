@@ -56,7 +56,7 @@
                 <DataTemplate x:DataType="app:CapturedException">
                     <contentButton:ContentButton Style="{StaticResource ExceptionLogEntry}">
                         <Grid
-                            Padding="10, 8"
+                            Margin="10, 8"
                             RowDefinitions="Auto, Auto, Auto"
                             ColumnDefinitions="Auto, *"
                             ColumnSpacing="10"
