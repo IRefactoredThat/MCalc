@@ -14,8 +14,8 @@
         <HorizontalStackLayout Style="{StaticResource Toolbar}">
             <contentButton:ContentButton
                 Style="{StaticResource ToolbarButton}"
-                IsVisible="{Binding HistorySettings.HistoryEnabled}"
-                Command="{Binding HistoryViewModel.DeleteAllCommand}">
+                Clicked="OnClearHistoryClicked"
+                IsVisible="{Binding HistorySettings.HistoryEnabled}">
                 <Label
                     Text="{x:Static fonts:MaterialSymbols.Trashcan}"
                     Style="{StaticResource ToolbarIcon}"/>
