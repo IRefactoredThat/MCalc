@@ -76,7 +76,7 @@ public class ColorWheelDialog(AppearanceSettings appearanceSettings, TypographyS
         }
 
         dialog.Show();
-        DialogFontApplier.Apply(dialog, typographySettings.AppFont);
+        DialogFontApplier.Apply(dialog, typographySettings);
 
         var positive = dialog.GetButton(-1);
         var negative = dialog.GetButton(-2);

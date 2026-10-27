@@ -47,7 +47,7 @@ public class ClearHistoryDialog(AppearanceSettings appearanceSettings, Typograph
         }
 
         dialog.Show();
-        DialogFontApplier.Apply(dialog, typographySettings.AppFont);
+        DialogFontApplier.Apply(dialog, typographySettings);
 
         var positive = dialog.GetButton((int)DialogButtonType.Positive);
         var negative = dialog.GetButton((int)DialogButtonType.Negative);

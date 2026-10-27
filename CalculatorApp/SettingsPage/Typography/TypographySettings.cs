@@ -34,6 +34,7 @@ public class TypographySettings(IPreferences preferences) :
     public const double IconSize = 24, LayoutOptionSize = 18;
     public const double NumberPreviewSize = 34, LayoutBuilderSize = 25;
     public const double GridDrawableSize = 16, SnackbarSize = 18, ButtonMinFontSize = 10;
+    public const double DialogTitleSize = 20, DialogTextSize = 14;
 
     public const double MinScale = 0.8, MaxScale = 1.2, DefaultScale = 1;
     public const double ScaleStep = 0.02;
@@ -63,6 +64,8 @@ public class TypographySettings(IPreferences preferences) :
         (nameof(LayoutBuilderSize), nameof(LayoutBuilderScale), LayoutBuilderSize),
         (nameof(GridDrawableSize), nameof(GridDrawableScale), GridDrawableSize),
         (nameof(SnackbarSize), nameof(SnackbarScale), SnackbarSize),
+        (nameof(DialogTitleSize), nameof(DialogTitleScale), DialogTitleSize),
+        (nameof(DialogTextSize), nameof(DialogTextScale), DialogTextSize),
         (nameof(ButtonMinFontSize), nameof(ButtonMinFontScale), ButtonMinFontSize),
     ];
 
@@ -267,6 +270,18 @@ public class TypographySettings(IPreferences preferences) :
     {
         get => GetSizeScale(nameof(SnackbarScale));
         set => SetSizeScale(nameof(SnackbarScale), value);
+    }
+
+    public double DialogTitleScale
+    {
+        get => GetSizeScale(nameof(DialogTitleScale));
+        set => SetSizeScale(nameof(DialogTitleScale), value);
+    }
+
+    public double DialogTextScale
+    {
+        get => GetSizeScale(nameof(DialogTextScale));
+        set => SetSizeScale(nameof(DialogTextScale), value);
     }
 
     public double ButtonMinFontScale

@@ -22,7 +22,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Flyout"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Header size"
+                Name="Header scale"
                 Description="Scale for the navigation header"
                 Icon="{x:Static fonts:MaterialSymbols.Flyout}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -33,7 +33,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Item size"
+                Name="Item scale"
                 Description="Scale for navigation items"
                 Icon="{x:Static fonts:MaterialSymbols.Flyout}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -53,7 +53,7 @@
                 IsToggled="{Binding DynamicTextScaling}"/>
             <stepSlider:StepSliderSetting x:Name="AutoScaling"
                 CornerRadius="5, 5, 15, 15"
-                Name="Input size"
+                Name="Input scale"
                 Description="Scale for the calculator input"
                 Icon="{x:Static fonts:MaterialSymbols.Input}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -65,7 +65,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Output"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 15, 15"
-                Name="Output size"
+                Name="Output scale"
                 Description="Scale for the calculator output"
                 Icon="{x:Static fonts:MaterialSymbols.Output}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -77,7 +77,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="History"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Header size"
+                Name="Header scale"
                 Description="Scale for the history header"
                 Icon="{x:Static fonts:MaterialSymbols.HistoryHeader}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -88,7 +88,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Item size"
+                Name="Item scale"
                 Description="Scale for history entries"
                 Icon="{x:Static fonts:MaterialSymbols.History}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -99,7 +99,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Empty state size"
+                Name="Empty history scale"
                 Description="Scale for the empty history message"
                 Icon="{x:Static fonts:MaterialSymbols.HistoryOff}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -110,7 +110,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Clear question size"
+                Name="Clear question scale"
                 Description="Scale for the clear confirmation"
                 Icon="{x:Static fonts:MaterialSymbols.Delete}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -122,7 +122,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Settings"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Group header size"
+                Name="Group header scale"
                 Description="Scale for group headers"
                 Icon="{x:Static fonts:MaterialSymbols.SettingGroupHeader}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -133,7 +133,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Group subheader size"
+                Name="Group subheader scale"
                 Description="Scale for group subheaders"
                 Icon="{x:Static fonts:MaterialSymbols.SettingGroupSubheader}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -144,7 +144,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Name size"
+                Name="Name scale"
                 Description="Scale for setting names"
                 Icon="{x:Static fonts:MaterialSymbols.SettingName}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -155,7 +155,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Description size"
+                Name="Description scale"
                 Description="Scale for setting descriptions"
                 Icon="{x:Static fonts:MaterialSymbols.SettingDescription}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -166,7 +166,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Option size"
+                Name="Option scale"
                 Description="Scale for option chips"
                 Icon="{x:Static fonts:MaterialSymbols.SettingOption}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -178,7 +178,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Shell and text"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Shell title size"
+                Name="Shell title scale"
                 Description="Scale for the shell title"
                 Icon="{x:Static fonts:MaterialSymbols.Typography}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -189,7 +189,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Base text size"
+                Name="Base text scale"
                 Description="Scale for default text labels"
                 Icon="{x:Static fonts:MaterialSymbols.FontSize}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -201,7 +201,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Icons"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Icon size"
+                Name="Icon scale"
                 Description="Scale for icon glyphs"
                 Icon="{x:Static fonts:MaterialSymbols.DynamicFontSize}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -212,7 +212,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Layout builder icon size"
+                Name="Layout builder icon scale"
                 Description="Scale for layout builder icons"
                 Icon="{x:Static fonts:MaterialSymbols.CustomGrid}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -224,7 +224,7 @@
             <Label Style="{StaticResource SettingSubheader}" Text="Previews"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Number preview size"
+                Name="Number preview scale"
                 Description="Scale for formatted number preview"
                 Icon="{x:Static fonts:MaterialSymbols.Numbers}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -235,7 +235,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Option chip size"
+                Name="Option chip scale"
                 Description="Scale for layout option chips"
                 Icon="{x:Static fonts:MaterialSymbols.SettingOption}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -246,7 +246,7 @@
                 IsPercent="True"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Grid label size"
+                Name="Grid label scale"
                 Description="Scale for grid preview labels"
                 Icon="{x:Static fonts:MaterialSymbols.Grid}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
@@ -255,10 +255,33 @@
                 Value="{Binding GridDrawableScale}"
                 Step="{x:Static typography:TypographySettings.ScaleStep}"
                 IsPercent="True"/>
+            <Label Style="{StaticResource SettingSubheader}" Text="Dialogs"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Dialog title scale"
+                Description="Scale for dialog title"
+                Icon="{x:Static fonts:MaterialSymbols.Dialogs}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding DialogTitleScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15"
+                Name="Dialog text scale"
+                Description="Scale for dialog text"
+                Icon="{x:Static fonts:MaterialSymbols.Dialogs}"
+                Maximum="{x:Static typography:TypographySettings.MaxScale}"
+                Minimum="{x:Static typography:TypographySettings.MinScale}"
+                ResetValue="{x:Static typography:TypographySettings.DefaultScale}"
+                Value="{Binding DialogTextScale}"
+                Step="{x:Static typography:TypographySettings.ScaleStep}"
+                IsPercent="True"/>
             <Label Style="{StaticResource SettingSubheader}" Text="Other"/>
             <stepSlider:StepSliderSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Snackbar size"
+                Name="Snackbar scale"
                 Description="Scale for notification text"
                 Icon="{x:Static fonts:MaterialSymbols.Notifications}"
                 Maximum="{x:Static typography:TypographySettings.MaxScale}"
