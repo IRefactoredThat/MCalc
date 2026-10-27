@@ -7,6 +7,7 @@ using Google.Android.Material.Color.Utilities;
 namespace CalculatorApp.SettingsPage.Appearance;
 
 using Shell = Microsoft.Maui.Controls.Shell;
+using Colors = Microsoft.Maui.Graphics.Colors;
 
 public enum Theme { Auto, Light, Dark }
 public enum Style { Vibrant, TonalSpot, Expressive,
@@ -21,8 +22,7 @@ public class AppearanceSettings(IPreferences preferences,
     public const double MaxSurfaceChroma = 100.0;
     public const double DefaultSurfaceChroma = 50.0;
     public const double SurfaceChromaStep = 1.0;
-    private static readonly Color FallbackSeed = SeedPresets.
-        Presets[DefaultColorIndex];
+    public static readonly Color FallbackSeed = Colors.Teal;
 
     private static readonly HashSet<string> TintedRoles =
     [
@@ -64,8 +64,6 @@ public class AppearanceSettings(IPreferences preferences,
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-
-    public const int DefaultColorIndex = 0;
 
     public Color GetColorByName(string name) => (Color)_resources[name];
 

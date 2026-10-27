@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentButton:ContentButton
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:contentButton="clr-namespace:CalculatorApp.SharedElements.ContentButton"
+    xmlns:hex="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting"
+    x:Class="CalculatorApp.SettingsPage.Colors.ColorWheelSetting.ColorWheelSetting"
+    x:Name="Root"
+    x:DataType="hex:ColorWheelSetting">
+    <Grid
+        ColumnDefinitions="Auto, *, Auto"
+        RowDefinitions="Auto, Auto"
+        Padding="0, 10, 0, 10">
+        <Label
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="0"
+            Style="{StaticResource SettingsIcon}"
+            Text="{Binding Source={x:Reference Root}, Path=Icon}"/>
+        <Label
+            Grid.Row="0"
+            Grid.Column="1"
+            Style="{StaticResource SettingName}"
+            Text="{Binding Source={x:Reference Root}, Path=Name}"/>
+        <Label
+            Grid.Row="1"
+            Grid.Column="1"
+            Style="{StaticResource SettingDescription}"
+            Text="{Binding Source={x:Reference Root}, Path=Description}"/>
+        <contentButton:ContentButton
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.Column="2"
+            VerticalOptions="Center"
+            HorizontalOptions="End"
+            Margin="0, 0, 15, 0"
+            CornerRadius="16"
+            StrokeThickness="1"
+            WidthRequest="32"
+            HeightRequest="32"
+            BackgroundColor="{Binding Source={x:Reference Root}, Path=Color}"/>
+    </Grid>
+</contentButton:ContentButton>

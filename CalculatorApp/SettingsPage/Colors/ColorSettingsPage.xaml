@@ -6,7 +6,7 @@
     xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
     xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
     xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
-    xmlns:colorChooser="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorChooser"
+    xmlns:colorWheelSetting="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting"
     x:Class="CalculatorApp.SettingsPage.Colors.ColorSettingsPage"
     x:DataType="appearance:AppearanceSettings"
     Header="Custom colors">
@@ -18,14 +18,13 @@
                 Description="Change style of the scheme"
                 Icon="{x:Static fonts:MaterialSymbols.ColorStyle}"
                 SelectedOption="{Binding Style}"/>
-            <colorChooser:ColorChooser
+            <colorWheelSetting:ColorWheelSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Color presets"
-                Description="Choose seed color from presets"
+                Name="Custom color"
+                Description="Select desired seed color"
                 Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
-                Colors="{x:Static appearance:SeedPresets.Presets}"
-                DefaultColorIndex="{x:Static appearance:AppearanceSettings.DefaultColorIndex}"
-                SelectedColor="{Binding SeedColor}"/>
+                Color="{Binding SeedColor}"
+                x:Name="HexColorSetting"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>
