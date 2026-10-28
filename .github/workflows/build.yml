@@ -3,10 +3,9 @@ name: build
 on:
   push:
     branches:
-      - dev
+      - '**'
     paths-ignore:
       - '**/*.md'
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -107,7 +106,7 @@ jobs:
           if-no-files-found: error
 
       - name: Release
-        if: steps.prep.outputs.tag_exists == 'false'
+        if: steps.prep.outputs.tag_exists == 'false' && github.ref == 'refs/heads/dev'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VER: ${{ steps.prep.outputs.version }}
