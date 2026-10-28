@@ -16,14 +16,25 @@ public static class DialogFontApplier
         Dialog? dialog,
         TypographySettings typographySettings)
     {
-        if (dialog?.Window?.DecorView is not { } decorView ||
-            Application.Current?.Handler?.MauiContext?
+        if (dialog?.Window?.DecorView is not { } decorView)
+        {
+            return;
+        }
+
+        Apply(decorView, typographySettings);
+    }
+
+    public static void Apply(
+        View view,
+        TypographySettings typographySettings)
+    {
+        if (Application.Current?.Handler?.MauiContext?
                 .Services.GetService<IFontManager>() is not { } fontManager)
         {
             return;
         }
 
-        ApplyToView(decorView, fontManager, typographySettings);
+        ApplyToView(view, fontManager, typographySettings);
     }
 
     private static void ApplyToView(

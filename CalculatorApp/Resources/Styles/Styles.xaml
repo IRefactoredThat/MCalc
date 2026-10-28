@@ -339,28 +339,7 @@
     </Style>
     <Style x:Key="ExceptionLogHeader" TargetType="contentButton:ContentButton">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainerHigh}"/>
-        <Setter Property="CornerRadius" Value="15, 15, 0, 0"/>
-    </Style>
-    <Style x:Key="ExceptionLogBody" TargetType="contentButton:ContentButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceVariant}"/>
-        <Setter Property="CornerRadius" Value="0, 0, 5, 5"/>
-    </Style>
-    <Style x:Key="ExceptionLogEntry" TargetType="contentButton:ContentButton">
-        <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceContainer}"/>
-        <Setter Property="CornerRadius" Value="10, 10, 10, 10"/>
-        <Setter Property="Margin" Value="0, 0, 0, 8"/>
-    </Style>
-    <Style x:Key="ExceptionLogTime" TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}"/>
-        <Setter Property="FontSize" Value="{DynamicResource SettingDescriptionSize}"/>
-    </Style>
-    <Style x:Key="ExceptionLogStack" TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource OnSurfaceVariant}"/>
-        <Setter Property="FontSize" Value="{DynamicResource SettingDescriptionSize}"/>
-        <Setter Property="LineBreakMode" Value="TailTruncation"/>
-    </Style>
-    <Style x:Key="ErrorTintedIcon" TargetType="Label" BasedOn="{StaticResource Icon}">
-        <Setter Property="TextColor" Value="{DynamicResource Error}"/>
+        <Setter Property="CornerRadius" Value="15, 15, 5, 5"/>
     </Style>
     <Style TargetType="layoutBuilder:SpreadsheetGrid" ApplyToDerivedTypes="True">
         <Setter Property="BackgroundColor" Value="{DynamicResource SurfaceVariant}"/>

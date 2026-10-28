@@ -9,7 +9,6 @@ using CalculatorApp.CalculatorPage.Page;
 using CalculatorApp.Platforms.Android.Alerts;
 using CalculatorApp.Platforms.Android.ColorWheel;
 using CalculatorApp.Platforms.Android.Extensions;
-using CalculatorApp.Platforms.Android.HueWheel;
 using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SettingsPage.App;
 using CalculatorApp.SettingsPage.Appearance;
@@ -37,6 +36,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<SystemScheme>()
             .AddSingleton<ClearHistoryDialog>()
             .AddSingleton<ColorWheelDialog>()
+            .AddSingleton<ExceptionLogDialog>()
             .AddSingleton<CustomModelStorage>()
             .AddSingleton<AppearanceSchemeStorage>()
             .AddSingleton<IPreferences>(sp =>

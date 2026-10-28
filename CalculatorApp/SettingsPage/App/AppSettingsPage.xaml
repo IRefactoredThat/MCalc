@@ -8,12 +8,10 @@
     xmlns:openExternalApp="clr-namespace:CalculatorApp.SettingsPage.Types.OpenExternalApp"
     x:Class="CalculatorApp.SettingsPage.App.AppSettingsPage"
     x:DataType="app:AppSettings"
-    Header="App"
-    x:Name="DerivedRoot">
+    Header="App">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <app:ExceptionLog
-                HeightRequest="{Binding Source={x:Reference DerivedRoot}, Path=LayoutHeight, x:DataType='base:SettingsBasePage'}"/>
+            <app:ExceptionLog x:Name="ExceptionLogView"/>
             <openExternalApp:OpenExternalAppSetting
                 CornerRadius="5, 5, 5, 5"
                 Name="Source code"
