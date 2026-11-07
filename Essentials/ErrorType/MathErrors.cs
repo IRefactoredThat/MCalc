@@ -2,7 +2,7 @@
 
 namespace Essentials.ErrorType;
 /// <summary>
-/// Represents a math error. Occurs when applying <see cref="Operator"/> to operand 
+/// Represents a math error. Occurs when applying <see cref="Operator"/> to operand
 /// resulted in an overflow.
 /// </summary>
 /// <param name="Operator"></param>
@@ -13,3 +13,7 @@ public record NumberOverflow(OperatorToken Operator) : Error($"Overflow after {O
 /// </summary>
 /// <param name="Operator"></param>
 public record InvalidOperation(OperatorToken Operator) : Error($"Invalid argument for {Operator.Value}.");
+/// <summary>
+/// Represents a math error. Occurs when trying to divide by zero.
+/// </summary>
+public record ZeroDivision() : Error("Division by zero not allowed.");
