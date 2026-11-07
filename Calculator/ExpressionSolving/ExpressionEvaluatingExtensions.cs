@@ -1,7 +1,7 @@
-﻿using Calculator.Operands;
-using Calculator.Operators;
+﻿using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
@@ -20,10 +20,9 @@ public static class ExpressionEvaluatingExtensions
     /// A <see cref="Result{T}"/> of type <see cref="double"/> either
     /// representing the rounded computed result, or an <see cref="Error"/> object.
     /// </returns>
-    public static Result<double> EvaluateAndRound(Expression expression) =>
+    public static Result<Number> EvaluateAndRound(Expression expression) =>
         expression.MatchAllParentheses().SubstituteAllParentheses()
-            .Map(simplifiedExpression => simplifiedExpression.EvaluateAllOperators()).Map(operand =>
-            operand.SmartRound().ToResult());
+            .Map(simplifiedExpression => simplifiedExpression.EvaluateAllOperators());
 
     /// <summary>
     /// Evaluates all operators inside the <paramref name="expression"/> with no
@@ -31,8 +30,8 @@ public static class ExpressionEvaluatingExtensions
     /// </summary>
     /// <param name="expression">The <see cref="Expression"/> to evaluate.</param>
     /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either
-    /// representing an <see cref="IOperand"/> with an <see cref="IOperand.Value"/>
+    /// A <see cref="Result{T}"/> of type <see cref="Number"/> either
+    /// representing an <see cref="Number"/> with an <see cref="Number.Value"/>
     /// property set to the computed result, or an <see cref="Error"/>
     /// from evaluating one of the expression operators
     /// </returns>
@@ -43,7 +42,7 @@ public static class ExpressionEvaluatingExtensions
     /// before invoking this method or make sure there are no parentheses in
     /// <paramref name="expression"/>.
     /// </remarks>
-    public static Result<IOperand> EvaluateAllOperators(this Expression expression) =>
+    public static Result<Number> EvaluateAllOperators(this Expression expression) =>
         expression
                 .EvaluateRightSideUnaryOperators()
                 .Map(simplifiedExpression => simplifiedExpression
@@ -55,7 +54,7 @@ public static class ExpressionEvaluatingExtensions
                 .Map(simplifiedExpression => simplifiedExpression.EvaluateLeftAssociateBinaryOperators
                     <AdditionOperator, SubtractionOperator>())
                 .Map(value => value.Parts is
-                    [IOperand operand]
+                    [Number operand]
                     ? operand.ToResult()
                     : new ExpressionNotEvaluated());
 }

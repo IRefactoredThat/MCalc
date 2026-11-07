@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using CalculatorApp.SettingsPage.Formatting;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace CalculatorApp.CalculatorPage.Output;
@@ -32,7 +33,7 @@ public class CalculatorOutputViewModel : INotifyPropertyChanged
         }
     }
 
-    public void Update(Result<double> newResult)
+    public void Update(Result<Number> newResult)
     {
         _calculation.Result = newResult;
         Output = newResult.ValueOrDefault(_formattingSettings.Format, string.Empty);

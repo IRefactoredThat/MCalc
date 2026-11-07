@@ -58,21 +58,6 @@ public interface IBinaryOperator : IOperator;
 public interface IGroupingOperator : IOperator;
 
 /// <summary>
-/// Represents the base for all operands.
-/// </summary>
-public interface IOperand : IExpressionPart
-{
-    /// <summary>
-    /// Value of this operand.
-    /// </summary>
-    public double Value { get; }
-}
-/// <summary>
-/// Represent the base for all constants.
-/// </summary>
-public interface IConstant : IOperand;
-
-/// <summary>
 /// Represents a non-existent <see cref="IExpressionPart"/>.
 /// </summary>
 public readonly record struct EmptyPart : IExpressionPart;

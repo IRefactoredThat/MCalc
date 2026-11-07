@@ -43,18 +43,18 @@ public partial class NumberPreview
         set => SetValue(FractionalPartLengthProperty, value);
     }
 
-    public static readonly BindableProperty MaxLengthProperty =
+    public static readonly BindableProperty WholeLengthProperty =
         BindableProperty.Create(
-            nameof(MaxLength),
+            nameof(WholePartLength),
             typeof(int),
             typeof(NumberPreview),
             defaultBindingMode: BindingMode.TwoWay,
             propertyChanged: OnMaxLengthChanged);
 
-    public int MaxLength
+    public int WholePartLength
     {
-        get => (int)GetValue(MaxLengthProperty);
-        set => SetValue(MaxLengthProperty, value);
+        get => (int)GetValue(WholeLengthProperty);
+        set => SetValue(WholeLengthProperty, value);
     }
 
     public static readonly BindableProperty ENotationExponentThresholdProperty =
@@ -147,24 +147,26 @@ public partial class NumberPreview
 
     private string BuildENotationPreview()
     {
-        if (MaxLength <= 0)
+        var totalLength = WholePartLength + FractionalPartLength;
+        if (totalLength <= 0)
             return string.Empty;
 
         int exponent = Math.Max(0, ENotationExponentThreshold);
 
         if (exponent == 0)
         {
-            return $"1{DecimalSeparator}{new string('1', MaxLength)}";
+            return $"1{DecimalSeparator}{new string('1', totalLength)}";
         }
 
-        int decimalDigits = Math.Max(1, MaxLength - exponent);
+        int decimalDigits = Math.Max(1, totalLength - exponent);
         string mantissa = $"1{DecimalSeparator}{new string('1', decimalDigits)}";
         return $"{mantissa}E-{exponent}";
     }
 
     private string BuildDecimalPreview()
     {
-        if (MaxLength <= 0)
+        var totalLength = WholePartLength + FractionalPartLength;
+        if (totalLength <= 0)
         {
             return string.Empty;
         }
@@ -172,24 +174,22 @@ public partial class NumberPreview
         var fractionalLength = Math.Clamp(
             FractionalPartLength,
             0,
-            MaxLength - 1);
-
-        var integerLength = MaxLength - fractionalLength;
+            totalLength - 1);
 
         var thousandSeparatorCount = ThousandSeparator == '\0'
             ? 0
-            : (integerLength - 1) / 3;
+            : (WholePartLength - 1) / 3;
 
         var decimalSeparatorCount = fractionalLength > 0 ? 1 : 0;
 
         var resultLength =
-            MaxLength +
+            totalLength +
             thousandSeparatorCount +
             decimalSeparatorCount;
 
         return string.Create(
             resultLength,
-            (integerLength, fractionalLength, DecimalSeparator, ThousandSeparator),
+            (WholePartLength, fractionalLength, DecimalSeparator, ThousandSeparator),
             static (span, state) =>
             {
                 var (integerLength, fractionalLength, decimalSeparator, thousandSeparator) = state;

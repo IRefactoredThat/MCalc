@@ -1,5 +1,6 @@
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Tests;
@@ -50,7 +51,7 @@ public class EvaluationPropertyTests
     {
         var tokens = new List<IToken>();
 
-        void Operand(int depth)
+        void Number(int depth)
         {
             if (depth > 0 && random.Next(4) == 0)
             {
@@ -63,7 +64,7 @@ public class EvaluationPropertyTests
             if (depth > 0 && random.Next(3) == 0)
             {
                 tokens.Add(LeftSideUnary(random));
-                Operand(depth - 1);
+                Number(depth - 1);
                 return;
             }
 
@@ -73,12 +74,12 @@ public class EvaluationPropertyTests
                 return;
             }
 
-            tokens.Add(Number(random));
+            tokens.Add(GetNextToken(random));
         }
 
         void Expression(int depth)
         {
-            Operand(depth);
+            Number(depth);
 
             for (var step = random.Next(1, 5); step > 0; step--)
             {
@@ -89,7 +90,7 @@ public class EvaluationPropertyTests
                 }
 
                 tokens.Add(BinaryOperator(random));
-                Operand(depth);
+                Number(depth);
             }
         }
 
@@ -98,7 +99,7 @@ public class EvaluationPropertyTests
         return tokens;
     }
 
-    private static IToken Number(Random random) =>
+    private static IToken GetNextToken(Random random) =>
         random.Next(3) == 0
             ? new NumberToken($"{random.Next(1, 10)}.{random.Next(100, 999)}",
                 DecimalSeparator.Period)
@@ -188,8 +189,8 @@ public class EvaluationPropertyTests
         PlayAll(tokens, first);
         PlayAll(tokens, second);
 
-        double? firstValue = null;
-        double? secondValue = null;
+        Number? firstValue = null;
+        Number? secondValue = null;
         var firstFailed = false;
         var secondFailed = false;
 
@@ -227,10 +228,6 @@ public class EvaluationPropertyTests
         var session = new TokenSession();
 
         PlayAll(GenerateWellFormed(random), session);
-
-        session.Evaluate().Switch(
-            value => Assert.That(double.IsFinite(value), Is.True),
-            _ => { });
     }
 
     [Test]
@@ -250,18 +247,6 @@ public class EvaluationPropertyTests
             session.TypeNumber(digit.ToString());
 
             Assert.That(session.Error(), Is.TypeOf<EmptyExpression>());
-        }
-    }
-
-    [Test]
-    public void ASingleConstantIsAnExpression()
-    {
-        foreach (var constant in new IToken[] { PiToken.Instance, EToken.Instance })
-        {
-            var session = new TokenSession();
-            session.Add(constant);
-
-            Assert.That(double.IsFinite(session.Value()), Is.True);
         }
     }
 

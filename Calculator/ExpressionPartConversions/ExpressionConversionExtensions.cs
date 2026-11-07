@@ -10,23 +10,10 @@ namespace Calculator.ExpressionPartConversions;
 internal static class ExpressionPartConversionExtensions
 {
     /// <summary>
-    /// Wraps an <see cref="IExpressionPart"/> around an
-    /// <see cref="ImplicitMultiplicationOperator"/>.
-    /// </summary>
-    /// <param name="part">A part to transform.</param>
-    /// <returns>
-    /// A new instance of <see cref="ImplicitMultiplicationOperator"/>
-    /// with <see cref="ImplicitMultiplicationOperator.InnerPart"/> set
-    /// to <paramref name="part"/>.
-    /// </returns>
-    public static IExpressionPart WrapForImplicitMultiplication
-        (this IExpressionPart part) => new ImplicitMultiplicationOperator(part);
-
-    /// <summary>
-    /// Converts a given <see cref="IBinaryOperator"/> to a <see cref="string"/>.
+    /// Converts a given <see cref="IBinaryOperator"/> to an <see cref="OperatorToken"/>.
     /// </summary>
     /// <param name="binaryOperator">The binary operator to convert.</param>
-    /// <returns>A <see cref="string"/> representing equivalent token.</returns>
+    /// <returns>An <see cref="OperatorToken"/> representing the operator.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Binary operator not defined.</exception>
     public static OperatorToken ToToken(this IBinaryOperator binaryOperator) =>
         binaryOperator switch
@@ -39,6 +26,33 @@ internal static class ExpressionPartConversionExtensions
             ModuloOperator => PercentToken.Instance,
             _ => throw new ArgumentOutOfRangeException(nameof(binaryOperator), binaryOperator, null)
         };
+
+    /// <summary>
+    /// Converts a given <see cref="IUnaryOperator"/> to an <see cref="OperatorToken"/>.
+    /// </summary>
+    /// <param name="unaryOperator">The unary operator to convert.</param>
+    /// <returns>An <see cref="OperatorToken"/> representing the operator.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Unary operator not defined.</exception>
+    public static OperatorToken ToToken(this IUnaryOperator unaryOperator) =>
+        unaryOperator switch
+        {
+            ILeftSideUnaryOperator leftSideUnaryOperator => leftSideUnaryOperator.ToToken(),
+            IRightSideUnaryOperator rightSideUnaryOperator => rightSideUnaryOperator.ToToken(),
+            _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, null)
+        };
+
+    /// <summary>
+    /// Wraps an <see cref="IExpressionPart"/> around an
+    /// <see cref="ImplicitMultiplicationOperator"/>.
+    /// </summary>
+    /// <param name="part">A part to transform.</param>
+    /// <returns>
+    /// A new instance of <see cref="ImplicitMultiplicationOperator"/>
+    /// with <see cref="ImplicitMultiplicationOperator.InnerPart"/> set
+    /// to <paramref name="part"/>.
+    /// </returns>
+    public static IExpressionPart WrapForImplicitMultiplication
+        (this IExpressionPart part) => new ImplicitMultiplicationOperator(part);
 
     /// <summary>
     /// Converts a given <see cref="ILeftSideUnaryOperator"/> to a <see cref="string"/>.
@@ -95,20 +109,6 @@ internal static class ExpressionPartConversionExtensions
         unaryOperator switch
         {
             FactorialOperator => ExclamationMarkToken.Instance,
-            _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, null)
-        };
-
-    /// <summary>
-    /// Maps a given <see cref="IUnaryOperator"/> to a <see cref="string"/>
-    /// </summary>
-    /// <param name="unaryOperator">The unary operator to convert.</param>
-    /// <returns>A <see cref="StreamReader"/> representing equivalent token.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Unary operator not defined.</exception>
-    public static OperatorToken ToToken(this IUnaryOperator unaryOperator) =>
-        unaryOperator switch
-        {
-            ILeftSideUnaryOperator leftSideUnaryOperator => leftSideUnaryOperator.ToToken(),
-            IRightSideUnaryOperator rightSideUnaryOperator => rightSideUnaryOperator.ToToken(),
             _ => throw new ArgumentOutOfRangeException(nameof(unaryOperator), unaryOperator, null)
         };
 }

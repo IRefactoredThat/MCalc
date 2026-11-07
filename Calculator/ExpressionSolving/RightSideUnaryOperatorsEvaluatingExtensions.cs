@@ -2,6 +2,7 @@
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
@@ -21,7 +22,7 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
     /// A <see cref="Result{T}"/> of type <see cref="Expression"/> formed by
     /// evaluating <see cref="IRightSideUnaryOperator"/> instances in the
     /// <paramref name="expression"/> or one <see cref="Error"/> from
-    /// <see cref="UnaryOperatorsExtensions.Apply(IUnaryOperator, IOperand, AngleMode)"/>
+    /// <see cref="UnaryOperatorsExtensions.Apply(IUnaryOperator, Number, AngleMode)"/>
     /// method.
     /// </returns>
     public static Result<Expression> EvaluateRightSideUnaryOperators(this Expression expression)
@@ -42,15 +43,15 @@ internal static class RightSideUnaryOperatorsEvaluatingExtensions
                 return new InvalidRightSideUnaryOperatorUse(unaryOperator.ToToken());
             }
 
-            var computedOperand = newExpression.Parts[^1] switch
+            var computedNumber = newExpression.Parts[^1] switch
             {
                 Expression innerExpression => innerExpression.EvaluateAllOperators()
                     .Map(operand => unaryOperator.Apply(operand, innerExpression.Mode)),
-                IOperand operand => unaryOperator.Apply(operand, expression.Mode),
+                Number operand => unaryOperator.Apply(operand, expression.Mode),
                 _ => new InvalidRightSideUnaryOperatorUse(unaryOperator.ToToken())
             };
 
-            result = result.Map(current => computedOperand.Map(value =>
+            result = result.Map(current => computedNumber.Map(value =>
             {
                 current.RemovePart(current.Parts.Count - 1).AddPart(value);
                 return current.ToResult();

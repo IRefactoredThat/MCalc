@@ -1,7 +1,8 @@
-using Calculator.Operands;
+using System.Globalization;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Tests;
@@ -70,7 +71,11 @@ public class ExpressionParsingTests
             .Select(entry => new TestCaseData(entry.Token)
                 .SetName($"{{m}}(Operator:{entry.Token.Value})"));
 
-    private NumberToken Number(string value) => _session.Number(value);
+    private NumberToken NumberPart(string value) => _session.Number(value);
+
+    private static Number Double(double value) =>
+        Number.Parse(value.ToString("R", CultureInfo.InvariantCulture),
+            CultureInfo.InvariantCulture);
 
     private void TypeNumber(string digits) => _session.TypeNumber(digits);
 
@@ -124,7 +129,7 @@ public class ExpressionParsingTests
     public void SingleDecimalNumberIsNotAnExpression()
     {
         TypeNumber("15");
-        Add(Number("."));
+        Add(NumberPart("."));
         TypeNumber("5");
 
         Assert.That(Error(), Is.TypeOf<EmptyExpression>());
@@ -135,7 +140,7 @@ public class ExpressionParsingTests
     {
         Add(PiToken.Instance);
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new PiConstant()]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([Number.Pi]));
     }
 
     [Test]
@@ -143,7 +148,7 @@ public class ExpressionParsingTests
     {
         Add(EToken.Instance);
 
-        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([new EConstant()]));
+        Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>([Number.E]));
     }
 
     [Test]
@@ -171,12 +176,12 @@ public class ExpressionParsingTests
     {
         _session.DecimalSeparator = decimalSeparator;
         _session.Info.NumberDecimalSeparator = ((char)decimalSeparator).ToString();
-        Paste([Number(value)]);
+        Paste([NumberPart(value)]);
         Add(PlusToken.Instance);
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(expected), new AdditionOperator(), new Number(2)]));
+            [Double(expected), new AdditionOperator(), Number.CreateUnsafe(2)]));
     }
 
     [Test]
@@ -187,11 +192,11 @@ public class ExpressionParsingTests
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new AdditionOperator(), new Number(2)]));
+            [Number.CreateUnsafe(1), new AdditionOperator(), Number.CreateUnsafe(2)]));
     }
 
     [TestCaseSource(nameof(BinaryOperatorCases))]
-    public void BinaryOperatorBetweenOperandsBecomesItsOwnPart(
+    public void BinaryOperatorBetweenNumbersBecomesItsOwnPart(
         OperatorToken op, Type part)
     {
         TypeNumber("12");
@@ -199,31 +204,31 @@ public class ExpressionParsingTests
         TypeNumber("34");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(12), Part(part), new Number(34)]));
+            [Number.CreateUnsafe(12), Part(part), Number.CreateUnsafe(34)]));
     }
 
     [Test]
     public void DecimalNumberBecomesNumberPartWithParsedValue()
     {
         TypeNumber("1");
-        Add(Number("."));
+        Add(NumberPart("."));
         TypeNumber("5");
         Add(PlusToken.Instance);
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1.5), new AdditionOperator(), new Number(2)]));
+            [Double(1.5), new AdditionOperator(), Number.CreateUnsafe(2)]));
     }
 
     [Test]
     public void ExponentNotationIsParsedToItsValue()
     {
-        Paste([Number("1E+5")]);
+        Paste([NumberPart("1E+5")]);
         Add(PlusToken.Instance);
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(100000), new AdditionOperator(), new Number(1)]));
+            [Number.CreateUnsafe(100000), new AdditionOperator(), Number.CreateUnsafe(1)]));
     }
 
     [Test]
@@ -234,13 +239,13 @@ public class ExpressionParsingTests
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(12), new AdditionOperator(), new Number(1)]));
+            [Number.CreateUnsafe(12), new AdditionOperator(), Number.CreateUnsafe(1)]));
     }
 
     [Test]
     public void ExponentOverflowIsRejectedAsUnparsableNumber()
     {
-        Paste([Number("1E+400")]);
+        Paste([NumberPart($"1E+{Number.MaxWholeDigits + 1}")]);
         Add(PlusToken.Instance);
         TypeNumber("1");
 
@@ -250,7 +255,7 @@ public class ExpressionParsingTests
     [Test]
     public void NumberTooLongForDoubleIsRejectedAsUnparsableNumber()
     {
-        Paste([Number("1.2.3")]);
+        Paste([NumberPart("1.2.3")]);
         Add(PlusToken.Instance);
         TypeNumber("1");
 
@@ -260,7 +265,7 @@ public class ExpressionParsingTests
     [Test]
     public void DecimalSeparatorWithoutDigitsIsRejectedAsUnparsableNumber()
     {
-        Add(Number("."));
+        Add(NumberPart("."));
         Add(PlusToken.Instance);
         TypeNumber("1");
 
@@ -271,12 +276,12 @@ public class ExpressionParsingTests
     public void TrailingDecimalSeparatorIsAcceptedAsWholeNumber()
     {
         TypeNumber("5");
-        Add(Number("."));
+        Add(NumberPart("."));
         Add(PlusToken.Instance);
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(5), new AdditionOperator(), new Number(1)]));
+            [Number.CreateUnsafe(5), new AdditionOperator(), Number.CreateUnsafe(1)]));
     }
 
     [TestCaseSource(nameof(BinaryOperatorCases))]
@@ -330,18 +335,18 @@ public class ExpressionParsingTests
     }
 
     [TestCaseSource(nameof(LeftSideUnaryOperatorCases))]
-    public void LeftSideUnaryOperatorBeforeOperandBecomesItsOwnPart(
+    public void LeftSideUnaryOperatorBeforeNumberBecomesItsOwnPart(
         OperatorToken op, Type part)
     {
         Add(op);
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [Part(part), new Number(2)]));
+            [Part(part), Number.CreateUnsafe(2)]));
     }
 
     [TestCaseSource(nameof(LeftSideUnaryOperatorCases))]
-    public void LeftSideUnaryOperatorAfterOperandBecomesExplicitMultiplication(
+    public void LeftSideUnaryOperatorAfterNumberBecomesExplicitMultiplication(
         OperatorToken op, Type part)
     {
         TypeNumber("2");
@@ -349,7 +354,7 @@ public class ExpressionParsingTests
         TypeNumber("3");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), Part(part), new Number(3)]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), Part(part), Number.CreateUnsafe(3)]));
     }
 
     [TestCaseSource(nameof(MultiplicativeOperators))]
@@ -395,9 +400,9 @@ public class ExpressionParsingTests
         TypeNumber("4");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new AdditionOperator(), new GroupingStartOperator(), new Number(2),
-                new AdditionOperator(), new Number(3), new GroupingEndOperator(),
-                new MultiplicationOperator(), new Number(4)]));
+            [Number.CreateUnsafe(1), new AdditionOperator(), new GroupingStartOperator(), Number.CreateUnsafe(2),
+                new AdditionOperator(), Number.CreateUnsafe(3), new GroupingEndOperator(),
+                new MultiplicationOperator(), Number.CreateUnsafe(4)]));
     }
 
     [Test]
@@ -410,12 +415,12 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new GroupingStartOperator(), new GroupingStartOperator(), new Number(1),
+            [new GroupingStartOperator(), new GroupingStartOperator(), Number.CreateUnsafe(1),
                 new GroupingEndOperator(), new GroupingEndOperator()]));
     }
 
     [Test]
-    public void OpenBracketAfterOperandBecomesExplicitMultiplication()
+    public void OpenBracketAfterNumberBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(OpenBracketToken.Instance);
@@ -423,19 +428,19 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new GroupingStartOperator(), new Number(3),
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), new GroupingStartOperator(), Number.CreateUnsafe(3),
                 new GroupingEndOperator()]));
     }
 
     [Test]
-    public void OperandAfterClosedBracketBecomesExplicitMultiplication()
+    public void NumberAfterClosedBracketBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(ClosedBracketToken.Instance);
         TypeNumber("3");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new GroupingEndOperator(), new MultiplicationOperator(), new Number(3)]));
+            [Number.CreateUnsafe(2), new GroupingEndOperator(), new MultiplicationOperator(), Number.CreateUnsafe(3)]));
     }
 
     [Test]
@@ -501,7 +506,7 @@ public class ExpressionParsingTests
     }
 
     [Test]
-    public void GroupingAfterImplicitlyMultipliedOperandBecomesExplicitMultiplication()
+    public void GroupingAfterImplicitlyMultipliedNumberBecomesExplicitMultiplication()
     {
         Add(ClosedBracketToken.Instance);
         TypeNumber("2");
@@ -510,8 +515,8 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new GroupingEndOperator(), new MultiplicationOperator(), new Number(2),
-                new MultiplicationOperator(), new GroupingStartOperator(), new Number(3),
+            [new GroupingEndOperator(), new MultiplicationOperator(), Number.CreateUnsafe(2),
+                new MultiplicationOperator(), new GroupingStartOperator(), Number.CreateUnsafe(3),
                 new GroupingEndOperator()]));
     }
 
@@ -525,8 +530,8 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new SineOperator(),
-                new GroupingStartOperator(), new Number(3), new GroupingEndOperator()]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), new SineOperator(),
+                new GroupingStartOperator(), Number.CreateUnsafe(3), new GroupingEndOperator()]));
     }
 
     [Test]
@@ -538,7 +543,7 @@ public class ExpressionParsingTests
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(1), new AdditionOperator(), new GroupingStartOperator(), new Number(2)]));
+            [Number.CreateUnsafe(1), new AdditionOperator(), new GroupingStartOperator(), Number.CreateUnsafe(2)]));
     }
 
     [Test]
@@ -550,18 +555,18 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new Number(3),
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), Number.CreateUnsafe(3),
                 new GroupingEndOperator()]));
     }
 
     [Test]
-    public void FactorialAfterOperandBecomesItsOwnPart()
+    public void FactorialAfterNumberBecomesItsOwnPart()
     {
         TypeNumber("2");
         Add(ExclamationMarkToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new FactorialOperator()]));
+            [Number.CreateUnsafe(2), new FactorialOperator()]));
     }
 
     [Test]
@@ -572,7 +577,7 @@ public class ExpressionParsingTests
         Add(ExclamationMarkToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new FactorialOperator(), new FactorialOperator()]));
+            [Number.CreateUnsafe(2), new FactorialOperator(), new FactorialOperator()]));
     }
 
     [Test]
@@ -584,7 +589,7 @@ public class ExpressionParsingTests
         Add(ExclamationMarkToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new GroupingStartOperator(), new Number(2), new GroupingEndOperator(),
+            [new GroupingStartOperator(), Number.CreateUnsafe(2), new GroupingEndOperator(),
                 new FactorialOperator()]));
     }
 
@@ -598,8 +603,8 @@ public class ExpressionParsingTests
         Add(ClosedBracketToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new FactorialOperator(), new MultiplicationOperator(),
-                new GroupingStartOperator(), new Number(3), new GroupingEndOperator()]));
+            [Number.CreateUnsafe(2), new FactorialOperator(), new MultiplicationOperator(),
+                new GroupingStartOperator(), Number.CreateUnsafe(3), new GroupingEndOperator()]));
     }
 
     [Test]
@@ -610,7 +615,7 @@ public class ExpressionParsingTests
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new FactorialOperator(), new MultiplicationOperator(), new Number(1)]));
+            [new FactorialOperator(), new MultiplicationOperator(), Number.CreateUnsafe(1)]));
     }
 
     [Test]
@@ -621,38 +626,38 @@ public class ExpressionParsingTests
         Add(ExclamationMarkToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new FactorialOperator()]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), new FactorialOperator()]));
     }
 
     [Test]
-    public void OperandAfterFactorialIsKeptWithoutMultiplication()
+    public void NumberAfterFactorialIsKeptWithoutMultiplication()
     {
         TypeNumber("2");
         Add(ExclamationMarkToken.Instance);
         TypeNumber("3");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new FactorialOperator(), new Number(3)]));
+            [Number.CreateUnsafe(2), new FactorialOperator(), Number.CreateUnsafe(3)]));
     }
 
     [Test]
-    public void ConstantAfterOperandBecomesExplicitMultiplication()
+    public void ConstantAfterNumberBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(PiToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new PiConstant()]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), Number.Pi]));
     }
 
     [Test]
-    public void ConstantBeforeOperandBecomesExplicitMultiplication()
+    public void ConstantBeforeNumberBecomesExplicitMultiplication()
     {
         Add(PiToken.Instance);
         TypeNumber("2");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new PiConstant(), new MultiplicationOperator(), new Number(2)]));
+            [Number.Pi, new MultiplicationOperator(), Number.CreateUnsafe(2)]));
     }
 
     [Test]
@@ -662,19 +667,19 @@ public class ExpressionParsingTests
         Add(PiToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new PiConstant(), new MultiplicationOperator(), new PiConstant()]));
+            [Number.Pi, new MultiplicationOperator(), Number.Pi]));
     }
 
     [Test]
-    public void OperandChainAroundConstantBecomesExplicitMultiplication()
+    public void NumberChainAroundConstantBecomesExplicitMultiplication()
     {
         TypeNumber("2");
         Add(PiToken.Instance);
         TypeNumber("3");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new PiConstant(),
-                new MultiplicationOperator(), new Number(3)]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), Number.Pi,
+                new MultiplicationOperator(), Number.CreateUnsafe(3)]));
     }
 
     [Test]
@@ -687,9 +692,9 @@ public class ExpressionParsingTests
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(3), new MultiplicationOperator(), new EConstant(),
-                new MultiplicationOperator(), new EConstant(),
-                new AdditionOperator(), new Number(1)]));
+            [Number.CreateUnsafe(3), new MultiplicationOperator(), Number.E,
+                new MultiplicationOperator(), Number.E,
+                new AdditionOperator(), Number.CreateUnsafe(1)]));
     }
 
     [Test]
@@ -700,7 +705,7 @@ public class ExpressionParsingTests
         Add(PiToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new PiConstant(), new AdditionOperator(), new PiConstant()]));
+            [Number.Pi, new AdditionOperator(), Number.Pi]));
     }
 
     [Test]
@@ -711,7 +716,7 @@ public class ExpressionParsingTests
         Add(PiToken.Instance);
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new MultiplicationOperator(), new PiConstant()]));
+            [Number.CreateUnsafe(2), new MultiplicationOperator(), Number.Pi]));
     }
 
     [Test]
@@ -723,7 +728,7 @@ public class ExpressionParsingTests
         TypeNumber("1");
 
         Assert.That(Parts(), Is.EqualTo<IExpressionPart[]>(
-            [new Number(2), new SubtractionOperator(), new SineOperator(), new Number(1)]));
+            [Number.CreateUnsafe(2), new SubtractionOperator(), new SineOperator(), Number.CreateUnsafe(1)]));
     }
 
     [Test]
@@ -741,7 +746,7 @@ public class ExpressionParsingTests
         {
             Assert.That(expression!.Mode, Is.EqualTo(AngleMode.DEG));
             Assert.That(expression.Parts, Is.EqualTo<IExpressionPart[]>(
-                [new Number(1), new AdditionOperator(), new Number(2)]));
+                [Number.CreateUnsafe(1), new AdditionOperator(), Number.CreateUnsafe(2)]));
         }
     }
 }

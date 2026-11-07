@@ -1,7 +1,7 @@
 ﻿using Calculator.ExpressionPartConversions;
-using Calculator.Operands;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.Operators;
@@ -12,64 +12,68 @@ namespace Calculator.Operators;
 internal static class BinaryOperatorsExtensions
 {
     /// <summary>
-    /// Applies <paramref name="binaryOperator"/> to the <paramref name="leftOperand"/>
-    /// and <paramref name="rightOperand"/>.
+    /// Applies <paramref name="binaryOperator"/> to the <paramref name="left"/>
+    /// and <paramref name="right"/>.
     /// </summary>
     /// <param name="binaryOperator">The <see cref="IBinaryOperator"/> applied.</param>
-    /// <param name="leftOperand">The left <see cref="IOperand"/>.</param>
-    /// <param name="rightOperand">The right <see cref="IOperand"/>.</param>
+    /// <param name="left">The left <see cref="Number"/>.</param>
+    /// <param name="right">The right <see cref="Number"/>.</param>
     /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> either representing
-    /// a new <see cref="IOperand"/> instance with <see cref="IOperand.Value"/> set to
-    /// the computed result of the operation, or one <see cref="Error"/> listed here:
-    /// <see cref="NumberOverflow"/> |
-    /// <see cref="InvalidOperation"/> |
-    /// <see cref="UndefinedOperation"/>.
+    /// A <see cref="Result{T}"/> of type <see cref="Number"/> either representing
+    /// a new <see cref="Number"/> with result of the operation, or one <see cref="Error"/> listed here:
+    /// <see cref="NumberOverflow"/> | <see cref="InvalidOperation"/> | <see cref="UndefinedOperation"/>.
     /// </returns>
-    public static Result<IOperand> Apply(this IBinaryOperator binaryOperator,
-        IOperand leftOperand, IOperand rightOperand)
+    public static Result<Number> Apply(this IBinaryOperator binaryOperator, Number left, Number right)
     {
-        var result = binaryOperator switch
+        var token = binaryOperator.ToToken();
+
+        try
         {
-            AdditionOperator =>
-                new Number(leftOperand.Value + rightOperand.Value),
-
-            SubtractionOperator =>
-                new Number(leftOperand.Value - rightOperand.Value),
-
-            MultiplicationOperator =>
-                new Number(leftOperand.Value * rightOperand.Value),
-
-            DivisionOperator when rightOperand.Value == 0 =>
-                new InvalidOperation(DivToken.Instance),
-            DivisionOperator =>
-                new Number(leftOperand.Value / rightOperand.Value),
-
-            ExponentiationOperator when leftOperand.Value == 0 &&
-                rightOperand.Value < 0 => new InvalidOperation(CaretToken.Instance),
-            ExponentiationOperator => new Number(
-                double.Pow(leftOperand.Value, rightOperand.Value)),
-
-            ModuloOperator => leftOperand.Modulo(rightOperand).ToResult(),
-
-            _ => new UndefinedOperation(binaryOperator),
-        };
-
-
-        return result.Map(operand =>
-        {
-            if (double.IsNegativeInfinity(operand.Value) || double.IsPositiveInfinity(operand.Value))
+            if (binaryOperator is DivisionOperator && right.IsZero())
             {
-                return new NumberOverflow(binaryOperator.ToToken());
+                return new InvalidOperation(token);
             }
 
-            if (double.IsNaN(operand.Value))
+            if (binaryOperator is ModuloOperator && right.IsZero())
             {
-                return new InvalidOperation(binaryOperator.ToToken());
+                return left;
             }
 
-            return operand.ToResult();
-        });
+            return Normalize(binaryOperator switch
+            {
+                AdditionOperator => left.AddTo(right),
+                SubtractionOperator => left.SubtractFrom(right),
+                MultiplicationOperator => left.MultiplyWith(right),
+                DivisionOperator => left.DivideWith(right),
+                ExponentiationOperator => left.PowWith(right),
+                ModuloOperator => left.ModuloWith(right),
+                _ => new UndefinedOperation(binaryOperator),
+            }, token);
+        }
+        catch (OverflowException)
+        {
+            return new NumberOverflow(token);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return new InvalidOperation(token);
+        }
+        catch (ArithmeticException)
+        {
+            return new InvalidOperation(token);
+        }
+    }
 
+    private static Result<Number> Normalize(Result<Number> result, OperatorToken token)
+    {
+        Result<Number> normalized = new InvalidOperation(token);
+
+        result.Switch(
+            value => normalized = value,
+            error => normalized = error is ZeroDivision
+                ? new InvalidOperation(token)
+                : error);
+
+        return normalized;
     }
 }

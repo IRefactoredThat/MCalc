@@ -1,23 +1,23 @@
 ﻿using System.Globalization;
 using Calculator.ExpressionPartConversions;
-using Calculator.Operands;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionPartsMapping;
 
 /// <summary>
 /// Represents a class containing a method used for mapping a token
-/// to an <see cref="IOperand"/> instance.
+/// to an <see cref="Number"/> instance.
 /// </summary>
-internal static class OperandMappingExtensions
+internal static class NumberMappingExtensions
 {
     /// <summary>
-    /// Maps a <paramref name="token"/> into an <see cref="IOperand"/> instance
+    /// Maps a <paramref name="token"/> into an <see cref="Number"/> instance
     /// or <see cref="ImplicitMultiplicationOperator"/> instance wrapping
-    /// <see cref="IOperand"/> instance
+    /// <see cref="Number"/> instance
     /// based on <see cref="IExpressionPart"/> formed
     /// by previous invocation of <see cref="ExpressionPartsMapping"/> method chain
     /// or returns an <see cref="Error"/> when the mapping was not successful.
@@ -26,33 +26,36 @@ internal static class OperandMappingExtensions
     /// <param name="token">An assumed <see cref="IExpressionPart"/> to map.</param>
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> being
-    /// an <see cref="IOperand"/> instance or <see cref="ImplicitMultiplicationOperator"/> that wraps it.
+    /// an <see cref="Number"/> instance or <see cref="ImplicitMultiplicationOperator"/> that wraps it.
     /// </returns>
-    public static Result<Expression> OperandMappings(
+    public static Result<Expression> NumberMappings(
         Expression expression, NumberFormatInfo info, IToken token)
     {
-        Result<IOperand> operand = token switch
+        Result<Number> operand = token switch
         {
-            PiToken => new PiConstant(),
-            EToken => new EConstant(),
-            NumberToken number => double.TryParse(number.Value,
-                NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent |
-                NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign,
-                info, out var result) && double.IsFinite(result)
-                ? new Number(result) : new NumberFormatError(),
+            PiToken => Number.Pi,
+            EToken => Number.E,
+            NumberToken number => ParseNumber(number.Value, info),
             _ => throw new ArgumentException(
                 $"Invalid argument of type {token.GetType().Name}", nameof(token))
         };
 
-        return operand.Map<IOperand, Expression>(value =>
+        return operand.Map<Number, Expression>(value =>
             expression.Parts[^1] switch
             {
                 GroupingEndOperator => expression.AddPart(
                     value.WrapForImplicitMultiplication()),
                 AdditionOperator or SubtractionOperator when
-                    expression.Parts[^2] is not IOperand => expression.AddPart(
+                    expression.Parts[^2] is not Number => expression.AddPart(
                     value).AddPart(new GroupingEndOperator()),
                 _ => expression.AddPart(value)
             });
     }
+
+    private static Result<Number> ParseNumber(
+        string value, NumberFormatInfo info) =>
+        Number.TryParse(value,
+            NumberStyles.AllowDecimalPoint | NumberStyles.AllowExponent |
+            NumberStyles.AllowThousands | NumberStyles.AllowLeadingSign,
+            info, out var result) ? result : new NumberFormatError();
 }

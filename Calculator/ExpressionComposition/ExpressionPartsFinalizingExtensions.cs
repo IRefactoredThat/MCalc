@@ -1,6 +1,6 @@
-﻿using Calculator.Operands;
-using Calculator.Operators;
+﻿using Calculator.Operators;
 using Essentials.Calculator;
+using Essentials.Numerics;
 
 namespace Calculator.ExpressionComposition;
 
@@ -42,23 +42,23 @@ internal static class ExpressionPartsFinalizingExtensions
     }
 
     /// <summary>
-    /// Expands each <see cref="IOperand"/> chain inside of the <paramref name="expression"/>
+    /// Expands each <see cref="Number"/> chain inside of the <paramref name="expression"/>
     /// by inserting <see cref="MultiplicationOperator"/>s in between
-    /// <see cref="IOperand"/> values.
+    /// <see cref="Number"/> values.
     /// </summary>
     /// <param name="expression">The <see cref="Expression"/> to expand.</param>
     /// <returns>
     /// A new <see cref="Expression"/> containing the parts of the
     /// <paramref name="expression"/> with explicit multiplication chains.
     /// </returns>
-    public static Expression ExpandChainedOperands(this Expression expression)
+    public static Expression ExpandChainedNumbers(this Expression expression)
     {
         var newExpression = Expression.Create(expression.Mode);
 
         foreach (var part in expression.Parts)
         {
-            if (part is IOperand && newExpression.Parts.Count > 0 &&
-                newExpression.Parts[^1] is IOperand)
+            if (part is Number && newExpression.Parts.Count > 0 &&
+                newExpression.Parts[^1] is Number)
             {
                 newExpression.AddPart(new MultiplicationOperator());
             }
@@ -96,7 +96,7 @@ internal static class ExpressionPartsFinalizingExtensions
             {
                 case NegativeValueOperator:
                     newParts.AddPart(new GroupingStartOperator());
-                    newParts.AddPart(new Number(0));
+                    newParts.AddPart(Number.Zero);
                     newParts.AddPart(new SubtractionOperator());
                     groupings.Push(true);
                     index++;
@@ -104,14 +104,15 @@ internal static class ExpressionPartsFinalizingExtensions
 
                 case PositiveValueOperator:
                     newParts.AddPart(new GroupingStartOperator());
-                    newParts.AddPart(new Number(0));
+                    newParts.AddPart(Number.Zero);
                     newParts.AddPart(new AdditionOperator());
                     groupings.Push(true);
                     index++;
                     break;
 
                 case GroupingStartOperator when index + 2 < oldParts.Count
-                    && oldParts[index + 1] is Number { Value: 0 }
+                    && oldParts[index + 1] is Number next
+                    && next.IsZero()
                     && oldParts[index + 2] is AdditionOperator or SubtractionOperator:
                     groupings.Push(true);
                     newParts.AddPart(oldParts[index]);

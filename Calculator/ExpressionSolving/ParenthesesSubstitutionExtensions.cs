@@ -1,6 +1,7 @@
 ﻿using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
@@ -131,7 +132,7 @@ internal static class ParenthesesSubstitutionExtensions
                 // Try to collapse the group to a single operand
                 result = result.Map(current => innerResult.Map(value =>
                 {
-                    current.AddPart(value.Parts is [IOperand operand] ? operand : value);
+                    current.AddPart(value.Parts is [Number operand] ? operand : value);
                     return current.ToResult();
                 }));
                 index = groupingEndIndex + 1;

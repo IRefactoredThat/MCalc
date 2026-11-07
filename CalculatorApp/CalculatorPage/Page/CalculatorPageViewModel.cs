@@ -119,11 +119,12 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
         UpdateOutput();
     }
 
-    private void UpdateOutput()
+    private async void UpdateOutput()
     {
-        OutputViewModel.Update(ExpressionParsingExtensions
+        var result = await Task.Run(() => ExpressionParsingExtensions
             .Parse(_tokens, FormattingSettings.NumberFormatInfo, AngleMode)
             .Map(ExpressionEvaluatingExtensions.EvaluateAndRound));
+        OutputViewModel.Update(result);
     }
 
     private void Evaluate(IInputOutput inputOutput)

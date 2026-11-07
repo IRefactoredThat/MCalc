@@ -1,6 +1,7 @@
 ﻿using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
@@ -22,7 +23,7 @@ internal static class BinaryOperatorEvaluatingExtensions
     /// A new <see cref="Expression"/> object formed by evaluating
     /// <see cref="IBinaryOperator"/> instances in the <paramref name="expression"/>
     /// or one <see cref="Error"/> from
-    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
+    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, Number, Number)"/>
     /// method.
     /// </returns>
     public static Result<Expression> EvaluateLeftAssociateBinaryOperators<T1, T2>
@@ -44,7 +45,7 @@ internal static class BinaryOperatorEvaluatingExtensions
     /// A new <see cref="Expression"/> object formed by evaluating
     /// <see cref="IBinaryOperator"/> instances in the <paramref name="expression"/>
     /// or one <see cref="Error"/> from
-    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
+    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, Number, Number)"/>
     /// method.
     /// </returns>
     public static Result<Expression> EvaluateLeftAssociateBinaryOperators<T1, T2, T3>
@@ -63,7 +64,7 @@ internal static class BinaryOperatorEvaluatingExtensions
     /// A new <see cref="Expression"/> object formed by evaluating
     /// <typeparamref name="T"/> instances in the <paramref name="expression"/> or one
     /// <see cref="Error"/> from the
-    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
+    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, Number, Number)"/>
     /// method.
     /// </returns>
     public static Result<Expression> EvaluateRightAssociativeBinaryOperators<T>
@@ -88,7 +89,7 @@ internal static class BinaryOperatorEvaluatingExtensions
     /// <returns>
     /// A <see cref="Result{T}"/> of type <see cref="Expression"/> representing
     /// either the reduced expression or one <see cref="Error"/> from the
-    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, IOperand, IOperand)"/>
+    /// <see cref="BinaryOperatorsExtensions.Apply(IBinaryOperator, Number, Number)"/>
     /// method.
     /// </returns>
     private static Result<Expression> ReducePortions<T1, T2, T3>(this
@@ -127,24 +128,24 @@ internal static class BinaryOperatorEvaluatingExtensions
 
         while (index < parts.Count)
         {
-            if (parts[index] is not (IOperand or Expression))
+            if (parts[index] is not (Number or Expression))
             {
                 newExpression.AddPart(parts[index]);
                 index++;
                 continue;
             }
 
-            var operand = parts[index].EvaluateOperand();
+            var operand = parts[index].EvaluateNumber();
             index++;
 
             while (index + 1 < parts.Count &&
                 (parts[index] is T1 or T2 or T3) &&
-                (parts[index + 1] is IOperand or Expression))
+                (parts[index + 1] is Number or Expression))
             {
                 var @operator = (IBinaryOperator)parts[index];
-                var right = parts[index + 1].EvaluateOperand();
+                var right = parts[index + 1].EvaluateNumber();
                 operand = operand.Map(left =>
-                    right.Map(rightOperand => @operator.Apply(left, rightOperand)));
+                    right.Map(rightNumber => @operator.Apply(left, rightNumber)));
                 index += 2;
             }
 
@@ -182,24 +183,24 @@ internal static class BinaryOperatorEvaluatingExtensions
 
         while (index >= 0)
         {
-            if (parts[index] is not (IOperand or Expression))
+            if (parts[index] is not (Number or Expression))
             {
                 reversedParts.Add(parts[index]);
                 index--;
                 continue;
             }
 
-            var operand = parts[index].EvaluateOperand();
+            var operand = parts[index].EvaluateNumber();
             index--;
 
             while (index - 1 >= 0 &&
                 (parts[index] is T1 or T2 or T3) &&
-                (parts[index - 1] is IOperand or Expression))
+                (parts[index - 1] is Number or Expression))
             {
                 var @operator = (IBinaryOperator)parts[index];
-                var left = parts[index - 1].EvaluateOperand();
+                var left = parts[index - 1].EvaluateNumber();
                 operand = operand.Map(right =>
-                    left.Map(leftOperand => @operator.Apply(leftOperand, right)));
+                    left.Map(leftNumber => @operator.Apply(leftNumber, right)));
                 index -= 2;
             }
 
@@ -223,19 +224,19 @@ internal static class BinaryOperatorEvaluatingExtensions
     }
 
     /// <summary>
-    /// Evaluates <paramref name="part"/> to an <see cref="IOperand"/> by taking it as
+    /// Evaluates <paramref name="part"/> to an <see cref="Number"/> by taking it as
     /// is if it already is an operand or evaluating it completely if it is an
     /// <see cref="Expression"/>.
     /// </summary>
     /// <param name="part">The part to evaluate.</param>
     /// <returns>
-    /// A <see cref="Result{T}"/> of type <see cref="IOperand"/> representing either
+    /// A <see cref="Result{T}"/> of type <see cref="Number"/> representing either
     /// the evaluated operand or an <see cref="ExpressionNotEvaluated"/> error.
     /// </returns>
-    private static Result<IOperand> EvaluateOperand(this IExpressionPart part) =>
+    private static Result<Number> EvaluateNumber(this IExpressionPart part) =>
         part switch
         {
-            IOperand operand => operand.ToResult(),
+            Number operand => operand.ToResult(),
             Expression expression => expression.EvaluateAllOperators(),
             _ => new ExpressionNotEvaluated()
         };

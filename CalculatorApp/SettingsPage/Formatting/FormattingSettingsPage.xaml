@@ -8,7 +8,7 @@
     xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
     xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
     xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
-    xmlns:expressionParsing="clr-namespace:Calculator.ExpressionParsing;assembly=Calculator"
+    xmlns:numerics="clr-namespace:Essentials.Numerics;assembly=Essentials"
     x:Class="CalculatorApp.SettingsPage.Formatting.FormattingSettingsPage"
     x:DataType="formatting:FormattingSettings"
     Header="Formatting">
@@ -20,12 +20,21 @@
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
             <formatting:NumberPreview
-                CornerRadius="15, 15, 15, 15"
+                CornerRadius="15, 15, 5, 5"
                 DecimalSeparator="{Binding DecimalSeparator}"
                 ThousandSeparator="{Binding ThousandSeparator}"
                 ENotationExponentThreshold="{Binding ENotationExponentThreshold}"
-                FractionalPartLength="{x:Static expressionParsing:Tokens.Precision}"
-                MaxLength="{x:Static expressionParsing:Tokens.MaxTotalDigits}"/>
+                FractionalPartLength="{Binding Precision}"
+                WholePartLength="{x:Static formatting:FormattingSettings.WholePartLength}"/>
+            <stepSlider:StepSliderSetting
+                CornerRadius="5, 5, 15, 15" Name="Precision"
+                Description="How many digits after decimal are calculated"
+                Icon="{x:Static fonts:MaterialSymbols.Precision}"
+                Maximum="{stepSlider:Double {x:Static numerics:Number.MaxPrecision}}"
+                Minimum="{stepSlider:Double {x:Static numerics:Number.MinPrecision}}"
+                ResetValue="{stepSlider:Double {x:Static numerics:Number.DefaultPrecision}}"
+                Value="{Binding Precision, Converter={StaticResource IntToDoubleConverter}}"
+                Step="1"/>
             <Label Style="{StaticResource SettingSubheader}" Text="Separators"/>
             <expandable:ExpandableOptionsSetting
                 CornerRadius="15, 15, 5, 5"

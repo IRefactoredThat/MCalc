@@ -4,6 +4,7 @@ using Calculator.ExpressionParsing;
 using Calculator.ExpressionSolving;
 using Essentials.ErrorType;
 using Essentials.Calculator;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Tests;
@@ -215,12 +216,12 @@ internal sealed class TokenSession
     public string RenderedText() => _tokens.GetTextInfo(_tokens.DisplayPosition, ThousandSeparator,
         DecimalSeparator).Text;
 
-    public Result<double> Evaluate() =>
+    public Result<Number> Evaluate() =>
         Parse().Map(ExpressionEvaluatingExtensions.EvaluateAndRound);
 
-    public double Value()
+    public Number Value()
     {
-        double? value = null;
+        Number? value = null;
         string? failure = null;
 
         Evaluate().Switch(result => value = result, error => failure = error.GetType().Name);

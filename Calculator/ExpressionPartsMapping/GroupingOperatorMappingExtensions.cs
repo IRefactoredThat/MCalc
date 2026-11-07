@@ -3,6 +3,7 @@ using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionPartsMapping;
@@ -44,9 +45,9 @@ internal static class GroupingOperatorMappingExtensions
     public static Result<Expression> MapToProperPart(Expression expression,
         NumberFormatInfo info, IToken token) => (token, expression.Parts[^1]) switch
         {
-            (OpenBracketToken, IOperand or GroupingEndOperator or
+            (OpenBracketToken, Number or GroupingEndOperator or
                 IRightSideUnaryOperator or
-                ImplicitMultiplicationOperator(IOperand))
+                ImplicitMultiplicationOperator(Number))
                 => expression.AddPart(
                     new GroupingStartOperator().WrapForImplicitMultiplication()),
 

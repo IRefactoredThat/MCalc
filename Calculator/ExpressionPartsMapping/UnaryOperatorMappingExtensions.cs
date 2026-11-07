@@ -2,6 +2,7 @@
 using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionPartsMapping;
@@ -75,9 +76,9 @@ internal static class UnaryOperatorMappingExtensions
         };
         return (@operator, expression.Parts[^1]) switch
         {
-            (ILeftSideUnaryOperator unaryOperator, IOperand or GroupingEndOperator or
+            (ILeftSideUnaryOperator unaryOperator, Number or GroupingEndOperator or
                 IRightSideUnaryOperator or
-                ImplicitMultiplicationOperator(IOperand) or
+                ImplicitMultiplicationOperator(Number) or
                 ImplicitMultiplicationOperator(GroupingEndOperator) or
                 ImplicitMultiplicationOperator(IRightSideUnaryOperator)) =>
                 expression.AddPart(unaryOperator.WrapForImplicitMultiplication()),

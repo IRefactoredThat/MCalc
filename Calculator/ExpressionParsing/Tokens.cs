@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Text;
 using Essentials.Calculator;
+using Essentials.Numerics;
 
 namespace Calculator.ExpressionParsing;
 
@@ -8,12 +9,26 @@ public class Tokens : IReadOnlyList<IToken>
 {
     private readonly List<IToken> _tokens = [];
 
-    public const int MaxTotalDigits = 15, Precision = 5;
-
     private int _tokenIndex, _tokenOffset;
     public int DisplayPosition { get; private set; }
 
     public void Clear() => _tokens.Clear();
+
+    private const int MaxTokenHeadroom = 96;
+
+    private static int MaxTokenLength =>
+        Number.MaxWholeDigits + Number.Precision + MaxTokenHeadroom;
+
+    private static int WholeDigitCount(string value, DecimalSeparator separator)
+    {
+        var separatorIndex = value.AsSpan().IndexOfAny((char)separator, 'E');
+
+        return separatorIndex < 0 ? value.Length : separatorIndex;
+    }
+
+    private static bool CanAccept(string value, DecimalSeparator separator) =>
+        WholeDigitCount(value, separator) <= Number.MaxWholeDigits &&
+        value.Length <= MaxTokenLength;
 
     private static int MapNumberDisplayToTokenOffset(int displayOffset, int wholePartLength)
     {
@@ -96,11 +111,13 @@ public class Tokens : IReadOnlyList<IToken>
 
         if (token is NumberToken current && newToken is NumberToken)
         {
-            if (current.Value.Length >= MaxTotalDigits)
+            var newValue = current.Value.Insert(_tokenOffset, newToken.Value);
+
+            if (!CanAccept(newValue, separator))
             {
                 return logicalPosition;
             }
-            var newValue = current.Value.Insert(_tokenOffset, newToken.Value);
+
             _tokens[_tokenIndex] = new NumberToken(newValue, separator);
         }
         else if (token is NumberToken && newToken is OperatorToken)
@@ -134,11 +151,14 @@ public class Tokens : IReadOnlyList<IToken>
                 }
                 else if (_tokens[_tokenIndex - 1] is NumberToken num)
                 {
-                    if (newToken.Value.Length + num.Value.Length >= MaxTotalDigits)
+                    var newValue = num.Value + newToken.Value;
+
+                    if (!CanAccept(newValue, separator))
                     {
                         return logicalPosition;
                     }
-                    _tokens[_tokenIndex - 1] = new NumberToken(num.Value + newToken.Value, separator);
+
+                    _tokens[_tokenIndex - 1] = new NumberToken(newValue, separator);
                 }
                 else if (_tokens[_tokenIndex - 1] is OperatorToken)
                 {
@@ -153,11 +173,14 @@ public class Tokens : IReadOnlyList<IToken>
                 }
                 else if (_tokens[_tokenIndex + 1] is NumberToken num)
                 {
-                    if (newToken.Value.Length + num.Value.Length >= MaxTotalDigits)
+                    var newValue = newToken.Value + num.Value;
+
+                    if (!CanAccept(newValue, separator))
                     {
                         return logicalPosition;
                     }
-                    _tokens[_tokenIndex + 1] = new NumberToken(newToken.Value + num.Value, separator);
+
+                    _tokens[_tokenIndex + 1] = new NumberToken(newValue, separator);
                 }
                 else if (_tokens[_tokenIndex + 1] is OperatorToken)
                 {
@@ -195,11 +218,14 @@ public class Tokens : IReadOnlyList<IToken>
             _tokens[_tokenIndex - 1] is OperatorToken op &&
             _tokens[_tokenIndex - 2] is NumberToken left)
         {
-            if (left.Value.Length + right.Value.Length >= MaxTotalDigits)
+            var newValue = left.Value + right.Value;
+
+            if (!CanAccept(newValue, separator))
             {
                 return logicalPosition;
             }
-            var newNumber = new NumberToken(left.Value + right.Value, separator);
+
+            var newNumber = new NumberToken(newValue, separator);
             _tokens[_tokenIndex - 2] = newNumber;
             _tokens.RemoveRange(_tokenIndex - 1, 2);
             return logicalPosition - op.Value.Length;
@@ -314,12 +340,14 @@ public class Tokens : IReadOnlyList<IToken>
 
         if (sequence.Count == 1 && mergeLeft && mergeRight)
         {
-            if (left!.Value.Length + firstToken!.Value.Length + right!.Value.Length >= MaxTotalDigits)
+            var newValue = left!.Value + firstToken!.Value + right!.Value;
+
+            if (!CanAccept(newValue, separator))
             {
                 return logicalPosition;
             }
 
-            _tokens[_tokenIndex] = new NumberToken(left.Value + firstToken.Value + right.Value, separator);
+            _tokens[_tokenIndex] = new NumberToken(newValue, separator);
             _tokens.RemoveAt(insertIndex);
 
             return logicalPosition + firstToken.Value.Length;
@@ -334,9 +362,10 @@ public class Tokens : IReadOnlyList<IToken>
         {
             for (var i = startIndex; i < startIndex + insertCount; i++)
             {
-                var currentTokenLength = sequence[i].Value.Length;
-                addedLength += sequence[i].Value.Length;
-                if (currentTokenLength >= MaxTotalDigits)
+                var value = sequence[i].Value;
+                addedLength += value.Length;
+
+                if (!CanAccept(value, separator))
                 {
                     return logicalPosition;
                 }
@@ -347,23 +376,27 @@ public class Tokens : IReadOnlyList<IToken>
 
         if (mergeLeft)
         {
-            if (left!.Value.Length + firstToken!.Value.Length >= MaxTotalDigits)
+            var newValue = left!.Value + firstToken!.Value;
+
+            if (!CanAccept(newValue, separator))
             {
                 return logicalPosition;
             }
 
-            _tokens[_tokenIndex] = new NumberToken(left.Value + firstToken.Value, separator);
+            _tokens[_tokenIndex] = new NumberToken(newValue, separator);
             addedLength += firstToken.Value.Length;
         }
 
         if (mergeRight)
         {
-            if (lastToken!.Value.Length + right!.Value.Length >= MaxTotalDigits)
+            var newValue = lastToken!.Value + right!.Value;
+
+            if (!CanAccept(newValue, separator))
             {
                 return logicalPosition;
             }
 
-            _tokens[insertIndex + insertCount] = new NumberToken(lastToken.Value + right.Value, separator);
+            _tokens[insertIndex + insertCount] = new NumberToken(newValue, separator);
             addedLength += lastToken.Value.Length;
         }
 

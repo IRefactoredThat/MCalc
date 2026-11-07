@@ -1,5 +1,6 @@
 ﻿using Calculator.ExpressionParsing;
 using Essentials.Calculator;
+using NumberValue = Essentials.Numerics.Number;
 
 namespace Tests;
 
@@ -185,7 +186,7 @@ public class TokenizationTests
     }
 
     [TestCaseSource(nameof(AllOperators))]
-    public void OperatorBetweenNumbersIsInsertedWithOperandsOnBothSides(OperatorToken op)
+    public void OperatorBetweenNumbersIsInsertedWithNumbersOnBothSides(OperatorToken op)
     {
         var beforeOperator = Add(Number("12"));
         var withOperator = Add(op);
@@ -258,7 +259,7 @@ public class TokenizationTests
     }
 
     [Test]
-    public void OperatorAfterOperatorStartsNegativeOperand()
+    public void OperatorAfterOperatorStartsNegativeNumber()
     {
         TypeNumber("5");
         Add(TimesToken.Instance);
@@ -445,81 +446,104 @@ public class TokenizationTests
     }
 
     [Test]
-    public void DigitIsRejectedWhenNumberAlreadyHasMaxTotalDigits()
+    public void DigitIsRejectedWhenNumberAlreadyHasMaxWholeDigits()
     {
-        TypeNumber("123456789012345");
+        var full = new string('1', NumberValue.MaxWholeDigits);
+        TypeNumber(full);
         Add(PlusToken.Instance);
-        MoveCursorTo(18);
 
         var before = CurrentText;
+        MoveCursorTo(before.Length - 2);
+
         var (text, position) = Add(NumberToken.Four);
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(text, Is.EqualTo(before));
-            Assert.That(position, Is.EqualTo(18));
+            Assert.That(position, Is.EqualTo(before.Length - 2));
             Assert.That(_session, Has.Count.EqualTo(2));
-            Assert.That(_session[0].Value, Is.EqualTo("123456789012345"));
+            Assert.That(_session[0].Value, Is.EqualTo(full));
+        }
+    }
+
+    [Test]
+    public void DecimalPartDoesNotCountTowardMaxWholeDigits()
+    {
+        var whole = new string('1', NumberValue.MaxWholeDigits);
+        TypeNumber(whole);
+        Add(DecimalSeparatorToken());
+        TypeNumber("5");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_session.TokenValues, Is.EqualTo([whole + ".5"]));
+            Assert.That(_session, Has.Count.EqualTo(1));
         }
     }
 
     [Test]
     public void DigitIsRejectedInFrontOfOperatorWhenNumberOnTheLeftIsFull()
     {
-        TypeNumber("123456789012345");
+        var full = new string('1', NumberValue.MaxWholeDigits);
+        TypeNumber(full);
         Add(PlusToken.Instance);
-        MoveCursorTo(19);
+
+        var before = CurrentText;
+        MoveCursorTo(before.Length - 1);
 
         var (text, position) = Add(NumberToken.Four);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(text, Is.EqualTo("123 456 789 012 345+"));
-            Assert.That(position, Is.EqualTo(19));
+            Assert.That(text, Is.EqualTo(before));
+            Assert.That(position, Is.EqualTo(before.Length - 1));
             Assert.That(_session.TokenValues,
-                Is.EqualTo(["123456789012345", "+"]));
+                Is.EqualTo([full, "+"]));
         }
     }
 
     [Test]
     public void DigitIsRejectedInSecondHalfOfOperatorWhenNumberOnTheRightIsFull()
     {
+        var full = new string('1', NumberValue.MaxWholeDigits);
         TypeNumber("12");
         Add(SinToken.Instance);
-        TypeNumber("123456789012345");
+        TypeNumber(full);
+
+        var before = CurrentText;
         MoveCursorTo(4);
 
         var (text, position) = Add(NumberToken.Four);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(text, Is.EqualTo("12sin123 456 789 012 345"));
+            Assert.That(text, Is.EqualTo(before));
             Assert.That(position, Is.EqualTo(5));
             Assert.That(_session.TokenValues,
-                Is.EqualTo(["12", "sin", "123456789012345"]));
+                Is.EqualTo(["12", "sin", full]));
         }
     }
 
     [Test]
-    public void PasteOfNumberWithMaxTotalDigitsIsRejected()
+    public void PasteOfNumberWithMaxWholeDigitsIsAccepted()
     {
+        var full = new string('1', NumberValue.MaxWholeDigits);
         TypeNumber("12");
         Add(PlusToken.Instance);
 
-        var (text, position) = Paste([Number("123456789012345")]);
+        var (text, position) = Paste([Number(full)]);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(text, Is.EqualTo("12+"));
-            Assert.That(position, Is.EqualTo(3));
-            Assert.That(_session.TokenValues, Is.EqualTo(["12", "+"]));
+            Assert.That(position, Is.EqualTo(text.Length));
+            Assert.That(_session.TokenValues, Is.EqualTo(["12", "+", full]));
         }
     }
 
     [Test]
-    public void PasteOfNumberExceedingMaxTotalDigitsIsRejected()
+    public void PasteOfNumberExceedingMaxWholeDigitsIsRejected()
     {
-        var tooLong = Number(new string('9', Tokens.MaxTotalDigits + 1));
+        var tooLong = Number(new string('9', NumberValue.MaxWholeDigits + 1));
 
         var (text, position) = Paste([tooLong]);
 
@@ -532,7 +556,7 @@ public class TokenizationTests
     }
 
     [Test]
-    public void PasteMergingNumbersIsRejectedWhenResultReachesMaxTotalDigits()
+    public void PasteMergingNumbersIsRejectedWhenResultExceedsMaxWholeDigits()
     {
         TypeNumber("12345678");
         Add(SinToken.Instance);
@@ -546,7 +570,8 @@ public class TokenizationTests
         MoveCursorTo(10);
 
         var before = CurrentText;
-        var (text, position) = Paste([Number("5")]);
+        var (text, position) = Paste(
+            [Number(new string('5', NumberValue.MaxWholeDigits))]);
 
         using (Assert.EnterMultipleScope())
         {
@@ -619,22 +644,24 @@ public class TokenizationTests
     }
 
     [Test]
-    public void RemoveDoesNotMergeNumbersWhenResultReachesMaxTotalDigits()
+    public void RemoveMergesNumbersWhenResultReachesMaxWholeDigits()
     {
-        TypeNumber("12345678");
+        var half = new string('1', NumberValue.MaxWholeDigits / 2);
+        TypeNumber(half);
         Add(PlusToken.Instance);
-        TypeNumber("12345678");
-        MoveCursorTo(11);
+        TypeNumber(half);
 
         var before = CurrentText;
-        var (text, position) = Remove();
+        var secondNumberStart = before.IndexOf('+') + 1;
+        MoveCursorTo(secondNumberStart);
+
+        var (_, position) = Remove();
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(text, Is.EqualTo(before));
-            Assert.That(position, Is.EqualTo(11));
+            Assert.That(position, Is.EqualTo(before.IndexOf('+')));
             Assert.That(_session.TokenValues,
-                Is.EqualTo(["12345678", "+", "12345678"]));
+                Is.EqualTo([half + half]));
         }
     }
 
@@ -827,16 +854,18 @@ public class TokenizationTests
     [Test]
     public void PastingNextToAFullNumberAppliesOnlyThePartThatFits()
     {
-        TypeNumber("12345678901234");
+        var almostFull = new string('9', NumberValue.MaxWholeDigits - 1);
+        TypeNumber(almostFull);
 
+        var before = CurrentText;
         var (text, position) = Paste([Number("12"), PlusToken.Instance, Number("34")]);
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(text, Is.EqualTo("12 345 678 901 234+34"));
-            Assert.That(position, Is.EqualTo(18));
+            Assert.That(text, Is.EqualTo($"{before}+34"));
+            Assert.That(position, Is.EqualTo(before.Length));
             Assert.That(_session.TokenValues,
-                Is.EqualTo(["12345678901234", "+", "34"]));
+                Is.EqualTo([almostFull, "+", "34"]));
         }
     }
 

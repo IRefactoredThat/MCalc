@@ -3,6 +3,7 @@ using Calculator.ExpressionPartConversions;
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionPartsMapping;
@@ -21,7 +22,7 @@ internal static class BinaryOperatorMappingExtensions
     /// based on <see cref="IExpressionPart"/> type and <see cref="IExpressionPart"/> formed
     /// by previous invocation of <see cref="ExpressionPartsMapping"/> method chain
     /// or delegates this request to the
-    /// <see cref="OperandMappingExtensions"/> class if the <paramref name="token"/>
+    /// <see cref="NumberMappingExtensions"/> class if the <paramref name="token"/>
     /// does not represent an <see cref="IBinaryOperator"/>.
     /// </summary>
     /// <param name="token">An assumed <see cref="IExpressionPart"/> to map.</param>
@@ -42,7 +43,7 @@ internal static class BinaryOperatorMappingExtensions
     /// </para>
     /// <para>
     /// 4) A <see cref="Result{T}"/> of type <see cref="IExpressionPart"/> formed by
-    /// delegating the request to the <see cref="OperandMappingExtensions"/> class, when
+    /// delegating the request to the <see cref="NumberMappingExtensions"/> class, when
     /// the mapping was not successful.
     /// </para>
     /// </returns>
@@ -53,8 +54,8 @@ internal static class BinaryOperatorMappingExtensions
         (TimesToken or DivToken or CaretToken or PercentToken, ILeftSideUnaryOperator unaryOperator)
             => new InvalidUnaryOperatorUse(unaryOperator.ToToken()),
         (PlusToken or MinusToken or TimesToken or DivToken or CaretToken or PercentToken,
-            IOperand or GroupingEndOperator or IRightSideUnaryOperator or
-            ImplicitMultiplicationOperator(IOperand)) =>
+            Number or GroupingEndOperator or IRightSideUnaryOperator or
+            ImplicitMultiplicationOperator(Number)) =>
             expression.AddPart(MapTokenToBinaryOperator(token)),
         (PlusToken, _) => expression.AddPart(new PositiveValueOperator()),
         (MinusToken, _) => expression.AddPart(new NegativeValueOperator()),
@@ -62,7 +63,7 @@ internal static class BinaryOperatorMappingExtensions
         (DivToken, _) => new InvalidBinaryOperatorUse(DivToken.Instance),
         (CaretToken, _) => new InvalidBinaryOperatorUse(CaretToken.Instance),
         (PercentToken, _) => new InvalidBinaryOperatorUse(PercentToken.Instance),
-        _ => OperandMappingExtensions.OperandMappings(expression, info, token)
+        _ => NumberMappingExtensions.NumberMappings(expression, info, token)
     };
 
     private static IBinaryOperator MapTokenToBinaryOperator(IToken token) => token switch

@@ -1,10 +1,10 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using Calculator.ExpressionParsing;
 using CalculatorApp.CalculatorPage.Buttons;
 using CalculatorApp.SettingsPage.Backup;
 using Essentials.Calculator;
+using Essentials.Numerics;
 
 namespace CalculatorApp.SettingsPage.Formatting;
 
@@ -82,8 +82,19 @@ public class FormattingSettings(IPreferences preferences) :
     }
 
     public const int MinAutoENotationDigits = 1;
-    public const int DefaultAutoENotationDigits = 3;
-    public const int MaxAutoENotationDigits = 10;
+    public const int DefaultAutoENotationDigits = 6;
+    public const int MaxAutoENotationDigits = 50;
+
+    public int Precision
+    {
+        get;
+        set
+        {
+            Number.Precision = value;
+            field = Number.Precision;
+            OnPropertyChanged();
+        }
+    }
 
     private const DecimalSeparator DefaultDecimalSeparator = DecimalSeparator.Period;
     private const ThousandSeparator DefaultThousandSeparator = ThousandSeparator.Comma;
@@ -95,6 +106,7 @@ public class FormattingSettings(IPreferences preferences) :
         ThousandSeparator = (ThousandSeparator)preferences.Get(nameof(ThousandSeparator), (int)DefaultThousandSeparator);
         ENotation = (ENotation)preferences.Get(nameof(ENotation), (int)DefaultENotation);
         AutoENotationDigits = preferences.Get(nameof(AutoENotationDigits), DefaultAutoENotationDigits);
+        Precision = preferences.Get(nameof(Precision), Number.DefaultPrecision);
     }
 
     public NumberFormatInfo NumberFormatInfo => new()
@@ -108,35 +120,38 @@ public class FormattingSettings(IPreferences preferences) :
 
     public int ENotationExponentThreshold => ENotation switch
     {
-        ENotation.Enabled => Tokens.MaxTotalDigits,
+        ENotation.Enabled => Number.MaxWholeDigits + Number.Precision,
         ENotation.Auto => AutoENotationDigits,
         ENotation.Disabled => -1,
         _ => throw new ArgumentOutOfRangeException(nameof(ENotation), ENotation, null)
     };
 
-    public string Format(double value)
+    public const int WholePartLength = 6;
+
+    public string Format(Number value)
     {
-        if (value == 0.0 || ENotation == ENotation.Disabled)
+        var fractionFormat = Number.Precision > 0
+            ? $".{new string('#', Number.Precision)}"
+            : string.Empty;
+        var decimalFormat = $"#,0{fractionFormat}";
+        var scientificFormat = $"0{fractionFormat}E+0";
+
+        if (value.IsZero() || ENotation == ENotation.Disabled)
         {
-            return value.ToString(
-                $"#,0.{new string('#', Tokens.MaxTotalDigits - 1)}",
-                NumberFormatInfo);
+            return value.ToString(decimalFormat, NumberFormatInfo);
         }
 
-        var absValue = double.Abs(value);
+        var absValue = value.Abs();
 
-        var eNotationDigits = ENotation == ENotation.Auto
-            ? AutoENotationDigits
-            : -Tokens.MaxTotalDigits;
+        var eNotationDigits = (ENotation == ENotation.Auto ?
+            AutoENotationDigits : 0) + Number.Precision;
 
-        var minDisplay = double.Pow(10, -eNotationDigits);
-        var maxDisplay = double.Pow(10, eNotationDigits);
+        var minDisplay = Number.Ten.PowInteger(-eNotationDigits);
+        var maxDisplay = Number.Ten.PowInteger(eNotationDigits);
 
         var useScientific = absValue < minDisplay || absValue >= maxDisplay;
 
-        var format = useScientific || ENotation == ENotation.Enabled
-            ? $"0.{new string('#', Tokens.MaxTotalDigits - 1)}E+0"
-            : $"#,0.{new string('#', Tokens.MaxTotalDigits - 1)}";
+        var format = useScientific || ENotation == ENotation.Enabled ? scientificFormat : decimalFormat;
 
         return value.ToString(format, NumberFormatInfo);
     }

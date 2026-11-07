@@ -1,6 +1,7 @@
 ﻿using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 
 namespace Calculator.ExpressionSolving;
@@ -20,7 +21,7 @@ internal static class LeftSideUnaryOperatorsEvaluatingExtensions
     /// A <see cref="Result{T}"/> of type <see cref="Expression"/> formed by
     /// evaluating <see cref="ILeftSideUnaryOperator"/> instances in the
     /// <paramref name="expression"/> or one <see cref="Error"/> from
-    /// <see cref="UnaryOperatorsExtensions.Apply(IUnaryOperator, IOperand, AngleMode)"/>
+    /// <see cref="UnaryOperatorsExtensions.Apply(IUnaryOperator, Number, AngleMode)"/>
     /// method.
     /// </returns>
     public static Result<Expression> EvaluateLeftSideUnaryOperators(this Expression expression)
@@ -37,14 +38,14 @@ internal static class LeftSideUnaryOperatorsEvaluatingExtensions
                 continue;
             }
 
-            if ((part is Expression or IOperand) && pendingOperators.Count > 0)
+            if ((part is Expression or Number) && pendingOperators.Count > 0)
             {
                 var mode = part is Expression inner ? inner.Mode : expression.Mode;
 
-                var computedOperand = part switch
+                var computedNumber = part switch
                 {
                     Expression innerExpression => innerExpression.EvaluateAllOperators(),
-                    IOperand operand => operand.ToResult(),
+                    Number operand => operand.ToResult(),
                     _ => new ExpressionNotEvaluated()
                 };
 
@@ -52,11 +53,11 @@ internal static class LeftSideUnaryOperatorsEvaluatingExtensions
                 for (var offset = pendingOperators.Count - 1; offset >= 0; offset--)
                 {
                     var unaryOperator = pendingOperators[offset];
-                    computedOperand = computedOperand.Map(
+                    computedNumber = computedNumber.Map(
                         operand => unaryOperator.Apply(operand, mode));
                 }
 
-                result = result.Map(current => computedOperand.Map(value =>
+                result = result.Map(current => computedNumber.Map(value =>
                 {
                     current.AddPart(value);
                     return current.ToResult();

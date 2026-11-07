@@ -2,6 +2,7 @@
 using Calculator.Operators;
 using Essentials.Calculator;
 using Essentials.ErrorType;
+using Essentials.Numerics;
 using Essentials.ResultType;
 using static Calculator.ExpressionPartsMapping.GroupingOperatorMappingExtensions;
 
@@ -52,12 +53,12 @@ internal static class ExpressionParsingExtensions
             .SelfMap(expression => expression
                 .SubstituteImplicitMultiplications()
                 .CloseSignedNumberGroups()
-                .ExpandChainedOperands())
+                .ExpandChainedNumbers())
             .SelfMap(finalExpression => finalExpression.Parts switch
             {
                 [] => new EmptyExpression(),
                 // Expression can only end with ), some number or !, if that's not the case...
-                [.., not (GroupingEndOperator or IOperand or FactorialOperator)] => new InvalidExpressionEnd(),
+                [.., not (GroupingEndOperator or Number or FactorialOperator)] => new InvalidExpressionEnd(),
                 _ => finalExpression
             });
     }
