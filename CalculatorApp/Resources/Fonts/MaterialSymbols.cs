@@ -40,6 +40,7 @@ public static class MaterialSymbols
     public const string SettingOption = "\ue0ee";
     public const string Input = "\ue890";
     public const string Theme = "\ue40a";
+    public const string Precision = "\ue719";
     public const string ThousandSeparator = "\ue242";
     public const string DecimalSeparator = "\uf82c";
     public const string ENotation = "\uf002";
