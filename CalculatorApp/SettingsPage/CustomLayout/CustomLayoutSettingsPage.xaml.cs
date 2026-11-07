@@ -1,5 +1,4 @@
 using CalculatorApp.SettingsPage.Animations;
-using CalculatorApp.SettingsPage.Layout;
 
 namespace CalculatorApp.SettingsPage.CustomLayout;
 

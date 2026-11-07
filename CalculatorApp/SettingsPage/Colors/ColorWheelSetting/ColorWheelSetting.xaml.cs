@@ -1,5 +1,4 @@
 using CalculatorApp.Platforms.Android.ColorWheel;
-using CalculatorApp.Platforms.Android.HueWheel;
 using CalculatorApp.SettingsPage.Appearance;
 
 namespace CalculatorApp.SettingsPage.Colors.ColorWheelSetting;

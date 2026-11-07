@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using CalculatorApp.SettingsPage.Formatting;
 using CalculatorApp.SettingsPage.Layout;
 using Essentials.Calculator;
 

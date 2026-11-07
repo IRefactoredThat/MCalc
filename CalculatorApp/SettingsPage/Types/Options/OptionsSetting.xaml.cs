@@ -1,4 +1,3 @@
-using CalculatorApp.SettingsPage.Animations;
 using CalculatorApp.SharedElements.ContentButton;
 
 namespace CalculatorApp.SettingsPage.Types.Options;
