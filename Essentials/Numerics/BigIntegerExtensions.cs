@@ -66,7 +66,7 @@ internal static class BigIntegerExtensions
         return absolute >= Pow10(Number.MaxWholeDigits + scale);
     }
 
-    private static BigInteger Pi(int scale) =>
+    internal static BigInteger Pi(int scale) =>
         BigInteger.Parse(Number.PiDigits.AsSpan(0, scale + 2))
             .Rescale(scale + 1, scale);
 
@@ -339,11 +339,6 @@ internal static class BigIntegerExtensions
         }
     }
 
-    /// <summary>
-    /// Reduces <paramref name="scaled"/> to an equivalent angle in
-    /// <c>[-π/2, π/2]</c> radians and reports whether the cosine of the
-    /// original angle has the opposite sign.
-    /// </summary>
     private static (BigInteger Reduced, bool NegateCosine) ReduceAngle(
         BigInteger scaled, int scale)
     {

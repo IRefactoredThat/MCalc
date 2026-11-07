@@ -7,7 +7,7 @@ namespace Essentials.Numerics;
 
 public readonly partial struct Number
 {
-    private const int WorkingGuardDigits = 10;
+    private const int WorkingGuardDigits = 5;
     private const int MaxResultBits = 100_000;
 
     private static int WorkingScale => Precision + WorkingGuardDigits;
@@ -115,7 +115,7 @@ public readonly partial struct Number
             return new InvalidOperation(LnToken.Instance);
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
 
         return FromWorking(ToScaled(scale).Ln(scale), scale);
     }
@@ -127,7 +127,7 @@ public readonly partial struct Number
             return new InvalidOperation(LogToken.Instance);
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
         var logarithm = ToScaled(scale).Ln(scale);
         var ln10 = (10 * BigIntegerExtensions.Pow10(scale)).Ln(scale);
 
@@ -162,7 +162,7 @@ public readonly partial struct Number
             return new InvalidOperation(CaretToken.Instance);
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
         var logarithm = ToScaled(scale).Ln(scale);
         var exponent = other.ToScaled(scale);
         var product = (logarithm * exponent).DivideRounded(BigIntegerExtensions.Pow10(scale));
@@ -269,36 +269,123 @@ public readonly partial struct Number
             return new InvalidOperation(SqrtToken.Instance);
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
 
         return FromWorking(ToScaled(scale).Sqrt(scale), scale);
     }
 
     public Number Cbrt()
     {
-        var scale = Precision;
+        var scale = WorkingScale;
         return FromWorking(ToScaled(scale).RootN(3, scale), scale);
     }
 
-    public Number Sin()
+    private static BigInteger DegreesToRadians(BigInteger scaledDegrees, int scale)
     {
-        var scale = Precision;
-        return FromWorking(ToScaled(scale).Sin(scale), scale);
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var fullCircle = 360 * scaleFactor;
+        var halfCircle = 180 * scaleFactor;
+        var reduced = scaledDegrees.FlooredRemainder(fullCircle);
+        if (reduced > halfCircle)
+        {
+            reduced -= fullCircle;
+        }
+
+        return (reduced * BigIntegerExtensions.Pi(scale)).DivideRounded(halfCircle);
     }
 
-    public Number Cos()
+    private static BigInteger RadiansToDegrees(BigInteger radians, int scale)
     {
-        var scale = Precision;
-        return FromWorking(ToScaled(scale).Cos(scale), scale);
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        return (radians * 180 * scaleFactor).DivideRounded(BigIntegerExtensions.Pi(scale));
     }
 
-    public Number Tan()
+    private static bool TryQuadrantAngle(BigInteger scaledDegrees, int scale, out int quadrant)
     {
-        var scale = Precision;
-        return FromWorking(ToScaled(scale).Tan(scale), scale);
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var fullCircle = 360 * scaleFactor;
+        var reduced = scaledDegrees.FlooredRemainder(fullCircle);
+        var quadrantStep = 90 * scaleFactor;
+        var rem = reduced.FlooredRemainder(quadrantStep);
+        if (rem.IsZero)
+        {
+            quadrant = (int)(reduced / quadrantStep);
+            return true;
+        }
+
+        quadrant = -1;
+        return false;
     }
 
-    public Result<Number> Asin()
+    public Number Sin(AngleMode mode = AngleMode.RAD)
+    {
+        var scale = WorkingScale;
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    1 => One,
+                    3 => NegativeOne,
+                    _ => Zero
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
+        return FromWorking(value.Sin(scale), scale);
+    }
+
+    public Number Cos(AngleMode mode = AngleMode.RAD)
+    {
+        var scale = WorkingScale;
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    0 => One,
+                    2 => NegativeOne,
+                    _ => Zero
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
+        return FromWorking(value.Cos(scale), scale);
+    }
+
+    public Number Tan(AngleMode mode = AngleMode.RAD)
+    {
+        var scale = WorkingScale;
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    0 or 2 => Zero,
+                    _ => throw new DivideByZeroException()
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
+        return FromWorking(value.Tan(scale), scale);
+    }
+
+    public Result<Number> Asin(AngleMode mode = AngleMode.RAD)
     {
         if (this < NegativeOne || this > One)
         {
@@ -311,10 +398,16 @@ public readonly partial struct Number
         var root = (scaleFactor * scaleFactor - value * value)
             .DivideRounded(scaleFactor).Sqrt(scale);
         var angle = value.Atan2(root, scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
         return FromWorking(angle, scale);
     }
 
-    public Result<Number> Acos()
+    public Result<Number> Acos(AngleMode mode = AngleMode.RAD)
     {
         if (this < NegativeOne || this > One)
         {
@@ -328,28 +421,39 @@ public readonly partial struct Number
             .DivideRounded(scaleFactor).Sqrt(scale);
         var angle = root.Atan2(value, scale);
 
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
         return FromWorking(angle, scale);
     }
 
-    public Number Atan()
+    public Number Atan(AngleMode mode = AngleMode.RAD)
     {
         var scale = WorkingScale;
-        return FromWorking(ToScaled(scale).Atan(scale), scale);
+        var angle = ToScaled(scale).Atan(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
+        return FromWorking(angle, scale);
     }
 
-    private Number Atan2With(Number other)
+    private Number Atan2With(Number other, AngleMode mode = AngleMode.RAD)
     {
         var scale = WorkingScale;
-        return FromWorking(other.ToScaled(scale).Atan2(ToScaled(scale), scale), scale);
+        var angle = other.ToScaled(scale).Atan2(ToScaled(scale), scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
+        return FromWorking(angle, scale);
     }
-
-    public Result<Number> ToRadians() =>
-        MultiplyWith(Pi)
-            .SelfMap(result => result.DivideWith(HalfCircleDegrees));
-
-    public Result<Number> ToDegrees() =>
-        MultiplyWith(HalfCircleDegrees)
-            .SelfMap(result => result.DivideWith(Pi));
 
     public Number Sinh()
     {
@@ -363,7 +467,7 @@ public readonly partial struct Number
 
     public Number Cosh()
     {
-        var scale = Precision;
+        var scale = WorkingScale;
         var value = ToScaled(scale);
         var positive = value.Exp(scale);
         var negative = (-value).Exp(scale);
@@ -373,7 +477,7 @@ public readonly partial struct Number
 
     public Number Tanh()
     {
-        var scale = Precision;
+        var scale = WorkingScale;
         var scaleFactor = BigIntegerExtensions.Pow10(scale);
         var value = 2 * ToScaled(scale);
 
@@ -401,7 +505,7 @@ public readonly partial struct Number
             return Negate().Asinh().Negate();
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
         var value = ToScaled(scale);
         var scaleFactor = BigIntegerExtensions.Pow10(scale);
         var root = (value * value + scaleFactor * scaleFactor)
@@ -435,42 +539,130 @@ public readonly partial struct Number
             return new InvalidOperation(AtanhToken.Instance);
         }
 
-        var scale = Precision;
+        var scale = WorkingScale;
 
         return FromWorking(ToScaled(scale).Atanh(scale), scale);
     }
 
-    public Number Cot()
+    public Number Cot(AngleMode mode = AngleMode.RAD)
     {
         var scale = WorkingScale;
-        return FromWorking(ToScaled(scale).Cot(scale), scale);
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    1 or 3 => Zero,
+                    _ => throw new DivideByZeroException()
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
+        return FromWorking(value.Cot(scale), scale);
     }
 
-    public Number Sec()
+    public Number Sec(AngleMode mode = AngleMode.RAD)
     {
         var scale = WorkingScale;
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    0 => One,
+                    2 => NegativeOne,
+                    _ => throw new DivideByZeroException()
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
         var scaleFactor = BigIntegerExtensions.Pow10(scale);
-        var cosine = ToScaled(scale).Cos(scale);
+        var cosine = value.Cos(scale);
 
         return FromWorking((scaleFactor * scaleFactor).DivideRounded(cosine), scale);
     }
 
-    public Number Csc()
+    public Number Csc(AngleMode mode = AngleMode.RAD)
     {
         var scale = WorkingScale;
+        var value = ToScaled(scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            if (TryQuadrantAngle(value, scale, out var quadrant))
+            {
+                return quadrant switch
+                {
+                    1 => One,
+                    3 => NegativeOne,
+                    _ => throw new DivideByZeroException()
+                };
+            }
+
+            value = DegreesToRadians(value, scale);
+        }
+
         var scaleFactor = BigIntegerExtensions.Pow10(scale);
-        var sine = ToScaled(scale).Sin(scale);
+        var sine = value.Sin(scale);
 
         return FromWorking((scaleFactor * scaleFactor).DivideRounded(sine), scale);
     }
 
-    public Number Acot() => Atan2With(One);
+    public Number Acot(AngleMode mode = AngleMode.RAD) => Atan2With(One, mode);
 
-    public Result<Number> Asec() => One.DivideWith(this)
-        .SelfMap(result => result.Acos());
+    public Result<Number> Asec(AngleMode mode = AngleMode.RAD)
+    {
+        if (Abs() < One)
+        {
+            return new InvalidOperation(AsecToken.Instance);
+        }
 
-    public Result<Number> Acsc() => One.DivideWith(this)
-        .SelfMap(result => result.Asin());
+        var scale = WorkingScale;
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var value = (scaleFactor * scaleFactor).DivideRounded(ToScaled(scale));
+        var root = (scaleFactor * scaleFactor - value * value)
+            .DivideRounded(scaleFactor).Sqrt(scale);
+        var angle = root.Atan2(value, scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
+        return FromWorking(angle, scale);
+    }
+
+    public Result<Number> Acsc(AngleMode mode = AngleMode.RAD)
+    {
+        if (Abs() < One)
+        {
+            return new InvalidOperation(AcscToken.Instance);
+        }
+
+        var scale = WorkingScale;
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var value = (scaleFactor * scaleFactor).DivideRounded(ToScaled(scale));
+        var root = (scaleFactor * scaleFactor - value * value)
+            .DivideRounded(scaleFactor).Sqrt(scale);
+        var angle = value.Atan2(root, scale);
+
+        if (mode is AngleMode.DEG)
+        {
+            angle = RadiansToDegrees(angle, scale);
+        }
+
+        return FromWorking(angle, scale);
+    }
 
     public Result<Number> Coth() => One.DivideWith(Tanh());
 

@@ -1,4 +1,4 @@
-using System.Numerics;
+using System.Globalization;
 using Calculator.ExpressionSolving;
 using Essentials.Calculator;
 using Essentials.ErrorType;
@@ -48,7 +48,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("7/2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3.5", null).ToDouble()));
+        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3.5").ToDouble()));
     }
 
     [Test]
@@ -772,6 +772,37 @@ public class ExpressionEvaluatingTests
         _session.Type("atan(1)");
 
         Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("45").ToDouble()));
+    }
+
+    [TestCase("asin(0.5)", 3, "30")]
+    [TestCase("acos(0.5)", 3, "60")]
+    [TestCase("atan(1)", 3, "45")]
+    [TestCase("asec(2)", 3, "60")]
+    [TestCase("acsc(2)", 3, "30")]
+    [TestCase("sin(30)", 3, "0.5")]
+    [TestCase("cos(60)", 3, "0.5")]
+    [TestCase("tan(45)", 3, "1")]
+    [TestCase("sin(90)", 3, "1")]
+    [TestCase("cos(90)", 3, "0")]
+    [TestCase("sin(180)", 3, "0")]
+    [TestCase("cos(180)", 3, "-1")]
+    [TestCase("tan(180)", 3, "0")]
+    public void CircularTrigonometryInDegreeModeIsAccurateAtLowPrecision(string expression, int precision, string expected)
+    {
+        Number.Precision = precision;
+        _session.Mode = AngleMode.DEG;
+        _session.Type(expression);
+
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse(expected, CultureInfo.InvariantCulture)));
+    }
+
+    [Test]
+    public void Tan90DegreesIsInvalidOperation()
+    {
+        _session.Mode = AngleMode.DEG;
+        _session.Type("tan(90)");
+
+        Assert.That(_session.Error(), Is.TypeOf<InvalidOperation>());
     }
 
     [Test]

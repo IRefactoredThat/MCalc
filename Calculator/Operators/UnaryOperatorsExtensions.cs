@@ -1,4 +1,4 @@
-﻿using Calculator.ExpressionPartConversions;
+using Calculator.ExpressionPartConversions;
 using Essentials.Calculator;
 using Essentials.ErrorType;
 using Essentials.Numerics;
@@ -131,25 +131,15 @@ internal static class UnaryOperatorsExtensions
     /// or one <see cref="Error"/> listed here: <see cref="UndefinedOperation"/>.
     /// </returns>
     private static Result<Number> Apply(this IDirectCircularTrigOperator trigonometricOperator,
-        Number number, AngleMode mode)
-    {
-        // All operations are in radians so convert before applying
-        return mode is AngleMode.DEG
-            ? number.ToRadians().Map(radians =>
-                ApplyInRadians(trigonometricOperator, radians))
-            : ApplyInRadians(trigonometricOperator, number);
-    }
-
-    private static Result<Number> ApplyInRadians(
-        ITrigonometricOperator trigonometricOperator, Number number) =>
+        Number number, AngleMode mode) =>
         trigonometricOperator switch
         {
-            SineOperator => number.Sin(),
-            CosineOperator => number.Cos(),
-            TangentOperator => number.Tan(),
-            CotangentOperator => number.Cot(),
-            SecantOperator => number.Sec(),
-            CosecantOperator => number.Csc(),
+            SineOperator => number.Sin(mode),
+            CosineOperator => number.Cos(mode),
+            TangentOperator => number.Tan(mode),
+            CotangentOperator => number.Cot(mode),
+            SecantOperator => number.Sec(mode),
+            CosecantOperator => number.Csc(mode),
             _ => new UndefinedOperation(trigonometricOperator)
         };
 
@@ -167,22 +157,17 @@ internal static class UnaryOperatorsExtensions
     /// or one <see cref="Error"/> listed here: <see cref="UndefinedOperation"/>.
     /// </returns>
     private static Result<Number> Apply(this IInverseCircularTrigOperator trigonometricOperator,
-        Number number, AngleMode mode)
-    {
-        var result = trigonometricOperator switch
+        Number number, AngleMode mode) =>
+        trigonometricOperator switch
         {
-            ArcsineOperator => number.Asin(),
-            ArccosineOperator => number.Acos(),
-            ArctangentOperator => number.Atan(),
-            ArccotangentOperator => number.Acot(),
-            ArcsecantOperator => number.Asec(),
-            ArccosecantOperator => number.Acsc(),
+            ArcsineOperator => number.Asin(mode),
+            ArccosineOperator => number.Acos(mode),
+            ArctangentOperator => number.Atan(mode),
+            ArccotangentOperator => number.Acot(mode),
+            ArcsecantOperator => number.Asec(mode),
+            ArccosecantOperator => number.Acsc(mode),
             _ => new UndefinedOperation(trigonometricOperator)
         };
-
-        return result.SelfMap(value => mode is AngleMode.DEG ?
-            value.ToDegrees() : value);
-    }
 
     /// <summary>
     /// Applies <paramref name="trigonometricOperator"/> to the <paramref name="number"/>.
