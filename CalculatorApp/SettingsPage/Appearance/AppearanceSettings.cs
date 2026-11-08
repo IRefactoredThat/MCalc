@@ -25,6 +25,7 @@ public class AppearanceSettings(IPreferences preferences,
     private const string DarkManualColorsInitializedKey = "ManualColorsDarkInitialized";
     private const string LightManualColorPrefix = "ManualColor_Light_";
     private const string LightManualColorsInitializedKey = "ManualColorsLightInitialized";
+    private const string ManualColorsAmoledRepairKey = "ManualColorsAmoledRepair";
     public const double MinSurfaceChroma = 0.0;
     public const double MaxSurfaceChroma = 100.0;
     public const double DefaultSurfaceChroma = 50.0;
@@ -263,13 +264,14 @@ public class AppearanceSettings(IPreferences preferences,
         return _currentScheme;
     }
 
-    private Dictionary<string, int> GetDerivedColors(bool isDark)
+    private Dictionary<string, int> GetDerivedColors(bool isDark,
+        bool? applyAmoled = null)
     {
         var scheme = DynamicColors && systemScheme.ToScheme(isDark) is { } system
             ? system
             : GetSeedScheme(SeedColor.ToInt(), isDark);
 
-        var amoled = AmoledEnabled && isDark;
+        var amoled = (applyAmoled ?? AmoledEnabled) && isDark;
         var neutral = scheme.Neutral;
         var colors = new Dictionary<string, int>(scheme.Colors.Count);
 
@@ -320,12 +322,28 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in roles)
         {
+            var color = GetManualColor(role);
+
             if (!_resources.TryGetValue(role.Key, out var current) ||
-                current is not Color color || !role.Color.Equals(color))
+                current is not Color existing || !color.Equals(existing))
             {
-                _resources[role.Key] = role.Color;
+                _resources[role.Key] = color;
             }
         }
+    }
+
+    private Color GetManualColor(ColorRole role)
+    {
+        if (!AmoledEnabled || !IsDark ||
+            !AmoledColors.TryGetValue(role.Key, out var tone))
+        {
+            return role.Color;
+        }
+
+        var hct = Hct.FromInt(role.Color.ToInt());
+
+        return hct is null ? role.Color : Color.FromInt(
+            TonalPalette.FromHueAndChroma(hct.Hue, SurfaceChroma)!.Tone(tone));
     }
 
     private int Tint(int color)
@@ -396,7 +414,7 @@ public class AppearanceSettings(IPreferences preferences,
             return;
         }
 
-        var fallbackColors = GetDerivedColors(isDark);
+        var fallbackColors = GetDerivedColors(isDark, applyAmoled: false);
 
         foreach (var role in roles)
         {
@@ -419,7 +437,7 @@ public class AppearanceSettings(IPreferences preferences,
 
     private void LoadColorRoles(List<ColorRole> roles, bool isDark)
     {
-        var fallbackColors = GetDerivedColors(isDark);
+        var fallbackColors = GetDerivedColors(isDark, applyAmoled: false);
 
         if (isDark)
         {
@@ -438,7 +456,7 @@ public class AppearanceSettings(IPreferences preferences,
     }
 
     private void MigrateLegacyManualColors(List<ColorRole> roles,
-        IReadOnlyDictionary<string, int> fallbackColors)
+        Dictionary<string, int> fallbackColors)
     {
         if (preferences.Get(DarkManualColorsInitializedKey, false) ||
             !preferences.Get(LegacyManualColorsInitializedKey, false))
@@ -465,6 +483,34 @@ public class AppearanceSettings(IPreferences preferences,
         preferences.Set(DarkManualColorsInitializedKey, true);
     }
 
+    private void RepairAmoledSeededManualColors()
+    {
+        if (preferences.Get(ManualColorsAmoledRepairKey, false))
+        {
+            return;
+        }
+
+        preferences.Set(ManualColorsAmoledRepairKey, true);
+
+        var baseColors = GetDerivedColors(true, applyAmoled: false);
+        var amoledColors = GetDerivedColors(true, applyAmoled: true);
+
+        foreach (var role in _darkColorRoles)
+        {
+            if (!AmoledColors.ContainsKey(role.Key) ||
+                !baseColors.TryGetValue(role.Key, out var baseValue) ||
+                !amoledColors.TryGetValue(role.Key, out var amoledValue) ||
+                baseValue == amoledValue ||
+                role.Color.ToInt() != amoledValue)
+            {
+                continue;
+            }
+
+            role.Color = Color.FromInt(baseValue);
+            preferences.Set(GetManualColorKey(true, role.Key), baseValue);
+        }
+    }
+
     private static string GetManualColorKey(bool isDark, string role) =>
         (isDark ? DarkManualColorPrefix : LightManualColorPrefix) + role;
 
@@ -482,7 +528,7 @@ public class AppearanceSettings(IPreferences preferences,
 
         if (ColorMode == ColorMode.Manual && IsDark == isDark)
         {
-            _resources[role.Key] = role.Color;
+            _resources[role.Key] = GetManualColor(role);
             OnPropertyChanged(nameof(ShellColor));
         }
     }
@@ -507,6 +553,7 @@ public class AppearanceSettings(IPreferences preferences,
         SurfaceChroma = preferences.Get(nameof(SurfaceChroma), DefaultSurfaceChroma);
         BuildColorRoles();
         LoadColorRoles();
+        RepairAmoledSeededManualColors();
 
         if (ColorMode == ColorMode.Manual)
         {
