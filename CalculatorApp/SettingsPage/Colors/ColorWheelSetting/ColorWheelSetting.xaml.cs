@@ -11,7 +11,7 @@ public partial class ColorWheelSetting
         Clicked += OnClicked;
     }
 
-    public static readonly BindableProperty HueWheelDialogProperty =
+    public static readonly BindableProperty ColorWheelDialogProperty =
         BindableProperty.Create(
             nameof(ColorWheelDialog),
             typeof(ColorWheelDialog),
@@ -19,8 +19,8 @@ public partial class ColorWheelSetting
 
     public ColorWheelDialog ColorWheelDialog
     {
-        get => (ColorWheelDialog)GetValue(HueWheelDialogProperty);
-        set => SetValue(HueWheelDialogProperty, value);
+        get => (ColorWheelDialog)GetValue(ColorWheelDialogProperty);
+        set => SetValue(ColorWheelDialogProperty, value);
     }
 
     private void OnClicked(object? sender, EventArgs e)

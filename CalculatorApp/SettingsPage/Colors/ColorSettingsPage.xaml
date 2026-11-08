@@ -7,24 +7,46 @@
     xmlns:fonts="clr-namespace:CalculatorApp.Resources.Fonts"
     xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
     xmlns:colorWheelSetting="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting"
+    xmlns:stepSlider="clr-namespace:CalculatorApp.SettingsPage.Types.StepSlider"
+    xmlns:expandable="clr-namespace:CalculatorApp.SettingsPage.Types.Expandable"
     x:Class="CalculatorApp.SettingsPage.Colors.ColorSettingsPage"
     x:DataType="appearance:AppearanceSettings"
     Header="Custom colors">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <options:OptionsSetting
+            <expandable:ExpandableToggleSetting
                 CornerRadius="15, 15, 5, 5"
-                Name="Color style"
-                Description="Change style of the scheme"
-                Icon="{x:Static fonts:MaterialSymbols.ColorStyle}"
-                SelectedOption="{Binding Style}"/>
-            <colorWheelSetting:ColorWheelSetting
+                Name="Dynamic colors"
+                Description="Determine colors scheme from wallpaper"
+                Icon="{x:Static fonts:MaterialSymbols.DynamicColors}"
+                ToggledBehavior="ShowContentWhenToggledOff"
+                ExpandableView="{x:Reference CustomSeedOptions}"
+                IsToggled="{Binding DynamicColors}"/>
+            <VerticalStackLayout x:Name="CustomSeedOptions">
+                <options:OptionsSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Color style"
+                    Description="Change style of the scheme"
+                    Icon="{x:Static fonts:MaterialSymbols.ColorStyle}"
+                    SelectedOption="{Binding Style}"/>
+                <colorWheelSetting:ColorWheelSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Custom color"
+                    Description="Select desired seed color"
+                    Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
+                    Color="{Binding SeedColor}"
+                    x:Name="HexColorSetting"/>
+            </VerticalStackLayout>
+            <stepSlider:StepSliderSetting
                 CornerRadius="5, 5, 15, 15"
-                Name="Custom color"
-                Description="Select desired seed color"
-                Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
-                Color="{Binding SeedColor}"
-                x:Name="HexColorSetting"/>
+                Name="Chroma"
+                Description="Adjust color intensity"
+                Icon="{x:Static fonts:MaterialSymbols.Chroma}"
+                Maximum="{x:Static appearance:AppearanceSettings.MaxSurfaceChroma}"
+                Minimum="{x:Static appearance:AppearanceSettings.MinSurfaceChroma}"
+                Step="{x:Static appearance:AppearanceSettings.SurfaceChromaStep}"
+                ResetValue="{x:Static appearance:AppearanceSettings.DefaultSurfaceChroma}"
+                Value="{Binding SurfaceChroma}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

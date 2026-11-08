@@ -30,31 +30,29 @@
                 Description="Apply darker tone to colors"
                 Icon="{x:Static fonts:MaterialSymbols.Amoled}"
                 IsToggled="{Binding AmoledEnabled}"/>
-            <expandable:ExpandableToggleSetting
+            <expandable:ExpandableOptionsSetting
                 CornerRadius="5, 5, 5, 5"
-                Name="Dynamic colors"
-                Description="Determine colors scheme from wallpaper"
-                Icon="{x:Static fonts:MaterialSymbols.DynamicColors}"
-                ToggledBehavior="ShowContentWhenToggledOff"
-                ExpandableView="{x:Reference ColorsPage}"
-                IsToggled="{Binding DynamicColors}"/>
+                Name="Color source"
+                Description="Derive colors or choose each one manually"
+                Icon="{x:Static fonts:MaterialSymbols.CustomColors}"
+                ExpandableValues="{x:Static appearance:AppearanceSettings.ManualColorModes}"
+                ExpandableView="{x:Reference ManualColors}"
+                NonExpandableView="{x:Reference DerivedColors}"
+                SelectedOption="{Binding ColorMode}"/>
             <pageNavigation:PageNavigationSetting
-                x:Name="ColorsPage"
+                x:Name="DerivedColors"
                 CornerRadius="5, 5, 5, 5"
                 Name="Custom colors"
                 Description="Choose seed color from presets"
                 Icon="{x:Static fonts:MaterialSymbols.CustomColors}"
                 Route="{x:Type colors:ColorSettingsPage}"/>
-            <stepSlider:StepSliderSetting
+            <pageNavigation:PageNavigationSetting
+                x:Name="ManualColors"
                 CornerRadius="5, 5, 15, 15"
-                Name="Chroma"
-                Description="Adjust color intensity"
-                Icon="{x:Static fonts:MaterialSymbols.Chroma}"
-                Maximum="{x:Static appearance:AppearanceSettings.MaxSurfaceChroma}"
-                Minimum="{x:Static appearance:AppearanceSettings.MinSurfaceChroma}"
-                Step="{x:Static appearance:AppearanceSettings.SurfaceChromaStep}"
-                ResetValue="{x:Static appearance:AppearanceSettings.DefaultSurfaceChroma}"
-                Value="{Binding SurfaceChroma}"/>
+                Name="Custom palette"
+                Description="Choose each color separately"
+                Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
+                Route="{x:Type colors:ColorRoleSettingsPage}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

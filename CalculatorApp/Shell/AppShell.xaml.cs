@@ -21,6 +21,7 @@ public partial class AppShell
 
         Routing.RegisterRoute(nameof(AppearanceSettingsPage), typeof(AppearanceSettingsPage));
         Routing.RegisterRoute(nameof(ColorSettingsPage), typeof(ColorSettingsPage));
+        Routing.RegisterRoute(nameof(ColorRoleSettingsPage), typeof(ColorRoleSettingsPage));
         Routing.RegisterRoute(nameof(FormattingSettingsPage), typeof(FormattingSettingsPage));
         Routing.RegisterRoute(nameof(FontSizeSettingsPage), typeof(FontSizeSettingsPage));
         Routing.RegisterRoute(nameof(TypographySettingsPage), typeof(TypographySettingsPage));

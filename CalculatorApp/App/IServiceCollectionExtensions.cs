@@ -78,6 +78,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddPages(this IServiceCollection services) =>
         services.AddTransient<CalculatorGridPage>()
             .AddTransient<ColorSettingsPage>()
+            .AddTransient<ColorRoleSettingsPage>()
             .AddTransient<AppearanceSettingsPage>()
             .AddTransient<FontSizeSettingsPage>()
             .AddTransient<TypographySettingsPage>()
