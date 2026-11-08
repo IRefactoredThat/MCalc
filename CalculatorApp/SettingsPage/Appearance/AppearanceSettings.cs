@@ -25,6 +25,8 @@ public class AppearanceSettings(IPreferences preferences,
     private const string DarkManualColorsInitializedKey = "ManualColorsDarkInitialized";
     private const string LightManualColorPrefix = "ManualColor_Light_";
     private const string LightManualColorsInitializedKey = "ManualColorsLightInitialized";
+    private const string DarkColorPresetKey = "ColorPreset_Dark";
+    private const string LightColorPresetKey = "ColorPreset_Light";
     private const string ManualColorsAmoledRepairKey = "ManualColorsAmoledRepair";
     public const double MinSurfaceChroma = 0.0;
     public const double MaxSurfaceChroma = 100.0;
@@ -68,9 +70,24 @@ public class AppearanceSettings(IPreferences preferences,
 
     private (Style Style, int Argb, bool IsDark) _seededKey;
     private bool _suspendApply;
+    private bool _applyingPreset;
+    private ColorPreset _darkColorPreset = ColorPreset.Custom;
+    private ColorPreset _lightColorPreset = ColorPreset.Custom;
 
     public IReadOnlyList<ColorRole> DarkColorRoles => _darkColorRoles;
     public IReadOnlyList<ColorRole> LightColorRoles => _lightColorRoles;
+
+    public ColorPreset DarkColorPreset
+    {
+        get => _darkColorPreset;
+        set => SetColorPreset(true, value);
+    }
+
+    public ColorPreset LightColorPreset
+    {
+        get => _lightColorPreset;
+        set => SetColorPreset(false, value);
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -183,6 +200,7 @@ public class AppearanceSettings(IPreferences preferences,
             if (value == ColorMode.Manual)
             {
                 EnsureManualColorsInitialized();
+                LoadColorPresets();
             }
 
             Apply();
@@ -383,13 +401,9 @@ public class AppearanceSettings(IPreferences preferences,
 
         for (var index = 0; index < definitions.Count; index++)
         {
-            var corners = index switch
-            {
-                0 => new CornerRadius(15, 15, 5, 5),
-                _ when index == definitions.Count - 1 =>
-                    new CornerRadius(5, 5, 15, 15),
-                _ => new CornerRadius(5),
-            };
+            var corners = index == definitions.Count - 1
+                ? new CornerRadius(5, 5, 15, 15)
+                : new CornerRadius(5);
 
             roles.Add(new ColorRole(definitions[index], corners,
                 FallbackSeed, ColorChanged));
@@ -517,6 +531,92 @@ public class AppearanceSettings(IPreferences preferences,
     private static string GetManualColorsInitializedKey(bool isDark) =>
         isDark ? DarkManualColorsInitializedKey : LightManualColorsInitializedKey;
 
+    private static string GetColorPresetKey(bool isDark) =>
+        isDark ? DarkColorPresetKey : LightColorPresetKey;
+
+    private ColorPreset GetColorPreset(bool isDark) =>
+        isDark ? _darkColorPreset : _lightColorPreset;
+
+    private void SetColorPreset(bool isDark, ColorPreset preset)
+    {
+        if (GetColorPreset(isDark) == preset)
+        {
+            return;
+        }
+
+        if (ColorPresets.TryGetColors(preset, isDark, out var colors))
+        {
+            var roles = isDark ? _darkColorRoles : _lightColorRoles;
+
+            _applyingPreset = true;
+            try
+            {
+                foreach (var role in roles)
+                {
+                    if (colors.TryGetValue(role.Key, out var value))
+                    {
+                        role.Color = Color.FromInt(value);
+                    }
+                }
+            }
+            finally
+            {
+                _applyingPreset = false;
+            }
+        }
+
+        if (isDark)
+        {
+            _darkColorPreset = preset;
+        }
+        else
+        {
+            _lightColorPreset = preset;
+        }
+
+        preferences.Set(GetColorPresetKey(isDark), (int)preset);
+        OnPropertyChanged(isDark
+            ? nameof(DarkColorPreset)
+            : nameof(LightColorPreset));
+    }
+
+    private void LoadColorPresets()
+    {
+        var darkPreset = LoadColorPreset(true);
+        var lightPreset = LoadColorPreset(false);
+
+        if (_darkColorPreset != darkPreset)
+        {
+            _darkColorPreset = darkPreset;
+            OnPropertyChanged(nameof(DarkColorPreset));
+        }
+
+        if (_lightColorPreset != lightPreset)
+        {
+            _lightColorPreset = lightPreset;
+            OnPropertyChanged(nameof(LightColorPreset));
+        }
+    }
+
+    private ColorPreset LoadColorPreset(bool isDark)
+    {
+        var value = preferences.Get(GetColorPresetKey(isDark),
+            (int)ColorPreset.Custom);
+        var preset = Enum.IsDefined(typeof(ColorPreset), value)
+            ? (ColorPreset)value
+            : ColorPreset.Custom;
+        var roles = isDark ? _darkColorRoles : _lightColorRoles;
+
+        if (preset != ColorPreset.Custom &&
+            !ColorPresets.Matches(preset, isDark, roles))
+        {
+            preset = ColorPreset.Custom;
+            preferences.Set(GetColorPresetKey(isDark), (int)preset);
+        }
+
+        return preset;
+    }
+
     private void OnColorRoleChanged(ColorRole role, bool isDark)
     {
         if (_suspendApply)
@@ -525,6 +625,11 @@ public class AppearanceSettings(IPreferences preferences,
         }
 
         preferences.Set(GetManualColorKey(isDark, role.Key), role.Color.ToInt());
+
+        if (!_applyingPreset && GetColorPreset(isDark) != ColorPreset.Custom)
+        {
+            SetColorPreset(isDark, ColorPreset.Custom);
+        }
 
         if (ColorMode == ColorMode.Manual && IsDark == isDark)
         {
@@ -560,6 +665,7 @@ public class AppearanceSettings(IPreferences preferences,
             EnsureManualColorsInitialized();
         }
 
+        LoadColorPresets();
         _suspendApply = false;
         UpdateTheme();
     }

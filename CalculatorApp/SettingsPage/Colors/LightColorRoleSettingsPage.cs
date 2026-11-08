@@ -9,8 +9,5 @@ public sealed class LightColorRoleSettingsPage : ColorRoleSettingsPage
     public LightColorRoleSettingsPage(AppearanceSettings appearanceSettings,
         AnimationSettings animationSettings, ColorWheelDialog colorWheelDialog)
         : base(appearanceSettings, animationSettings, colorWheelDialog,
-            appearanceSettings.LightColorRoles)
-    {
-        Header = "Light palette";
-    }
+            appearanceSettings.LightColorRoles, false) { }
 }

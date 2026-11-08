@@ -7,15 +7,18 @@
     xmlns:appearance="clr-namespace:CalculatorApp.SettingsPage.Appearance"
     xmlns:colors="clr-namespace:CalculatorApp.SettingsPage.Colors"
     xmlns:colorWheelSetting="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting"
+    xmlns:options="clr-namespace:CalculatorApp.SettingsPage.Types.Options"
     x:Class="CalculatorApp.SettingsPage.Colors.ColorRoleSettingsPage"
     x:Name="ColorRoot"
-    x:DataType="colors:ColorRoleSettingsPage"
-    Header="Dark palette">
+    x:DataType="colors:ColorRoleSettingsPage">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <Label
-                Style="{StaticResource SettingSubheader}"
-                Text="{Binding Source={x:Reference ColorRoot}, Path=Header}"/>
+            <options:OptionsSetting
+                CornerRadius="15, 15, 5, 5"
+                Name="Preset"
+                Description="Apply a ready-made theme palette"
+                Icon="{x:Static fonts:MaterialSymbols.ColorStyle}"
+                SelectedOption="{Binding Source={x:Reference ColorRoot}, Path=Preset}"/>
             <VerticalStackLayout
                 BindableLayout.ItemsSource="{Binding Source={x:Reference ColorRoot}, Path=ColorRoles}">
                 <BindableLayout.ItemTemplate>
