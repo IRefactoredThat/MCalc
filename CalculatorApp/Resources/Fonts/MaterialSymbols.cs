@@ -46,11 +46,13 @@ public static class MaterialSymbols
     public const string ENotation = "\uf002";
     public const string EDigits = "\uf4b2";
     public const string Amoled = "\ue51c";
-    public const string DynamicColors = "\ue3b8";
+    public const string DynamicColors = "\ue1bc";
     public const string Chroma = "\ue91c";
-    public const string ColorStyle = "\ue997";
+    public const string ColorStyle = "\ue23a";
+    public const string ManualSource = "\ue997";
     public const string CustomColors = "\ue3ae";
-    public const string ColorPresets = "\ue9b4";
+    public const string SeedSource = "\ue3b8";
+    public const string ManualColor = "\ue9b4";
     public const string OldEntry = "\uebe7";
     public const string ClickAnimation = "\ue762";
     public const string TransitionAnimation = "\uf50c";

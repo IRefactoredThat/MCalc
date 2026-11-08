@@ -20,7 +20,7 @@
                         <colorWheelSetting:ColorWheelSetting
                             Name="{Binding Name}"
                             Description="{Binding Description}"
-                            Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
+                            Icon="{x:Static fonts:MaterialSymbols.ManualColor}"
                             CornerRadius="{Binding Corners}"
                             Color="{Binding Color}"
                             ClickAnimation="{Binding Source={x:Reference ColorRoot},

@@ -42,16 +42,16 @@
             <pageNavigation:PageNavigationSetting
                 x:Name="DerivedColors"
                 CornerRadius="5, 5, 5, 5"
-                Name="Custom colors"
-                Description="Choose seed color from presets"
-                Icon="{x:Static fonts:MaterialSymbols.CustomColors}"
+                Name="Seed color"
+                Description="Choose single-color source"
+                Icon="{x:Static fonts:MaterialSymbols.SeedSource}"
                 Route="{x:Type colors:ColorSettingsPage}"/>
             <pageNavigation:PageNavigationSetting
                 x:Name="ManualColors"
                 CornerRadius="5, 5, 15, 15"
                 Name="Custom palette"
                 Description="Choose each color separately"
-                Icon="{x:Static fonts:MaterialSymbols.ColorPresets}"
+                Icon="{x:Static fonts:MaterialSymbols.ManualSource}"
                 Route="{x:Type colors:ColorRoleSettingsPage}"/>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
