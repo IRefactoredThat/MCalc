@@ -53,6 +53,8 @@ public static class MaterialSymbols
     public const string CustomColors = "\ue3ae";
     public const string SeedSource = "\ue3b8";
     public const string ManualColor = "\ue9b4";
+    public const string DarkMode = "\ue51c";
+    public const string LightMode = "\ue518";
     public const string OldEntry = "\uebe7";
     public const string ClickAnimation = "\ue762";
     public const string TransitionAnimation = "\uf50c";

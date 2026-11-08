@@ -46,13 +46,20 @@
                 Description="Choose single-color source"
                 Icon="{x:Static fonts:MaterialSymbols.SeedSource}"
                 Route="{x:Type colors:ColorSettingsPage}"/>
-            <pageNavigation:PageNavigationSetting
-                x:Name="ManualColors"
-                CornerRadius="5, 5, 15, 15"
-                Name="Custom palette"
-                Description="Choose each color separately"
-                Icon="{x:Static fonts:MaterialSymbols.ManualSource}"
-                Route="{x:Type colors:ColorRoleSettingsPage}"/>
+            <VerticalStackLayout x:Name="ManualColors">
+                <pageNavigation:PageNavigationSetting
+                    CornerRadius="5, 5, 5, 5"
+                    Name="Dark palette"
+                    Description="Choose each dark color separately"
+                    Icon="{x:Static fonts:MaterialSymbols.DarkMode}"
+                    Route="{x:Type colors:ColorRoleSettingsPage}"/>
+                <pageNavigation:PageNavigationSetting
+                    CornerRadius="5, 5, 15, 15"
+                    Name="Light palette"
+                    Description="Choose each light color separately"
+                    Icon="{x:Static fonts:MaterialSymbols.LightMode}"
+                    Route="{x:Type colors:LightColorRoleSettingsPage}"/>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </base:SettingsBasePage.SettingsContent>
 </base:SettingsBasePage>

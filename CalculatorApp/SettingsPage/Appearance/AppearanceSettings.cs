@@ -19,8 +19,12 @@ public class AppearanceSettings(IPreferences preferences,
     INotifyPropertyChanged, IReload
 {
     private const double ContrastLevel = 0.0;
-    private const string ManualColorPrefix = "ManualColor_";
-    private const string ManualColorsInitializedKey = "ManualColorsInitialized";
+    private const string LegacyManualColorPrefix = "ManualColor_";
+    private const string LegacyManualColorsInitializedKey = "ManualColorsInitialized";
+    private const string DarkManualColorPrefix = "ManualColor_Dark_";
+    private const string DarkManualColorsInitializedKey = "ManualColorsDarkInitialized";
+    private const string LightManualColorPrefix = "ManualColor_Light_";
+    private const string LightManualColorsInitializedKey = "ManualColorsLightInitialized";
     public const double MinSurfaceChroma = 0.0;
     public const double MaxSurfaceChroma = 100.0;
     public const double DefaultSurfaceChroma = 50.0;
@@ -56,14 +60,16 @@ public class AppearanceSettings(IPreferences preferences,
         [nameof(MaterialScheme.SurfaceContainerHighest)] = 9,
     };
 
-    private readonly List<ColorRole> _colorRoles = [];
+    private readonly List<ColorRole> _darkColorRoles = [];
+    private readonly List<ColorRole> _lightColorRoles = [];
     private ResourceDictionary _resources = null!;
     private MaterialScheme _currentScheme = null!;
 
     private (Style Style, int Argb, bool IsDark) _seededKey;
     private bool _suspendApply;
 
-    public IReadOnlyList<ColorRole> ColorRoles => _colorRoles;
+    public IReadOnlyList<ColorRole> DarkColorRoles => _darkColorRoles;
+    public IReadOnlyList<ColorRole> LightColorRoles => _lightColorRoles;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -175,7 +181,7 @@ public class AppearanceSettings(IPreferences preferences,
 
             if (value == ColorMode.Manual)
             {
-                CaptureManualColors();
+                EnsureManualColorsInitialized();
             }
 
             Apply();
@@ -310,7 +316,9 @@ public class AppearanceSettings(IPreferences preferences,
 
     private void ApplyManualColors()
     {
-        foreach (var role in _colorRoles)
+        var roles = IsDark ? _darkColorRoles : _lightColorRoles;
+
+        foreach (var role in roles)
         {
             if (!_resources.TryGetValue(role.Key, out var current) ||
                 current is not Color color || !role.Color.Equals(color))
@@ -341,12 +349,19 @@ public class AppearanceSettings(IPreferences preferences,
 
     private void BuildColorRoles()
     {
-        if (_colorRoles.Count > 0)
+        BuildColorRoles(_darkColorRoles, true);
+        BuildColorRoles(_lightColorRoles, false);
+    }
+
+    private void BuildColorRoles(List<ColorRole> roles, bool isDark)
+    {
+        if (roles.Count > 0)
         {
             return;
         }
 
         var definitions = ColorRoleDefinitions.All;
+        void ColorChanged(ColorRole role) => OnColorRoleChanged(role, isDark);
 
         for (var index = 0; index < definitions.Count; index++)
         {
@@ -358,71 +373,114 @@ public class AppearanceSettings(IPreferences preferences,
                 _ => new CornerRadius(5),
             };
 
-            _colorRoles.Add(new ColorRole(definitions[index], corners,
-                FallbackSeed, OnColorRoleChanged));
+            roles.Add(new ColorRole(definitions[index], corners,
+                FallbackSeed, ColorChanged));
         }
     }
 
-    private void CaptureManualColors()
+    private void EnsureManualColorsInitialized()
     {
-        if (preferences.Get(ManualColorsInitializedKey, false))
+        var wasSuspended = _suspendApply;
+        _suspendApply = true;
+
+        EnsureManualColorsInitialized(_darkColorRoles, true);
+        EnsureManualColorsInitialized(_lightColorRoles, false);
+
+        _suspendApply = wasSuspended;
+    }
+
+    private void EnsureManualColorsInitialized(List<ColorRole> roles, bool isDark)
+    {
+        if (preferences.Get(GetManualColorsInitializedKey(isDark), false))
         {
             return;
         }
 
-        _suspendApply = true;
+        var fallbackColors = GetDerivedColors(isDark);
 
-        foreach (var role in _colorRoles)
+        foreach (var role in roles)
         {
-            var color = _resources.TryGetValue(role.Key, out var current) &&
-                        current is Color existing
-                ? existing
-                : FallbackSeed;
+            var value = fallbackColors.TryGetValue(role.Key, out var fallback)
+                ? fallback
+                : FallbackSeed.ToInt();
 
-            role.Color = color;
-            preferences.Set(ManualColorPrefix + role.Key, color.ToInt());
+            role.Color = Color.FromInt(value);
+            preferences.Set(GetManualColorKey(isDark, role.Key), value);
         }
 
-        _suspendApply = false;
-        preferences.Set(ManualColorsInitializedKey, true);
+        preferences.Set(GetManualColorsInitializedKey(isDark), true);
     }
 
-    private void LoadColorRoles(IReadOnlyDictionary<string, int> fallbackColors)
+    private void LoadColorRoles()
     {
-        var isManual = ColorMode == ColorMode.Manual;
-        var initialized = preferences.Get(ManualColorsInitializedKey, false);
+        LoadColorRoles(_darkColorRoles, true);
+        LoadColorRoles(_lightColorRoles, false);
+    }
 
-        foreach (var role in _colorRoles)
+    private void LoadColorRoles(List<ColorRole> roles, bool isDark)
+    {
+        var fallbackColors = GetDerivedColors(isDark);
+
+        if (isDark)
+        {
+            MigrateLegacyManualColors(roles, fallbackColors);
+        }
+
+        foreach (var role in roles)
         {
             var fallback = fallbackColors.TryGetValue(role.Key, out var value)
                 ? value
                 : FallbackSeed.ToInt();
-            var stored = preferences.Get(ManualColorPrefix + role.Key, fallback);
+            var stored = preferences.Get(GetManualColorKey(isDark, role.Key), fallback);
 
             role.Color = Color.FromInt(stored);
-
-            if (isManual && !initialized)
-            {
-                preferences.Set(ManualColorPrefix + role.Key, stored);
-            }
-        }
-
-        if (isManual && !initialized)
-        {
-            preferences.Set(ManualColorsInitializedKey, true);
         }
     }
 
-    private void OnColorRoleChanged(ColorRole role)
+    private void MigrateLegacyManualColors(List<ColorRole> roles,
+        IReadOnlyDictionary<string, int> fallbackColors)
+    {
+        if (preferences.Get(DarkManualColorsInitializedKey, false) ||
+            !preferences.Get(LegacyManualColorsInitializedKey, false))
+        {
+            return;
+        }
+
+        foreach (var role in roles)
+        {
+            var legacyKey = LegacyManualColorPrefix + role.Key;
+
+            if (!preferences.ContainsKey(legacyKey))
+            {
+                continue;
+            }
+
+            var fallback = fallbackColors.TryGetValue(role.Key, out var value)
+                ? value
+                : FallbackSeed.ToInt();
+            preferences.Set(GetManualColorKey(true, role.Key),
+                preferences.Get(legacyKey, fallback));
+        }
+
+        preferences.Set(DarkManualColorsInitializedKey, true);
+    }
+
+    private static string GetManualColorKey(bool isDark, string role) =>
+        (isDark ? DarkManualColorPrefix : LightManualColorPrefix) + role;
+
+    private static string GetManualColorsInitializedKey(bool isDark) =>
+        isDark ? DarkManualColorsInitializedKey : LightManualColorsInitializedKey;
+
+    private void OnColorRoleChanged(ColorRole role, bool isDark)
     {
         if (_suspendApply)
         {
             return;
         }
 
-        preferences.Set(ManualColorPrefix + role.Key, role.Color.ToInt());
+        preferences.Set(GetManualColorKey(isDark, role.Key), role.Color.ToInt());
 
-        if (ColorMode == ColorMode.Manual)
+        if (ColorMode == ColorMode.Manual && IsDark == isDark)
         {
             _resources[role.Key] = role.Color;
             OnPropertyChanged(nameof(ShellColor));
@@ -448,7 +506,13 @@ public class AppearanceSettings(IPreferences preferences,
         AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
         SurfaceChroma = preferences.Get(nameof(SurfaceChroma), DefaultSurfaceChroma);
         BuildColorRoles();
-        LoadColorRoles(GetDerivedColors(IsDark));
+        LoadColorRoles();
+
+        if (ColorMode == ColorMode.Manual)
+        {
+            EnsureManualColorsInitialized();
+        }
+
         _suspendApply = false;
         UpdateTheme();
     }

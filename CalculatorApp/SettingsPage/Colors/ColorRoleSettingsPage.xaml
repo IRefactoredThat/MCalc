@@ -9,12 +9,15 @@
     xmlns:colorWheelSetting="clr-namespace:CalculatorApp.SettingsPage.Colors.ColorWheelSetting"
     x:Class="CalculatorApp.SettingsPage.Colors.ColorRoleSettingsPage"
     x:Name="ColorRoot"
-    x:DataType="appearance:AppearanceSettings"
-    Header="Custom palette">
+    x:DataType="colors:ColorRoleSettingsPage"
+    Header="Dark palette">
     <base:SettingsBasePage.SettingsContent>
         <VerticalStackLayout>
-            <Label Style="{StaticResource SettingSubheader}" Text="Custom palette"/>
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding ColorRoles}">
+            <Label
+                Style="{StaticResource SettingSubheader}"
+                Text="{Binding Source={x:Reference ColorRoot}, Path=Header}"/>
+            <VerticalStackLayout
+                BindableLayout.ItemsSource="{Binding Source={x:Reference ColorRoot}, Path=ColorRoles}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="appearance:ColorRole">
                         <colorWheelSetting:ColorWheelSetting
