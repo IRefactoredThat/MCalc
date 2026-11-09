@@ -24,6 +24,7 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
     private readonly Tokens _tokens;
     private readonly UserMessageDisplayer _userMessageDisplayer;
     private bool _isAnimating;
+    private int _outputVersion;
 
     public AnimationSettings AnimationSettings { get; }
     public FormattingSettings FormattingSettings { get; }
@@ -121,9 +122,19 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
 
     private async void UpdateOutput()
     {
+        var numberFormat = FormattingSettings.NumberFormatInfo;
+        var angleMode = AngleMode;
+        var version = ++_outputVersion;
+
         var result = await Task.Run(() => ExpressionParsingExtensions
-            .Parse(_tokens, FormattingSettings.NumberFormatInfo, AngleMode)
+            .Parse(_tokens, numberFormat, angleMode)
             .Map(ExpressionEvaluatingExtensions.EvaluateAndRound));
+
+        if (version != _outputVersion)
+        {
+            return;
+        }
+
         OutputViewModel.Update(result);
     }
 
