@@ -4,10 +4,9 @@ using CalculatorApp.SettingsPage.Appearance;
 
 namespace CalculatorApp.SettingsPage.Colors;
 
-public sealed class LightColorRoleSettingsPage : ColorRoleSettingsPage
-{
-    public LightColorRoleSettingsPage(AppearanceSettings appearanceSettings,
-        AnimationSettings animationSettings, ColorWheelDialog colorWheelDialog)
-        : base(appearanceSettings, animationSettings, colorWheelDialog,
-            appearanceSettings.LightColorRoles, false) { }
-}
+public sealed class LightColorRoleSettingsPage(
+    AppearanceSettings appearanceSettings,
+    AnimationSettings animationSettings,
+    ColorWheelDialog colorWheelDialog)
+    : ColorRoleSettingsPage(appearanceSettings, animationSettings, colorWheelDialog,
+        appearanceSettings.LightColorRoles, false);
