@@ -99,8 +99,11 @@ public partial class NumberPreview
         set => SetValue(ThousandSeparatorProperty, value);
     }
 
-    private static void OnFractionalPartLengthChanged(BindableObject bindable, object oldValue, object newValue) =>
+    private static void OnFractionalPartLengthChanged(BindableObject bindable, object oldValue, object newValue)
+    {
         UpdateDecimalPreview(bindable);
+        UpdateENotationPreview(bindable);
+    }
 
     private static void OnMaxLengthChanged(BindableObject bindable, object oldValue, object newValue)
     {

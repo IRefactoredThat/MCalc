@@ -92,7 +92,9 @@ public class FormattingSettings(IPreferences preferences) :
         {
             Number.Precision = value;
             field = Number.Precision;
+            preferences.Set(nameof(Precision), field);
             OnPropertyChanged();
+            OnPropertyChanged(nameof(ENotationExponentThreshold));
         }
     }
 
@@ -145,8 +147,9 @@ public class FormattingSettings(IPreferences preferences) :
 
         var absValue = value.Abs();
 
-        var eNotationDigits = (ENotation == ENotation.Auto ?
-            AutoENotationDigits : 0) + Number.Precision;
+        var eNotationDigits = ENotation == ENotation.Auto
+            ? AutoENotationDigits
+            : 0;
 
         var minDisplay = Number.Ten.PowInteger(-eNotationDigits);
         var maxDisplay = Number.Ten.PowInteger(eNotationDigits);
