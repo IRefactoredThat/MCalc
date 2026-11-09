@@ -137,7 +137,9 @@ public class CalculatorPageViewModel : INotifyPropertyChanged
         OutputViewModel.ConsumeResult(async result =>
         {
             _isAnimating = true;
-            var resultToken = new NumberToken(result, FormattingSettings.DecimalSeparator);
+            var resultToken = new NumberToken(
+                FormattingSettings.Format(result, useGrouping: false),
+                FormattingSettings.DecimalSeparator);
             if (HistorySettings.HistoryEnabled)
             {
                 var item = new HistoryItem

@@ -128,12 +128,14 @@ public class FormattingSettings(IPreferences preferences) :
 
     public const int WholePartLength = 6;
 
-    public string Format(Number value)
+    public string Format(Number value) => Format(value, useGrouping: true);
+
+    public string Format(Number value, bool useGrouping)
     {
         var fractionFormat = Number.Precision > 0
             ? $".{new string('#', Number.Precision)}"
             : string.Empty;
-        var decimalFormat = $"#,0{fractionFormat}";
+        var decimalFormat = useGrouping ? $"#,0{fractionFormat}" : $"#0{fractionFormat}";
         var scientificFormat = $"0{fractionFormat}E+0";
 
         if (value.IsZero() || ENotation == ENotation.Disabled)

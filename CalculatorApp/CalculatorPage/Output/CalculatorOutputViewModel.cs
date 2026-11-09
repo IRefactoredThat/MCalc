@@ -39,16 +39,16 @@ public class CalculatorOutputViewModel : INotifyPropertyChanged
         Output = newResult.ValueOrDefault(_formattingSettings.Format, string.Empty);
     }
 
-    public void ConsumeResult(Action<string> setResult, Action<Error> onError)
+    public void ConsumeResult(Action<Number> setResult, Action<Error> onError)
     {
         if (_calculation.Result is null)
         {
             onError(new EmptyExpression());
             return;
         }
-        _calculation.Result?.Switch(_ =>
+        _calculation.Result?.Switch(result =>
         {
-            setResult(Output);
+            setResult(result);
             _calculation.Result = null;
         }, onError);
     }
