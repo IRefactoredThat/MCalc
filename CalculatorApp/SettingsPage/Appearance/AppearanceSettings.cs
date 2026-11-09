@@ -50,6 +50,7 @@ public class AppearanceSettings(IPreferences preferences,
         nameof(MaterialScheme.Outline),
         nameof(MaterialScheme.OutlineVariant),
     ];
+
     private static readonly Dictionary<string, int> AmoledColors = new()
     {
         [nameof(MaterialScheme.Background)] = 1,
@@ -71,29 +72,50 @@ public class AppearanceSettings(IPreferences preferences,
     private (Style Style, int Argb, bool IsDark) _seededKey;
     private bool _suspendApply;
     private bool _applyingPreset;
-    private ColorPreset _darkColorPreset = ColorPreset.Custom;
-    private ColorPreset _lightColorPreset = ColorPreset.Custom;
 
     public IReadOnlyList<ColorRole> DarkColorRoles => _darkColorRoles;
     public IReadOnlyList<ColorRole> LightColorRoles => _lightColorRoles;
 
     public ColorPreset DarkColorPreset
     {
-        get => _darkColorPreset;
-        set => SetColorPreset(true, value);
+        get;
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            OnColorPresetChanged(true, value);
+        }
     }
 
     public ColorPreset LightColorPreset
     {
-        get => _lightColorPreset;
-        set => SetColorPreset(false, value);
+        get;
+        set
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            OnColorPresetChanged(false, value);
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    private void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
+    private void OnPropertyChanged([CallerMemberName] string? propertyName = null) =>
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    private void ApplyAndNotify([CallerMemberName] string? propertyName = null)
+    {
+        Apply();
+        OnPropertyChanged(propertyName);
+        OnPropertyChanged(nameof(ShellColor));
     }
 
     public Color GetColorByName(string name) => (Color)_resources[name];
@@ -122,15 +144,13 @@ public class AppearanceSettings(IPreferences preferences,
         _ => Theme.Auto,
     };
 
-    private static void SetTheme(Theme theme)
-    {
+    private static void SetTheme(Theme theme) =>
         Application.Current!.UserAppTheme = theme switch
         {
             Theme.Dark => AppTheme.Dark,
             Theme.Light => AppTheme.Light,
             _ => AppTheme.Unspecified
         };
-    }
 
     public bool AmoledEnabled
     {
@@ -139,11 +159,7 @@ public class AppearanceSettings(IPreferences preferences,
         {
             preferences.Set(nameof(AmoledEnabled), value);
             field = value;
-
-            Apply();
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     }
 
@@ -157,11 +173,7 @@ public class AppearanceSettings(IPreferences preferences,
         {
             field = value;
             preferences.Set(nameof(DynamicColors), value);
-
-            Apply();
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     }
 
@@ -172,10 +184,7 @@ public class AppearanceSettings(IPreferences preferences,
         {
             field = value;
             preferences.Set(nameof(Style), (int)value);
-            Apply();
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     }
 
@@ -203,9 +212,7 @@ public class AppearanceSettings(IPreferences preferences,
                 LoadColorPresets();
             }
 
-            Apply();
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     }
 
@@ -216,10 +223,7 @@ public class AppearanceSettings(IPreferences preferences,
         {
             field = value;
             preferences.Set(nameof(SeedColor), value.ToInt());
-            Apply();
-
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     } = FallbackSeed;
 
@@ -230,15 +234,23 @@ public class AppearanceSettings(IPreferences preferences,
         {
             field = value;
             preferences.Set(nameof(SurfaceChroma), value);
-            Apply();
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(ShellColor));
+            ApplyAndNotify();
         }
     } = DefaultSurfaceChroma;
 
-    public Color ShellColor => Shell.Current?.CurrentPage is CalculatorGridPage
-        ? (Color)_resources[nameof(MaterialScheme.SurfaceContainerHighest)]
-        : (Color)_resources[nameof(MaterialScheme.Surface)];
+    public Color ShellColor => GetColorByName(
+        Shell.Current?.CurrentPage is CalculatorGridPage
+            ? nameof(MaterialScheme.SurfaceContainerHighest)
+            : nameof(MaterialScheme.Surface));
+
+    private List<ColorRole> GetRoles(bool isDark) =>
+        isDark ? _darkColorRoles : _lightColorRoles;
+
+    private static void ForBothThemes(Action<bool> action)
+    {
+        action(true);
+        action(false);
+    }
 
     private void Apply()
     {
@@ -260,12 +272,32 @@ public class AppearanceSettings(IPreferences preferences,
                 { Key: var key, RoleColors: { Count: > 0 } roleColors }
             && key == currentKey)
         {
-            ApplyCachedColors(roleColors);
+            foreach (var (name, value) in roleColors)
+            {
+                SetResource(name, Color.FromInt(value));
+            }
+
             return;
         }
 
-        ApplyColors(GetDerivedColors(isDark));
+        foreach (var (name, value) in GetDerivedColors(isDark))
+        {
+            SetResource(name, Color.FromInt(value));
+            schemeStorage.SetColorRole(name, value);
+        }
+
         _ = Task.Run(schemeStorage.Save);
+    }
+
+    private void SetResource(string name, Color color)
+    {
+        if (_resources.TryGetValue(name, out var current) &&
+            current is Color existing && existing.Equals(color))
+        {
+            return;
+        }
+
+        _resources[name] = color;
     }
 
     private MaterialScheme GetSeedScheme(int argb, bool isDark)
@@ -312,41 +344,11 @@ public class AppearanceSettings(IPreferences preferences,
         return colors;
     }
 
-    private void ApplyCachedColors(IReadOnlyDictionary<string, int> roleColors)
-    {
-        foreach (var (name, value) in roleColors)
-        {
-            _resources[name] = Color.FromInt(value);
-        }
-    }
-
-    private void ApplyColors(IReadOnlyDictionary<string, int> colors)
-    {
-        foreach (var (name, value) in colors)
-        {
-            if (!_resources.TryGetValue(name, out var current) ||
-                current is not Color color || color.ToInt() != value)
-            {
-                _resources[name] = Color.FromInt(value);
-            }
-
-            schemeStorage.SetColorRole(name, value);
-        }
-    }
-
     private void ApplyManualColors()
     {
-        var roles = IsDark ? _darkColorRoles : _lightColorRoles;
-
-        foreach (var role in roles)
+        foreach (var role in GetRoles(IsDark))
         {
-            var color = GetManualColor(role);
-
-            if (!_resources.TryGetValue(role.Name, out var current) ||
-                current is not Color existing || !color.Equals(existing))
-            {
-                _resources[role.Name] = color;
-            }
+            SetResource(role.Name, GetManualColor(role));
         }
     }
 
@@ -383,41 +385,30 @@ public class AppearanceSettings(IPreferences preferences,
         _ => throw new ArgumentOutOfRangeException(nameof(Style), Style, null)
     };
 
-    private void BuildColorRoles()
+    private void BuildColorRoles(bool isDark)
     {
-        BuildColorRoles(_darkColorRoles, true);
-        BuildColorRoles(_lightColorRoles, false);
-    }
+        var roles = GetRoles(isDark);
 
-    private void BuildColorRoles(List<ColorRole> roles, bool isDark)
-    {
         if (roles.Count > 0)
         {
             return;
         }
 
         using var enumerator = ColorRole.GetAllDefinitions().GetEnumerator();
+        var hasNext = enumerator.MoveNext();
 
-        if (enumerator.MoveNext())
+        while (hasNext)
         {
-            var hasNext = true;
+            var definition = enumerator.Current;
+            hasNext = enumerator.MoveNext();
 
-            while (hasNext)
-            {
-                var definition = enumerator.Current;
-                hasNext = enumerator.MoveNext();
+            var corners = hasNext
+                ? new CornerRadius(5)
+                : new CornerRadius(5, 5, 15, 15);
 
-                var corners = hasNext
-                    ? new CornerRadius(5)
-                    : new CornerRadius(5, 5, 15, 15);
-
-                roles.Add(new ColorRole(definition, corners, FallbackSeed, ColorChanged));
-            }
+            roles.Add(new ColorRole(definition, corners, FallbackSeed,
+                role => OnColorRoleChanged(role, isDark)));
         }
-
-        return;
-
-        void ColorChanged(ColorRole role) => OnColorRoleChanged(role, isDark);
     }
 
     private void EnsureManualColorsInitialized()
@@ -425,13 +416,12 @@ public class AppearanceSettings(IPreferences preferences,
         var wasSuspended = _suspendApply;
         _suspendApply = true;
 
-        EnsureManualColorsInitialized(_darkColorRoles, true);
-        EnsureManualColorsInitialized(_lightColorRoles, false);
+        ForBothThemes(EnsureManualColorsInitialized);
 
         _suspendApply = wasSuspended;
     }
 
-    private void EnsureManualColorsInitialized(List<ColorRole> roles, bool isDark)
+    private void EnsureManualColorsInitialized(bool isDark)
     {
         if (preferences.Get(GetManualColorsInitializedKey(isDark), false))
         {
@@ -440,11 +430,9 @@ public class AppearanceSettings(IPreferences preferences,
 
         var fallbackColors = GetDerivedColors(isDark, applyAmoled: false);
 
-        foreach (var role in roles)
+        foreach (var role in GetRoles(isDark))
         {
-            var value = fallbackColors.TryGetValue(role.Name, out var fallback)
-                ? fallback
-                : FallbackSeed.ToInt();
+            var value = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
 
             role.Color = Color.FromInt(value);
             preferences.Set(GetManualColorKey(isDark, role.Name), value);
@@ -453,14 +441,9 @@ public class AppearanceSettings(IPreferences preferences,
         preferences.Set(GetManualColorsInitializedKey(isDark), true);
     }
 
-    private void LoadColorRoles()
+    private void LoadColorRoles(bool isDark)
     {
-        LoadColorRoles(_darkColorRoles, true);
-        LoadColorRoles(_lightColorRoles, false);
-    }
-
-    private void LoadColorRoles(List<ColorRole> roles, bool isDark)
-    {
+        var roles = GetRoles(isDark);
         var fallbackColors = GetDerivedColors(isDark, applyAmoled: false);
 
         if (isDark)
@@ -470,12 +453,10 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in roles)
         {
-            var fallback = fallbackColors.TryGetValue(role.Name, out var value)
-                ? value
-                : FallbackSeed.ToInt();
-            var stored = preferences.Get(GetManualColorKey(isDark, role.Name), fallback);
+            var fallback = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
 
-            role.Color = Color.FromInt(stored);
+            role.Color = Color.FromInt(
+                preferences.Get(GetManualColorKey(isDark, role.Name), fallback));
         }
     }
 
@@ -490,16 +471,15 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in roles)
         {
-            var legacyKey = LegacyManualColorPrefix + role.Name;
+            var legacyKey = $"{LegacyManualColorPrefix}{role.Name}";
 
             if (!preferences.ContainsKey(legacyKey))
             {
                 continue;
             }
 
-            var fallback = fallbackColors.TryGetValue(role.Name, out var value)
-                ? value
-                : FallbackSeed.ToInt();
+            var fallback = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
+
             preferences.Set(GetManualColorKey(true, role.Name),
                 preferences.Get(legacyKey, fallback));
         }
@@ -545,23 +525,17 @@ public class AppearanceSettings(IPreferences preferences,
         isDark ? DarkColorPresetKey : LightColorPresetKey;
 
     private ColorPreset GetColorPreset(bool isDark) =>
-        isDark ? _darkColorPreset : _lightColorPreset;
+        isDark ? DarkColorPreset : LightColorPreset;
 
-    private void SetColorPreset(bool isDark, ColorPreset preset)
+    private void OnColorPresetChanged(bool isDark, ColorPreset preset)
     {
-        if (GetColorPreset(isDark) == preset)
-        {
-            return;
-        }
-
         if (ColorPresets.TryGetColors(preset, isDark, out var colors))
         {
-            var roles = isDark ? _darkColorRoles : _lightColorRoles;
-
             _applyingPreset = true;
+
             try
             {
-                foreach (var role in roles)
+                foreach (var role in GetRoles(isDark))
                 {
                     if (colors.TryGetValue(role.Name, out var value))
                     {
@@ -575,15 +549,6 @@ public class AppearanceSettings(IPreferences preferences,
             }
         }
 
-        if (isDark)
-        {
-            _darkColorPreset = preset;
-        }
-        else
-        {
-            _lightColorPreset = preset;
-        }
-
         preferences.Set(GetColorPresetKey(isDark), (int)preset);
         OnPropertyChanged(isDark
             ? nameof(DarkColorPreset)
@@ -592,33 +557,19 @@ public class AppearanceSettings(IPreferences preferences,
 
     private void LoadColorPresets()
     {
-        var darkPreset = LoadColorPreset(true);
-        var lightPreset = LoadColorPreset(false);
-
-        if (_darkColorPreset != darkPreset)
-        {
-            _darkColorPreset = darkPreset;
-            OnPropertyChanged(nameof(DarkColorPreset));
-        }
-
-        if (_lightColorPreset != lightPreset)
-        {
-            _lightColorPreset = lightPreset;
-            OnPropertyChanged(nameof(LightColorPreset));
-        }
+        DarkColorPreset = LoadColorPreset(true);
+        LightColorPreset = LoadColorPreset(false);
     }
 
     private ColorPreset LoadColorPreset(bool isDark)
     {
-        var value = preferences.Get(GetColorPresetKey(isDark),
-            (int)ColorPreset.Custom);
-        var preset = Enum.IsDefined(typeof(ColorPreset), value)
+        var value = preferences.Get(GetColorPresetKey(isDark), (int)ColorPreset.Custom);
+        var preset = Enum.IsDefined((ColorPreset)value)
             ? (ColorPreset)value
             : ColorPreset.Custom;
-        var roles = isDark ? _darkColorRoles : _lightColorRoles;
 
         if (preset != ColorPreset.Custom &&
-            !ColorPresets.Matches(preset, isDark, roles))
+            !ColorPresets.Matches(preset, isDark, GetRoles(isDark)))
         {
             preset = ColorPreset.Custom;
             preferences.Set(GetColorPresetKey(isDark), (int)preset);
@@ -638,12 +589,19 @@ public class AppearanceSettings(IPreferences preferences,
 
         if (!_applyingPreset && GetColorPreset(isDark) != ColorPreset.Custom)
         {
-            SetColorPreset(isDark, ColorPreset.Custom);
+            if (isDark)
+            {
+                DarkColorPreset = ColorPreset.Custom;
+            }
+            else
+            {
+                LightColorPreset = ColorPreset.Custom;
+            }
         }
 
         if (ColorMode == ColorMode.Manual && IsDark == isDark)
         {
-            _resources[role.Name] = GetManualColor(role);
+            SetResource(role.Name, GetManualColor(role));
             OnPropertyChanged(nameof(ShellColor));
         }
     }
@@ -651,7 +609,7 @@ public class AppearanceSettings(IPreferences preferences,
     public void Initialize(ResourceDictionary resourceDictionary)
     {
         _resources = resourceDictionary;
-        BuildColorRoles();
+        ForBothThemes(BuildColorRoles);
         Application.Current!.RequestedThemeChanged += OnThemeChanged;
     }
 
@@ -666,8 +624,8 @@ public class AppearanceSettings(IPreferences preferences,
         PreferredTheme = (Theme)preferences.Get(nameof(PreferredTheme), 0);
         AmoledEnabled = preferences.Get(nameof(AmoledEnabled), false);
         SurfaceChroma = preferences.Get(nameof(SurfaceChroma), DefaultSurfaceChroma);
-        BuildColorRoles();
-        LoadColorRoles();
+        ForBothThemes(BuildColorRoles);
+        ForBothThemes(LoadColorRoles);
         RepairAmoledSeededManualColors();
 
         if (ColorMode == ColorMode.Manual)
@@ -680,10 +638,8 @@ public class AppearanceSettings(IPreferences preferences,
         UpdateTheme();
     }
 
-    private void OnThemeChanged(object? sender, AppThemeChangedEventArgs e)
-    {
+    private void OnThemeChanged(object? sender, AppThemeChangedEventArgs e) =>
         UpdateTheme();
-    }
 
     private void UpdateTheme()
     {
@@ -695,8 +651,6 @@ public class AppearanceSettings(IPreferences preferences,
         OnPropertyChanged(nameof(ShellColor));
     }
 
-    public void OnNavigated(object? sender, ShellNavigatedEventArgs e)
-    {
+    public void OnNavigated(object? sender, ShellNavigatedEventArgs e) =>
         OnPropertyChanged(nameof(ShellColor));
-    }
 }
