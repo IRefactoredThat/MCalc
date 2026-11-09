@@ -67,7 +67,7 @@ public static class PaletteCreator
             "f7768e", "ff9e64", "e0af68", "9ece6a",
             "7dcfff", "7aa2f7", "bb9af7", "2ac3de"),
         (ColorPreset.Solarized, false) => Palette(
-            "fdf6e3", "eee8d5", "93a1a1", "839496",
+            "fdf6e3", "eee8d5", "eee8d5", "839496",
             "657b83", "586e75", "073642", "002b36",
             "dc322f", "cb4b16", "b58900", "859900",
             "2aa198", "268bd2", "6c71c4", "d33682"),
