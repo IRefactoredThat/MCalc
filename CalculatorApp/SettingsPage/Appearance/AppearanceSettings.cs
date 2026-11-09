@@ -348,14 +348,14 @@ public class AppearanceSettings(IPreferences preferences,
     {
         foreach (var role in GetRoles(IsDark))
         {
-            SetResource(role.Name, GetManualColor(role));
+            SetResource(role.Key, GetManualColor(role));
         }
     }
 
     private Color GetManualColor(ColorRole role)
     {
         if (!AmoledEnabled || !IsDark ||
-            !AmoledColors.TryGetValue(role.Name, out var tone))
+            !AmoledColors.TryGetValue(role.Key, out var tone))
         {
             return role.Color;
         }
@@ -432,10 +432,10 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in GetRoles(isDark))
         {
-            var value = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
+            var value = fallbackColors.GetValueOrDefault(role.Key, FallbackSeed.ToInt());
 
             role.Color = Color.FromInt(value);
-            preferences.Set(GetManualColorKey(isDark, role.Name), value);
+            preferences.Set(GetManualColorKey(isDark, role.Key), value);
         }
 
         preferences.Set(GetManualColorsInitializedKey(isDark), true);
@@ -453,10 +453,10 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in roles)
         {
-            var fallback = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
+            var fallback = fallbackColors.GetValueOrDefault(role.Key, FallbackSeed.ToInt());
 
             role.Color = Color.FromInt(
-                preferences.Get(GetManualColorKey(isDark, role.Name), fallback));
+                preferences.Get(GetManualColorKey(isDark, role.Key), fallback));
         }
     }
 
@@ -471,16 +471,16 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in roles)
         {
-            var legacyKey = $"{LegacyManualColorPrefix}{role.Name}";
+            var legacyKey = $"{LegacyManualColorPrefix}{role.Key}";
 
             if (!preferences.ContainsKey(legacyKey))
             {
                 continue;
             }
 
-            var fallback = fallbackColors.GetValueOrDefault(role.Name, FallbackSeed.ToInt());
+            var fallback = fallbackColors.GetValueOrDefault(role.Key, FallbackSeed.ToInt());
 
-            preferences.Set(GetManualColorKey(true, role.Name),
+            preferences.Set(GetManualColorKey(true, role.Key),
                 preferences.Get(legacyKey, fallback));
         }
 
@@ -501,9 +501,9 @@ public class AppearanceSettings(IPreferences preferences,
 
         foreach (var role in _darkColorRoles)
         {
-            if (!AmoledColors.ContainsKey(role.Name) ||
-                !baseColors.TryGetValue(role.Name, out var baseValue) ||
-                !amoledColors.TryGetValue(role.Name, out var amoledValue) ||
+            if (!AmoledColors.ContainsKey(role.Key) ||
+                !baseColors.TryGetValue(role.Key, out var baseValue) ||
+                !amoledColors.TryGetValue(role.Key, out var amoledValue) ||
                 baseValue == amoledValue ||
                 role.Color.ToInt() != amoledValue)
             {
@@ -511,7 +511,7 @@ public class AppearanceSettings(IPreferences preferences,
             }
 
             role.Color = Color.FromInt(baseValue);
-            preferences.Set(GetManualColorKey(true, role.Name), baseValue);
+            preferences.Set(GetManualColorKey(true, role.Key), baseValue);
         }
     }
 
@@ -537,7 +537,7 @@ public class AppearanceSettings(IPreferences preferences,
             {
                 foreach (var role in GetRoles(isDark))
                 {
-                    if (colors.TryGetValue(role.Name, out var value))
+                    if (colors.TryGetValue(role.Key, out var value))
                     {
                         role.Color = Color.FromInt(value);
                     }
@@ -585,7 +585,7 @@ public class AppearanceSettings(IPreferences preferences,
             return;
         }
 
-        preferences.Set(GetManualColorKey(isDark, role.Name), role.Color.ToInt());
+        preferences.Set(GetManualColorKey(isDark, role.Key), role.Color.ToInt());
 
         if (!_applyingPreset && GetColorPreset(isDark) != ColorPreset.Custom)
         {
@@ -601,7 +601,7 @@ public class AppearanceSettings(IPreferences preferences,
 
         if (ColorMode == ColorMode.Manual && IsDark == isDark)
         {
-            SetResource(role.Name, GetManualColor(role));
+            SetResource(role.Key, GetManualColor(role));
             OnPropertyChanged(nameof(ShellColor));
         }
     }

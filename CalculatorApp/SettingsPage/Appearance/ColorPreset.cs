@@ -37,7 +37,7 @@ public static class ColorPresets
 
         foreach (var role in roles)
         {
-            if (!colors.TryGetValue(role.Name, out var value) ||
+            if (!colors.TryGetValue(role.Key, out var value) ||
                 role.Color.ToInt() != value)
             {
                 return false;
