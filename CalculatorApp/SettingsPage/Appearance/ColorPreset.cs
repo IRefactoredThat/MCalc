@@ -37,7 +37,7 @@ public static class ColorPresets
 
         foreach (var role in roles)
         {
-            if (!colors.TryGetValue(role.Key, out var value) ||
+            if (!colors.TryGetValue(role.Name, out var value) ||
                 role.Color.ToInt() != value)
             {
                 return false;
@@ -66,7 +66,7 @@ public static class ColorPresets
             : Mix(muted, onSurface, 0.55);
         var outlineColor = isDark ? outline : Mix(outline, onSurface, 0.25);
 
-        return new Dictionary<string, int>(ColorRoleDefinitions.All.Count)
+        return new Dictionary<string, int>
         {
             [nameof(MaterialScheme.Primary)] = primary,
             [nameof(MaterialScheme.OnPrimary)] = background,

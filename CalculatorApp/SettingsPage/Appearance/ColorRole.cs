@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace CalculatorApp.SettingsPage.Appearance;
 
-public readonly record struct ColorRoleDefinition(string Key, string Description);
+public readonly record struct ColorRoleDefinition(string Name, string Description);
 
 public sealed class ColorRole(
     ColorRoleDefinition definition,
@@ -19,8 +19,7 @@ public sealed class ColorRole(
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    public string Key { get; } = definition.Key;
-    public string Name { get; } = Humanize(definition.Key);
+    public string Name { get; } = definition.Name;
     public string Description { get; } = definition.Description;
     public CornerRadius Corners { get; } = corners;
 
@@ -40,70 +39,42 @@ public sealed class ColorRole(
         }
     } = color;
 
-    private static string Humanize(string key)
+    public static IEnumerable<ColorRoleDefinition> GetAllDefinitions()
     {
-        var name = new char[key.Length + 4];
-        var length = 0;
-
-        for (var index = 0; index < key.Length; index++)
-        {
-            var character = key[index];
-
-            if (index > 0 && char.IsUpper(character))
-            {
-                name[length++] = ' ';
-                character = char.ToLowerInvariant(character);
-            }
-            else if (index == 0)
-            {
-                character = char.ToUpperInvariant(character);
-            }
-
-            name[length++] = character;
-        }
-
-        return new string(name, 0, length);
+        yield return new ColorRoleDefinition("Primary", "Main accent color");
+        yield return new ColorRoleDefinition("On primary", "Content shown on primary");
+        yield return new ColorRoleDefinition("Primary container", "Prominent primary surfaces");
+        yield return new ColorRoleDefinition("On primary container", "Content shown on primary container");
+        yield return new ColorRoleDefinition("Secondary", "Supporting accent color");
+        yield return new ColorRoleDefinition("On secondary", "Content shown on secondary");
+        yield return new ColorRoleDefinition("Secondary container", "Prominent secondary surfaces");
+        yield return new ColorRoleDefinition("On secondary container", "Content shown on secondary container");
+        yield return new ColorRoleDefinition("Tertiary", "Contrasting accent color");
+        yield return new ColorRoleDefinition("On tertiary", "Content shown on tertiary");
+        yield return new ColorRoleDefinition("Tertiary container", "Prominent tertiary surfaces");
+        yield return new ColorRoleDefinition("On tertiary container", "Content shown on tertiary container");
+        yield return new ColorRoleDefinition("Error", "Error and destructive actions");
+        yield return new ColorRoleDefinition("On error", "Content shown on error");
+        yield return new ColorRoleDefinition("Error container", "Prominent error surfaces");
+        yield return new ColorRoleDefinition("On error container", "Content shown on error container");
+        yield return new ColorRoleDefinition("Background", "App background");
+        yield return new ColorRoleDefinition("On background", "Content shown on background");
+        yield return new ColorRoleDefinition("Surface", "Default surface color");
+        yield return new ColorRoleDefinition("On surface", "Content shown on surface");
+        yield return new ColorRoleDefinition("Surface variant", "Alternative surface color");
+        yield return new ColorRoleDefinition("On surface variant", "Content shown on surface variant");
+        yield return new ColorRoleDefinition("Outline", "Borders and separators");
+        yield return new ColorRoleDefinition("Shadow", "Drop shadow color");
+        yield return new ColorRoleDefinition("Inverse surface", "High-contrast inverse surface");
+        yield return new ColorRoleDefinition("Inverse on surface", "Content shown on inverse surface");
+        yield return new ColorRoleDefinition("Inverse primary", "Primary color on inverse surface");
+        yield return new ColorRoleDefinition("Surface dim", "Dimmed surface color");
+        yield return new ColorRoleDefinition("Surface bright", "Brightened surface color");
+        yield return new ColorRoleDefinition("Surface container lowest", "Lowest-emphasis container");
+        yield return new ColorRoleDefinition("Surface container low", "Low-emphasis container");
+        yield return new ColorRoleDefinition("Surface container", "Standard container");
+        yield return new ColorRoleDefinition("Surface container high", "High-emphasis container");
+        yield return new ColorRoleDefinition("Surface container highest", "Highest-emphasis container");
+        yield return new ColorRoleDefinition("Outline variant", "Subtle borders and separators");
     }
-}
-
-public static class ColorRoleDefinitions
-{
-    public static readonly IReadOnlyList<ColorRoleDefinition> All =
-    [
-        new(nameof(MaterialScheme.Primary), "Main accent color"),
-        new(nameof(MaterialScheme.OnPrimary), "Content shown on primary"),
-        new(nameof(MaterialScheme.PrimaryContainer), "Prominent primary surfaces"),
-        new(nameof(MaterialScheme.OnPrimaryContainer), "Content shown on primary container"),
-        new(nameof(MaterialScheme.Secondary), "Supporting accent color"),
-        new(nameof(MaterialScheme.OnSecondary), "Content shown on secondary"),
-        new(nameof(MaterialScheme.SecondaryContainer), "Prominent secondary surfaces"),
-        new(nameof(MaterialScheme.OnSecondaryContainer), "Content shown on secondary container"),
-        new(nameof(MaterialScheme.Tertiary), "Contrasting accent color"),
-        new(nameof(MaterialScheme.OnTertiary), "Content shown on tertiary"),
-        new(nameof(MaterialScheme.TertiaryContainer), "Prominent tertiary surfaces"),
-        new(nameof(MaterialScheme.OnTertiaryContainer), "Content shown on tertiary container"),
-        new(nameof(MaterialScheme.Error), "Error and destructive actions"),
-        new(nameof(MaterialScheme.OnError), "Content shown on error"),
-        new(nameof(MaterialScheme.ErrorContainer), "Prominent error surfaces"),
-        new(nameof(MaterialScheme.OnErrorContainer), "Content shown on error container"),
-        new(nameof(MaterialScheme.Background), "App background"),
-        new(nameof(MaterialScheme.OnBackground), "Content shown on background"),
-        new(nameof(MaterialScheme.Surface), "Default surface color"),
-        new(nameof(MaterialScheme.OnSurface), "Content shown on surface"),
-        new(nameof(MaterialScheme.SurfaceVariant), "Alternative surface color"),
-        new(nameof(MaterialScheme.OnSurfaceVariant), "Content shown on surface variant"),
-        new(nameof(MaterialScheme.Outline), "Borders and separators"),
-        new(nameof(MaterialScheme.Shadow), "Drop shadow color"),
-        new(nameof(MaterialScheme.InverseSurface), "High-contrast inverse surface"),
-        new(nameof(MaterialScheme.InverseOnSurface), "Content shown on inverse surface"),
-        new(nameof(MaterialScheme.InversePrimary), "Primary color on inverse surface"),
-        new(nameof(MaterialScheme.SurfaceDim), "Dimmed surface color"),
-        new(nameof(MaterialScheme.SurfaceBright), "Brightened surface color"),
-        new(nameof(MaterialScheme.SurfaceContainerLowest), "Lowest-emphasis container"),
-        new(nameof(MaterialScheme.SurfaceContainerLow), "Low-emphasis container"),
-        new(nameof(MaterialScheme.SurfaceContainer), "Standard container"),
-        new(nameof(MaterialScheme.SurfaceContainerHigh), "High-emphasis container"),
-        new(nameof(MaterialScheme.SurfaceContainerHighest), "Highest-emphasis container"),
-        new(nameof(MaterialScheme.OutlineVariant), "Subtle borders and separators"),
-    ];
 }
