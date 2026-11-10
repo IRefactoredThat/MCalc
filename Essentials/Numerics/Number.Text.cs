@@ -47,6 +47,12 @@ public readonly partial struct Number : IParsable<Number>
     {
         provider ??= CultureInfo.CurrentCulture;
 
+        if (_scale > Precision)
+        {
+            var rounded = FromScaled(_scaled.Rescale(_scale, Precision), Precision);
+            return rounded.ToString(format, provider);
+        }
+
         if (string.IsNullOrEmpty(format) || format is "G" or "g" or "R" or "r")
         {
             return FormatGeneral(provider, trim: true);

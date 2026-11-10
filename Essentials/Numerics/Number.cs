@@ -91,9 +91,14 @@ public readonly partial struct Number : IEquatable<Number>, IComparable<Number>,
     private BigInteger ToBigInteger() => _scaled / BigIntegerExtensions.Pow10(_scale);
 
     private static Number FromWorking(BigInteger scaled, int workingScale) =>
-        FromCurrentScale(scaled.Rescale(workingScale, Precision));
+        FromScaled(scaled, workingScale);
 
     public int CompareTo(Number other)
+    {
+        return ToScaled(Precision).CompareTo(other.ToScaled(Precision));
+    }
+
+    private int CompareExactTo(Number other)
     {
         if (_scale == other._scale)
         {
@@ -105,26 +110,11 @@ public readonly partial struct Number : IEquatable<Number>, IComparable<Number>,
         return ToScaled(scale).CompareTo(other.ToScaled(scale));
     }
 
-    public bool Equals(Number other)
-    {
-        if (IsZero() && other.IsZero())
-        {
-            return true;
-        }
-
-        if (_scale == other._scale)
-        {
-            return _scaled == other._scaled;
-        }
-
-        var scale = Math.Max(_scale, other._scale);
-
-        return ToScaled(scale) == other.ToScaled(scale);
-    }
+    public bool Equals(Number other) => CompareTo(other) == 0;
 
     public override bool Equals(object? obj) => obj is Number other && Equals(other);
 
-    public override int GetHashCode() => _scaled.GetHashCode();
+    public override int GetHashCode() => ToScaled(Precision).GetHashCode();
 
     public static bool operator ==(Number left, Number right) => left.Equals(right);
 

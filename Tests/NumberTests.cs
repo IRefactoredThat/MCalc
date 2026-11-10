@@ -44,6 +44,23 @@ public class NumberTests
         return value;
     }
 
+    [Test]
+    public void EqualityUsesPrecisionWhileRetainingWorkingDigits()
+    {
+        AtPrecision(3, () =>
+        {
+            var logarithm = Value(Number.E.Ln());
+
+            Number.Precision = 8;
+            Assert.That(logarithm, Is.Not.EqualTo(Number.One));
+
+            Number.Precision = 3;
+            Assert.That(logarithm, Is.EqualTo(Number.One));
+            Assert.That(logarithm.CompareTo(Number.One), Is.Zero);
+            Assert.That(logarithm.GetHashCode(), Is.EqualTo(Number.One.GetHashCode()));
+        });
+    }
+
     private static Error Error(Result<Number> result)
     {
         Error? error = null;
@@ -322,7 +339,7 @@ public class NumberTests
                 Assert.That(Text(Number.One.Csc()),
                     Is.EqualTo("1.188395105778121216261599452375"));
                 Assert.That(Text(Value(Number.One.Coth())),
-                    Is.EqualTo("1.31303528549933130363616124693"));
+                    Is.EqualTo("1.313035285499331303636161246931"));
             }
         });
 

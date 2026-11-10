@@ -884,7 +884,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sin2p");
 
-        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2.85664211604366420008")));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2.85664211604366420006")));
     }
 
     [Test]

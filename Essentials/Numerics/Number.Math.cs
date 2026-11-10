@@ -12,13 +12,17 @@ public readonly partial struct Number
 
     private static int WorkingScale => Precision + WorkingGuardDigits;
 
-    private static Result<Number> FromArithmetic(BigInteger scaled, OperatorToken token)
+    private static Result<Number> FromArithmetic(BigInteger scaled, OperatorToken token) =>
+        FromArithmetic(scaled, token, Precision);
+
+    private static Result<Number> FromArithmetic(
+        BigInteger scaled, OperatorToken token, int scale)
     {
-        if (scaled.ExceedsWholeDigitLimit(Precision))
+        if (scaled.ExceedsWholeDigitLimit(scale))
         {
             return new NumberOverflow(token);
         }
-        return FromCurrentScale(scaled);
+        return FromScaled(scaled, scale);
     }
 
     public Result<Number> AddTo(Number other)
@@ -28,11 +32,10 @@ public readonly partial struct Number
             return FromArithmetic(_scaled + other._scaled, PlusToken.Instance);
         }
 
-        var scale = Math.Max(_scale, other._scale);
-        var result = (ToScaled(scale) + other.ToScaled(scale))
-            .Rescale(scale, Precision);
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, Math.Max(_scale, other._scale)));
+        var result = ToScaled(scale) + other.ToScaled(scale);
 
-        return FromArithmetic(result, PlusToken.Instance);
+        return FromArithmetic(result, PlusToken.Instance, scale);
     }
 
     public Result<Number> SubtractFrom(Number other)
@@ -42,11 +45,10 @@ public readonly partial struct Number
             return FromArithmetic(_scaled - other._scaled, MinusToken.Instance);
         }
 
-        var scale = Math.Max(_scale, other._scale);
-        var result = (ToScaled(scale) - other.ToScaled(scale))
-            .Rescale(scale, Precision);
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, Math.Max(_scale, other._scale)));
+        var result = ToScaled(scale) - other.ToScaled(scale);
 
-        return FromArithmetic(result, MinusToken.Instance);
+        return FromArithmetic(result, MinusToken.Instance, scale);
     }
 
     public Result<Number> MultiplyWith(Number other)
@@ -57,11 +59,11 @@ public readonly partial struct Number
                 (_scaled * other._scaled).DivideRounded(ScaleFactor), TimesToken.Instance);
         }
 
-        var scale = Math.Max(_scale, other._scale);
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, Math.Max(_scale, other._scale)));
 
         var product = ToScaled(scale) * other.ToScaled(scale);
 
-        return FromArithmetic(product.Rescale(scale * 2, Precision), TimesToken.Instance);
+        return FromArithmetic(product.Rescale(scale * 2, scale), TimesToken.Instance, scale);
     }
 
     public Result<Number> DivideWith(Number other)
@@ -77,11 +79,12 @@ public readonly partial struct Number
                 (_scaled * ScaleFactor).DivideRounded(other._scaled), DivToken.Instance);
         }
 
-        var scale = Math.Max(_scale, other._scale);
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, Math.Max(_scale, other._scale)));
 
-        var dividend = ToScaled(scale) * BigIntegerExtensions.Pow10(Precision);
+        var dividend = ToScaled(scale) * BigIntegerExtensions.Pow10(scale);
 
-        return FromArithmetic(dividend.DivideRounded(other.ToScaled(scale)), DivToken.Instance);
+        return FromArithmetic(
+            dividend.DivideRounded(other.ToScaled(scale)), DivToken.Instance, scale);
     }
 
     public Result<Number> ModuloWith(Number other)
@@ -96,12 +99,12 @@ public readonly partial struct Number
             return FromArithmetic(_scaled.FlooredRemainder(other._scaled), PercentToken.Instance);
         }
 
-        var scale = Math.Max(_scale, other._scale);
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, Math.Max(_scale, other._scale)));
 
         var remainder = ToScaled(scale)
             .FlooredRemainder(other.ToScaled(scale));
 
-        return FromArithmetic(remainder.Rescale(scale, Precision), PercentToken.Instance);
+        return FromArithmetic(remainder, PercentToken.Instance, scale);
     }
 
     public Number Negate() => FromScaled(-_scaled, _scale);
@@ -110,7 +113,7 @@ public readonly partial struct Number
 
     public Result<Number> Ln()
     {
-        if (this <= Zero)
+        if (CompareExactTo(Zero) <= 0)
         {
             return new InvalidOperation(LnToken.Instance);
         }
@@ -122,7 +125,7 @@ public readonly partial struct Number
 
     public Result<Number> Log()
     {
-        if (this <= Zero)
+        if (CompareExactTo(Zero) <= 0)
         {
             return new InvalidOperation(LogToken.Instance);
         }
@@ -144,7 +147,7 @@ public readonly partial struct Number
                 return One;
             }
 
-            if (other < Zero)
+            if (other.CompareExactTo(Zero) < 0)
             {
                 return new InvalidOperation(CaretToken.Instance);
             }
@@ -157,7 +160,7 @@ public readonly partial struct Number
             return PowInteger(other.ToBigInteger());
         }
 
-        if (this < Zero)
+        if (CompareExactTo(Zero) < 0)
         {
             return new InvalidOperation(CaretToken.Instance);
         }
@@ -179,18 +182,18 @@ public readonly partial struct Number
 
         var magnitude = Abs();
 
-        if (magnitude == One)
+        if (magnitude.CompareExactTo(One) == 0)
         {
-            return this < Zero && !exponent.IsEven ? NegativeOne : One;
+            return CompareExactTo(Zero) < 0 && !exponent.IsEven ? NegativeOne : One;
         }
 
         var negative = exponent < 0;
         exponent = BigInteger.Abs(exponent);
 
-        var scale = Precision;
+        var scale = Math.Min(WorkingScale, Math.Max(Precision, _scale));
         var scaleFactor = BigIntegerExtensions.Pow10(scale);
 
-        if (!negative && magnitude > One)
+        if (!negative && magnitude.CompareExactTo(One) > 0)
         {
             var wholeBits = magnitude.ToScaled(0).GetBitLength() - 1;
 
@@ -264,7 +267,7 @@ public readonly partial struct Number
 
     public Result<Number> Sqrt()
     {
-        if (this < Zero)
+        if (CompareExactTo(Zero) < 0)
         {
             return new InvalidOperation(SqrtToken.Instance);
         }
@@ -387,7 +390,7 @@ public readonly partial struct Number
 
     public Result<Number> Asin(AngleMode mode = AngleMode.RAD)
     {
-        if (this < NegativeOne || this > One)
+        if (CompareExactTo(NegativeOne) < 0 || CompareExactTo(One) > 0)
         {
             return new InvalidOperation(AsinToken.Instance);
         }
@@ -409,7 +412,7 @@ public readonly partial struct Number
 
     public Result<Number> Acos(AngleMode mode = AngleMode.RAD)
     {
-        if (this < NegativeOne || this > One)
+        if (CompareExactTo(NegativeOne) < 0 || CompareExactTo(One) > 0)
         {
             return new InvalidOperation(AcosToken.Instance);
         }
@@ -506,7 +509,7 @@ public readonly partial struct Number
 
     public Number Asinh()
     {
-        if (this < Zero)
+        if (CompareExactTo(Zero) < 0)
         {
             return Negate().Asinh().Negate();
         }
@@ -523,7 +526,7 @@ public readonly partial struct Number
 
     public Result<Number> Acosh()
     {
-        if (this < One)
+        if (CompareExactTo(One) < 0)
         {
             return new InvalidOperation(AcoshToken.Instance);
         }
@@ -540,7 +543,7 @@ public readonly partial struct Number
 
     public Result<Number> Atanh()
     {
-        if (this <= NegativeOne || this >= One)
+        if (CompareExactTo(NegativeOne) <= 0 || CompareExactTo(One) >= 0)
         {
             return new InvalidOperation(AtanhToken.Instance);
         }
@@ -628,7 +631,7 @@ public readonly partial struct Number
 
     public Result<Number> Asec(AngleMode mode = AngleMode.RAD)
     {
-        if (Abs() < One)
+        if (Abs().CompareExactTo(One) < 0)
         {
             return new InvalidOperation(AsecToken.Instance);
         }
@@ -650,7 +653,7 @@ public readonly partial struct Number
 
     public Result<Number> Acsc(AngleMode mode = AngleMode.RAD)
     {
-        if (Abs() < One)
+        if (Abs().CompareExactTo(One) < 0)
         {
             return new InvalidOperation(AcscToken.Instance);
         }
@@ -687,7 +690,7 @@ public readonly partial struct Number
 
     public Result<Number> Factorial()
     {
-        if (!IsInteger() || this < Zero)
+        if (!IsInteger() || CompareExactTo(Zero) < 0)
         {
             return new InvalidOperation(ExclamationMarkToken.Instance);
         }
