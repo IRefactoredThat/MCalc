@@ -8,9 +8,9 @@ using Context = Android.Content.Context;
 using RectF = Android.Graphics.RectF;
 using View = Android.Views.View;
 
-namespace CalculatorApp.Platforms.Android.HueWheel;
+namespace CalculatorApp.Platforms.Android.ColorWheel;
 
-public sealed class WheelView : View
+public sealed class ColorWheelView : View
 {
     private const int HueSteps = 360;
     private const float Inset = 30f;
@@ -37,9 +37,10 @@ public sealed class WheelView : View
 
     private static readonly int[] HueColors = CreateHueColors();
 
+    public Action<Color>? ColorChanged;
     public Color MauiColor => Color.FromHsv(_hue / 360f, _saturation, _value);
 
-    public WheelView(Context context) : base(context)
+    public ColorWheelView(Context context) : base(context)
     {
         _ringWidth = context.ToPixels(10f);
         _ringGap = context.ToPixels(14f);
@@ -86,10 +87,8 @@ public sealed class WheelView : View
         _x = w / 2f;
         _y = h / 2f;
 
-        // Outer edge of everything, same Inset as before.
         var outer = float.Max(float.Min(w, h) / 2f - Inset, 1f);
 
-        // Ring sits on the outside, the wheel shrinks to make room for it.
         _ringRadius = float.Max(outer - _ringWidth / 2f, 1f);
         _radius = float.Max(outer - _ringWidth - _ringGap, 1f);
         _ringRect.Set(_x - _ringRadius, _y - _ringRadius, _x + _ringRadius, _y + _ringRadius);
@@ -152,6 +151,7 @@ public sealed class WheelView : View
     {
         UpdateWheelFilter();
         UpdateRingShader();
+        ColorChanged?.Invoke(MauiColor);
         Invalidate();
     }
 
@@ -168,7 +168,6 @@ public sealed class WheelView : View
     {
         base.OnDraw(canvas);
 
-        // --- wheel (RGB scaled by value) ---
         _paint.SetColorFilter(_wheelFilter);
 
         _paint.SetShader(_hueShader);
@@ -180,23 +179,19 @@ public sealed class WheelView : View
         _paint.SetColorFilter(null);
         _paint.SetShader(null);
 
-        // --- value ring (outline only) ---
         canvas.DrawArc(_ringRect, RingStartAngle, RingSweepAngle, false, _ringPaint);
 
-        // --- thumbs ---
         _hsv[0] = _hue;
         _hsv[1] = _saturation;
         _hsv[2] = _value;
         _thumbFillPaint.Color = AColor.HSVToColor(_hsv);
 
-        // wheel thumb
         var hueRad = _hue * MathF.PI / 180f;
         var wx = _x + MathF.Cos(hueRad) * _saturation * _radius;
         var wy = _y + MathF.Sin(hueRad) * _saturation * _radius;
         canvas.DrawCircle(wx, wy, _thumbRadius * 0.8f, _thumbFillPaint);
         canvas.DrawCircle(wx, wy, _thumbRadius * 0.8f, _thumbStrokePaint);
 
-        // ring thumb
         var ringRad = (RingStartAngle + _value * RingSweepAngle) * MathF.PI / 180f;
         var rx = _x + MathF.Cos(ringRad) * _ringRadius;
         var ry = _y + MathF.Sin(ringRad) * _ringRadius;
@@ -215,16 +210,23 @@ public sealed class WheelView : View
         switch (e.ActionMasked)
         {
             case MotionEventActions.Down:
-                // Decide the target once and keep it until the finger lifts,
-                // so dragging across the boundary doesn't switch controls.
                 if (MathF.Abs(dist - _ringRadius) <= _ringWidth / 2f + _touchSlop)
+                {
                     _drag = DragTarget.Ring;
+                }
                 else if (dist <= _radius)
+                {
                     _drag = DragTarget.Wheel;
+                }
                 else
+                {
                     _drag = DragTarget.None;
+                }
 
-                if (_drag == DragTarget.None) return false;
+                if (_drag == DragTarget.None)
+                {
+                    return false;
+                }
                 Parent?.RequestDisallowInterceptTouchEvent(true);
                 break;
 
@@ -245,7 +247,6 @@ public sealed class WheelView : View
                 var rel = (AngleDegrees(dx, dy) - RingStartAngle + 360f) % 360f;
                 if (rel > RingSweepAngle)
                 {
-                    // Finger is in the gap at the bottom: snap to the nearer end.
                     rel = rel - RingSweepAngle < (360f - RingSweepAngle) / 2f ? RingSweepAngle : 0f;
                 }
                 _value = rel / RingSweepAngle;
