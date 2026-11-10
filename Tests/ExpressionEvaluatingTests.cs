@@ -1171,4 +1171,58 @@ public class ExpressionEvaluatingTests
 
         Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6").ToDouble()));
     }
+
+    [Test]
+    public void NestedArithmeticExpressionIsEvaluated()
+    {
+        _session.Type("((1+2)*(3+4)+(5-6)^2)*(2^3+1)");
+
+        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("198").ToDouble()));
+    }
+
+    [Test]
+    public void LongExpressionMixingRootsPowersAndFactorialsIsEvaluated()
+    {
+        _session.Type("sqrt(2)*sqrt(2)+cbrt(27)+(2^10)/4-5!");
+
+        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("141").ToDouble()));
+    }
+
+    [Test]
+    public void LongExpressionMixingLogarithmsAndRootsIsEvaluated()
+    {
+        _session.Type("ln(E^5)-log(1000)+sqrt(16)");
+
+        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6").ToDouble()));
+    }
+
+    [Test]
+    public void LongTrigonometricIdentityIsEvaluated()
+    {
+        _session.Type("sin(p/6)^2+cos(p/6)^2");
+
+        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.One.ToDouble()));
+    }
+
+    [Test]
+    public void LongIntegerExpressionIsExactAtMaximumPrecision()
+    {
+        Number.Precision = Number.MaxPrecision;
+        _session.Type("((2^10+24)*(3^5-3))+123456789012345-(10^6)");
+
+        Assert.That(_session.Value().ToString("G", CultureInfo.InvariantCulture),
+            Is.EqualTo("123456788263865"));
+    }
+
+    [TestCase("sqrt(9)+(2^3)*2", "19")]
+    [TestCase("(5!)/(3+2)", "24")]
+    [TestCase("(2+3)^2-(4^2)", "9")]
+    public void MixedOperatorsRespectGroupingAndPrecedence(string expression, string expected)
+    {
+        _session.Type(expression);
+
+        Assert.That(_session.Value().ToString("G", CultureInfo.InvariantCulture),
+            Is.EqualTo(expected));
+    }
+
 }

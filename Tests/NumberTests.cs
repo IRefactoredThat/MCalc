@@ -224,6 +224,86 @@ public class NumberTests
     });
 
     [Test]
+    public void MaximumPrecisionRootsAndLogarithmsAreCorrect() =>
+        AtPrecision(Number.MaxPrecision, () =>
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(Text(Value(Number.CreateUnsafe(2).Sqrt())), Is.EqualTo(
+                    "1.41421356237309504880168872420969807856967187537695"));
+                Assert.That(Text(Number.CreateUnsafe(2).Cbrt()), Is.EqualTo(
+                    "1.25992104989487316476721060727822835057025146470151"));
+                Assert.That(Text(Value(Number.CreateUnsafe(2).Ln())), Is.EqualTo(
+                    "0.69314718055994530941723212145817656807550013436026"));
+                Assert.That(Text(Value(Number.CreateUnsafe(2).Log())), Is.EqualTo(
+                    "0.30102999566398119521373889472449302676818988146211"));
+            }
+        });
+
+    [Test]
+    public void MaximumPrecisionTrigonometricFunctionsAreCorrect() =>
+        AtPrecision(Number.MaxPrecision, () =>
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(Text(Number.One.Sin()), Is.EqualTo(
+                    "0.84147098480789650665250232163029899962256306079837"));
+                Assert.That(Text(Number.One.Cos()), Is.EqualTo(
+                    "0.54030230586813971740093660744297660373231042061792"));
+                Assert.That(Text(Number.One.Tan()), Is.EqualTo(
+                    "1.55740772465490223050697480745836017308725077238152"));
+                Assert.That(Text(Number.One.Cot()), Is.EqualTo(
+                    "0.64209261593433070300641998659426562023027811391817"));
+                Assert.That(Text(Number.One.Sec()), Is.EqualTo(
+                    "1.85081571768092561791175324139865019347039665509401"));
+                Assert.That(Text(Number.One.Csc()), Is.EqualTo(
+                    "1.18839510577812121626159945237455100352782983409796"));
+                Assert.That(Text(Number.One.Atan()), Is.EqualTo(
+                    "0.78539816339744830961566084581987572104929234984378"));
+                Assert.That(Text(Value(Decimal(0.5m).Asin())), Is.EqualTo(
+                    "0.52359877559829887307710723054658381403286156656252"));
+                Assert.That(Text(Value(Decimal(0.5m).Acos())), Is.EqualTo(
+                    "1.04719755119659774615421446109316762806572313312504"));
+            }
+        });
+
+    [Test]
+    public void MaximumPrecisionHyperbolicFunctionsAreCorrect() =>
+        AtPrecision(Number.MaxPrecision, () =>
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(Text(Number.One.Sinh()), Is.EqualTo(
+                    "1.1752011936438014568823818505956008151557179813341"));
+                Assert.That(Text(Number.One.Cosh()), Is.EqualTo(
+                    "1.54308063481524377847790562075706168260152911236586"));
+                Assert.That(Text(Number.One.Tanh()), Is.EqualTo(
+                    "0.76159415595576488811945828260479359041276859725794"));
+                Assert.That(Text(Number.One.Asinh()), Is.EqualTo(
+                    "0.88137358701954302523260932497979230902816032826164"));
+                Assert.That(Text(Value(Number.CreateUnsafe(2).Acosh())), Is.EqualTo(
+                    "1.31695789692481670862504634730796844402698197146752"));
+                Assert.That(Text(Value(Decimal(0.5m).Atanh())), Is.EqualTo(
+                    "0.54930614433405484569762261846126285232374527891137"));
+            }
+        });
+
+    [Test]
+    public void LargeAnglesAreReducedToMaximumPrecisionAccuracy() =>
+        AtPrecision(Number.MaxPrecision, () =>
+        {
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(Text(Number.Parse("1E+5", Invariant).Sin()), Is.EqualTo(
+                    "0.03574879797201650931647050069580882900904569257811"));
+                Assert.That(Text(Number.Parse("1E+10", Invariant).Sin()), Is.EqualTo(
+                    "-0.48750602508751069152779429434810604167644731692279"));
+                Assert.That(Text(Number.Parse("1E+100", Invariant).Cos()), Is.EqualTo(
+                    "-0.92808190507465534345619464377695592818318207643905"));
+            }
+        });
+
+    [Test]
     public void SineOfAnAngleWithManyWholeDigitsIsReduced() => AtPrecision(10, () =>
     {
         var sine = Number.Parse("1E+100", Invariant).Sin();
@@ -284,8 +364,6 @@ public class NumberTests
             var square = Number.CreateUnsafe(BigInteger.Parse("10000000000000001"));
             var root = Value(square.Sqrt());
 
-            // Math.Sqrt cannot distinguish 10^16 + 1 from 10^16, so this
-            // result can only be produced by the fixed-point path.
             Assert.That(Text(root), Is.EqualTo("100000000.000000005"));
         });
 
