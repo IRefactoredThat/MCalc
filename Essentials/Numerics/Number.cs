@@ -38,10 +38,12 @@ public readonly partial struct Number : IEquatable<Number>, IComparable<Number>,
 
     /// <summary>
     /// Maximum number of digits allowed before the decimal separator.
-    /// Values produced by operations are limited to this whole-part size.
     /// </summary>
     public const int MaxWholeDigits = 500;
-
+    /// <summary>
+    /// Maximum number a factorial can be calculated for. Must be manually updated
+    /// with <see cref="MaxWholeDigits"/>. Used for maximum performance.
+    /// </summary>
     private const int FactorialBound = 250;
     private const int MaxExponent = 100_000;
 
