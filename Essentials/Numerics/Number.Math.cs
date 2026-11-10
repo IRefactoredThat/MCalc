@@ -106,7 +106,7 @@ public readonly partial struct Number
 
     public Number Negate() => FromScaled(-_scaled, _scale);
 
-    public Number Abs() => this < Zero ? Negate() : this;
+    public Number Abs() => _scaled.Sign < 0 ? Negate() : this;
 
     public Result<Number> Ln()
     {
@@ -129,7 +129,7 @@ public readonly partial struct Number
 
         var scale = WorkingScale;
         var logarithm = ToScaled(scale).Ln(scale);
-        var ln10 = (10 * BigIntegerExtensions.Pow10(scale)).Ln(scale);
+        var ln10 = BigIntegerExtensions.Ln10(scale);
 
         return FromWorking((logarithm * BigIntegerExtensions.Pow10(scale))
             .DivideRounded(ln10), scale);
@@ -459,20 +459,26 @@ public readonly partial struct Number
     {
         var scale = WorkingScale;
         var value = ToScaled(scale);
-        var positive = value.Exp(scale);
-        var negative = (-value).Exp(scale);
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var exponential = BigInteger.Abs(value).Exp(scale);
+        var inverse = (scaleFactor * scaleFactor).DivideRounded(exponential);
+        var difference = value.Sign < 0
+            ? inverse - exponential
+            : exponential - inverse;
 
-        return FromWorking((positive - negative).DivideRounded(2), scale);
+        return FromWorking(difference.DivideRounded(2), scale);
     }
 
     public Number Cosh()
     {
         var scale = WorkingScale;
         var value = ToScaled(scale);
-        var positive = value.Exp(scale);
-        var negative = (-value).Exp(scale);
+        var scaleFactor = BigIntegerExtensions.Pow10(scale);
+        var exponential = BigInteger.Abs(value).Exp(scale);
+        var inverse = (scaleFactor * scaleFactor).DivideRounded(exponential);
+        var sum = exponential + inverse;
 
-        return FromWorking((positive + negative).DivideRounded(2), scale);
+        return FromWorking(sum.DivideRounded(2), scale);
     }
 
     public Number Tanh()

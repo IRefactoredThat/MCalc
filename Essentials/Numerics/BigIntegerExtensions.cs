@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Collections.Concurrent;
 
 namespace Essentials.Numerics;
 
@@ -6,25 +7,30 @@ internal static class BigIntegerExtensions
 {
     private const int CachedPowerCount =
         Number.MaxWholeDigits + Number.MaxPrecision + 1;
+    private const int CachedConstantCount =
+        Number.MaxWholeDigits + Number.MaxPrecision + 16;
     private const int CachedIntegerCount = 8_192;
     private const double Log2OfTen = 3.32192809488736234787;
 
-    private static readonly Dictionary<int, BigInteger> PowersOfTen = new();
-    private static readonly Dictionary<int, BigInteger> SmallIntegers = new();
+    private static readonly ConcurrentDictionary<int, BigInteger> PowersOfTen = new();
+    private static readonly ConcurrentDictionary<int, BigInteger> PiValues = new();
+    private static readonly ConcurrentDictionary<int, BigInteger> Ln2Values = new();
+    private static readonly ConcurrentDictionary<int, BigInteger> Ln10Values = new();
+    private static readonly ConcurrentDictionary<int, BigInteger> SmallIntegers = new();
 
     public static BigInteger Pow10(int exponent)
     {
-        if (PowersOfTen.TryGetValue(exponent, out var power))
+        if (exponent < 0)
         {
-            return power;
+            throw new ArgumentOutOfRangeException(nameof(exponent));
         }
 
-        var cachedValue = BigInteger.Pow(10, exponent);
-        if (exponent < CachedPowerCount)
+        if (exponent >= CachedPowerCount)
         {
-            PowersOfTen.Add(exponent, cachedValue);
+            return BigInteger.Pow(10, exponent);
         }
-        return cachedValue;
+
+        return PowersOfTen.GetOrAdd(exponent, static value => BigInteger.Pow(10, value));
     }
 
     /// <summary>
@@ -66,28 +72,51 @@ internal static class BigIntegerExtensions
         return absolute >= Pow10(Number.MaxWholeDigits + scale);
     }
 
-    internal static BigInteger Pi(int scale) =>
-        BigInteger.Parse(Number.PiDigits.AsSpan(0, scale + 2))
-            .Rescale(scale + 1, scale);
+    internal static BigInteger Pi(int scale)
+    {
+        if (scale >= CachedConstantCount)
+        {
+            return BigInteger.Parse(Number.PiDigits.AsSpan(0, scale + 2))
+                .Rescale(scale + 1, scale);
+        }
 
-    private static BigInteger Ln2(int scale) =>
-        BigInteger.Parse(Number.Ln2Digits.AsSpan(0, scale + 1))
-            .Rescale(scale + 1, scale);
+        return PiValues.GetOrAdd(scale, static value =>
+            BigInteger.Parse(Number.PiDigits.AsSpan(0, value + 2))
+                .Rescale(value + 1, value));
+    }
+
+    private static BigInteger Ln2(int scale)
+    {
+        if ((uint)scale >= CachedConstantCount)
+        {
+            return BigInteger.Parse(Number.Ln2Digits.AsSpan(0, scale + 1))
+                .Rescale(scale + 1, scale);
+        }
+
+        return Ln2Values.GetOrAdd(scale, static value =>
+            BigInteger.Parse(Number.Ln2Digits.AsSpan(0, value + 1))
+                .Rescale(value + 1, value));
+    }
+
+    internal static BigInteger Ln10(int scale)
+    {
+        if ((uint)scale >= CachedConstantCount)
+        {
+            return (10 * Pow10(scale)).Ln(scale);
+        }
+
+        return Ln10Values.GetOrAdd(scale, static value =>
+            (10 * Pow10(value)).Ln(value));
+    }
 
     private static BigInteger SmallInteger(int value)
     {
-        if (SmallIntegers.TryGetValue(value, out var result))
+        if ((uint)value >= CachedIntegerCount)
         {
-            return result;
+            return new BigInteger(value);
         }
 
-        var cachedValue = new BigInteger(value);
-        if (value < CachedIntegerCount)
-        {
-            SmallIntegers.Add(value, cachedValue);
-        }
-
-        return cachedValue;
+        return SmallIntegers.GetOrAdd(value, static item => new BigInteger(item));
     }
 
     public static BigInteger Exp(this BigInteger scaled, int scale)
@@ -201,6 +230,14 @@ internal static class BigIntegerExtensions
             {
                 throw new OverflowException();
             }
+        }
+
+        // Bringing the mantissa into [0.75, 1.5) shrinks the series argument
+        // below 0.2, so the atanh series converges faster
+        if (mantissa + mantissa > scaleFactor * 3)
+        {
+            mantissa = mantissa.DivideRounded(2);
+            exponent++;
         }
 
         var z = ((mantissa - scaleFactor) * scaleFactor).DivideRounded(mantissa + scaleFactor);
@@ -339,42 +376,33 @@ internal static class BigIntegerExtensions
         }
     }
 
-    private static (BigInteger Reduced, bool NegateCosine) ReduceAngle(
+    private static (BigInteger Reduced, int Quadrant) ReduceAngle(
         BigInteger scaled, int scale)
     {
         var integerDigits = scaled.IntegerDigits() - scale;
         var reductionScale = scale + Math.Max(0, integerDigits) + 5;
-        var twoPi = 2 * Pi(reductionScale);
+        var pi = Pi(reductionScale);
+        var twoPi = 2 * pi;
         var widened = scaled * Pow10(reductionScale - scale);
-        var turns = widened.DivideRounded(twoPi);
-        var reduced = (widened - turns * twoPi).Rescale(reductionScale, scale);
+        var reduced = widened.FlooredRemainder(twoPi);
 
-        var pi = Pi(scale);
-        var halfPi = pi / 2;
-
-        if (reduced > halfPi)
+        if (reduced > pi)
         {
-            return (pi - reduced, true);
+            reduced -= twoPi;
         }
 
-        if (reduced < -halfPi)
-        {
-            return (-pi - reduced, true);
-        }
+        // Fold the angle into [-pi/4, pi/4] around the nearest quarter turn.
+        // The trigonometric series then need roughly half as many terms.
+        var quadrant = (int)((2 * reduced).DivideRounded(pi));
+        reduced -= quadrant * (pi / 2);
 
-        return (reduced, false);
+        var normalizedQuadrant = ((quadrant % 4) + 4) % 4;
+        return (reduced.Rescale(reductionScale, scale), normalizedQuadrant);
     }
 
-    public static BigInteger Sin(this BigInteger scaled, int scale)
+    private static BigInteger SinSeries(this BigInteger reduced, int scale)
     {
         var scaleFactor = Pow10(scale);
-
-        if (scaled.IsZero)
-        {
-            return BigInteger.Zero;
-        }
-
-        var (reduced, _) = ReduceAngle(scaled, scale);
         var squared = (reduced * reduced).DivideRounded(scaleFactor);
         var sineTerm = reduced;
         var sineSum = reduced;
@@ -401,16 +429,9 @@ internal static class BigIntegerExtensions
         return sineSum;
     }
 
-    public static BigInteger Cos(this BigInteger scaled, int scale)
+    private static BigInteger CosSeries(this BigInteger reduced, int scale)
     {
         var scaleFactor = Pow10(scale);
-
-        if (scaled.IsZero)
-        {
-            return scaleFactor;
-        }
-
-        var (reduced, negateCosine) = ReduceAngle(scaled, scale);
         var squared = (reduced * reduced).DivideRounded(scaleFactor);
         var cosineTerm = scaleFactor;
         var cosineSum = scaleFactor;
@@ -434,19 +455,54 @@ internal static class BigIntegerExtensions
             }
         }
 
-        return negateCosine ? -cosineSum : cosineSum;
+        return cosineSum;
+    }
+
+    public static BigInteger Sin(this BigInteger scaled, int scale)
+    {
+        if (scaled.IsZero)
+        {
+            return BigInteger.Zero;
+        }
+
+        var (reduced, quadrant) = ReduceAngle(scaled, scale);
+
+        return quadrant switch
+        {
+            0 => reduced.SinSeries(scale),
+            1 => reduced.CosSeries(scale),
+            2 => -reduced.SinSeries(scale),
+            _ => -reduced.CosSeries(scale)
+        };
+    }
+
+    public static BigInteger Cos(this BigInteger scaled, int scale)
+    {
+        if (scaled.IsZero)
+        {
+            return Pow10(scale);
+        }
+
+        var (reduced, quadrant) = ReduceAngle(scaled, scale);
+
+        return quadrant switch
+        {
+            0 => reduced.CosSeries(scale),
+            1 => -reduced.SinSeries(scale),
+            2 => -reduced.CosSeries(scale),
+            _ => reduced.SinSeries(scale)
+        };
     }
 
     private static (BigInteger Sine, BigInteger Cosine) SinCos(this BigInteger scaled, int scale)
     {
-        var scaleFactor = Pow10(scale);
-
         if (scaled.IsZero)
         {
-            return (BigInteger.Zero, scaleFactor);
+            return (BigInteger.Zero, Pow10(scale));
         }
 
-        var (reduced, negateCosine) = ReduceAngle(scaled, scale);
+        var (reduced, quadrant) = ReduceAngle(scaled, scale);
+        var scaleFactor = Pow10(scale);
         var squared = (reduced * reduced).DivideRounded(scaleFactor);
         var sineTerm = reduced;
         var sineSum = reduced;
@@ -477,7 +533,13 @@ internal static class BigIntegerExtensions
             }
         }
 
-        return (sineSum, negateCosine ? -cosineSum : cosineSum);
+        return quadrant switch
+        {
+            0 => (sineSum, cosineSum),
+            1 => (cosineSum, -sineSum),
+            2 => (-sineSum, -cosineSum),
+            _ => (-cosineSum, sineSum)
+        };
     }
 
     public static BigInteger Tan(this BigInteger scaled, int scale)
@@ -515,9 +577,9 @@ internal static class BigIntegerExtensions
         }
 
         var doublings = 0;
-        var quarter = scaleFactor / 4;
+        var reductionThreshold = scaleFactor / 16;
 
-        while (value > quarter)
+        while (value > reductionThreshold)
         {
             var square = scaleFactor + (value * value).DivideRounded(scaleFactor);
             var root = square.Sqrt(scale);
