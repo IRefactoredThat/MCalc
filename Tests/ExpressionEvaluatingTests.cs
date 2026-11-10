@@ -24,7 +24,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("7-3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4")));
     }
 
     [Test]
@@ -40,7 +40,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("6*7");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("42").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("42")));
     }
 
     [Test]
@@ -48,7 +48,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("7/2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3.5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3.5")));
     }
 
     [Test]
@@ -56,7 +56,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("7%3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1")));
     }
 
     [Test]
@@ -64,7 +64,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("1.5+2.25");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3.75").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3.75")));
     }
 
     [Test]
@@ -74,7 +74,7 @@ public class ExpressionEvaluatingTests
         _session.Info.NumberDecimalSeparator = ",";
         _session.Type("1,5+2,5");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4")));
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3*4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("14").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("14")));
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2*3-4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -98,7 +98,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+6/3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4")));
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("1+5%3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -114,7 +114,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3*4/2%3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -122,7 +122,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2*3^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("18").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("18")));
     }
 
     [Test]
@@ -130,7 +130,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("36/3^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4")));
     }
 
     [Test]
@@ -138,7 +138,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^2*3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("12").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("12")));
     }
 
     [Test]
@@ -146,7 +146,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3*4-6/2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("11").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("11")));
     }
 
     [Test]
@@ -154,7 +154,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2*sqrt(9)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("6")));
     }
 
     [Test]
@@ -162,7 +162,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^sin2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1.8781306511987292").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1.8781306511987291509")));
     }
 
     [Test]
@@ -170,7 +170,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("3!^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("36").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("36")));
     }
 
     [Test]
@@ -178,7 +178,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^3!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("64").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("64")));
     }
 
     [Test]
@@ -186,7 +186,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("8").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("8")));
     }
 
     [Test]
@@ -194,7 +194,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("-2^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-4").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-4")));
     }
 
     [Test]
@@ -202,7 +202,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("-sqrt(4)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-2")));
     }
 
     [Test]
@@ -210,7 +210,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("7-2-3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -218,7 +218,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("8/2/2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -226,7 +226,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^2^3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("256").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("256")));
     }
 
     [Test]
@@ -234,7 +234,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^3^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("512").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("512")));
     }
 
     [Test]
@@ -242,7 +242,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^3^2+1");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("513").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("513")));
     }
 
     [Test]
@@ -250,7 +250,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.125")));
     }
 
     [Test]
@@ -258,7 +258,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-2^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.0625").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.0625")));
     }
 
     [Test]
@@ -266,7 +266,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^(0-3)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.125")));
     }
 
     [Test]
@@ -274,7 +274,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3+4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4.125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4.125")));
     }
 
     [Test]
@@ -282,7 +282,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3-4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-3.875").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-3.875")));
     }
 
     [Test]
@@ -290,7 +290,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3*4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.5")));
     }
 
     [Test]
@@ -298,7 +298,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3/4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.03125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.03125")));
     }
 
     [Test]
@@ -306,7 +306,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3%2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.125")));
     }
 
     [Test]
@@ -314,7 +314,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^-3^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.001953125").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.001953125")));
     }
 
     [Test]
@@ -322,7 +322,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("-2^2^3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-256").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-256")));
     }
 
     [Test]
@@ -330,7 +330,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2p^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("19.739208802178716").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("19.73920880217871723764")));
     }
 
     [Test]
@@ -338,7 +338,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2^2p");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("12.566370614359172").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("12.56637061435917295384")));
     }
 
     [Test]
@@ -346,7 +346,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("--5");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -354,7 +354,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0-0-5");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-5")));
     }
 
     [Test]
@@ -362,7 +362,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("+-5");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-5")));
     }
 
     [Test]
@@ -370,7 +370,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(2+3)*4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("20").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("20")));
     }
 
     [Test]
@@ -378,7 +378,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("((2+3))*4");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("20").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("20")));
     }
 
     [Test]
@@ -386,7 +386,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(((5)))");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -394,7 +394,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2*(3*4)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("24").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("24")));
     }
 
     [Test]
@@ -402,7 +402,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(2+3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -410,7 +410,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -418,7 +418,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(2+(3*4)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("14").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("14")));
     }
 
     [Test]
@@ -426,7 +426,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(0-3*4)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-12").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-12")));
     }
 
     [Test]
@@ -450,7 +450,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2+3)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("5")));
     }
 
     [Test]
@@ -458,7 +458,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("5!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("120").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("120")));
     }
 
     [Test]
@@ -466,7 +466,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("3!!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("720").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("720")));
     }
 
     [Test]
@@ -474,7 +474,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("(3+2)!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("120").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("120")));
     }
 
     [Test]
@@ -482,7 +482,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("20!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2.43290200817664E+18").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2.43290200817664E+18")));
     }
 
     [Test]
@@ -556,7 +556,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sqrt(9)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -572,7 +572,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("cbrt(0-8)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-2")));
     }
 
     [Test]
@@ -580,7 +580,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("cbrt(27)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -588,7 +588,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("ln(E)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1")));
     }
 
     [Test]
@@ -596,7 +596,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("ln(100)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("4.605170185988092").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("4.60517018598809136804")));
     }
 
     [Test]
@@ -620,7 +620,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("log(1000)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -628,7 +628,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("log(2)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.3010299956639812").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.30102999566398119521")));
     }
 
     [Test]
@@ -652,7 +652,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("log(10^3)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -660,7 +660,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("asin(1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1.5707963267948966").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1.57079632679489661923")));
     }
 
     [TestCase("asin(2)")]
@@ -685,7 +685,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("asec(2)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("60").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("60")));
     }
 
     [Test]
@@ -693,7 +693,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sinsin0");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -701,7 +701,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sqrt(2)*sqrt(2)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -709,7 +709,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sqrt(2)^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -718,7 +718,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("sin(30)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.5")));
     }
 
     [Test]
@@ -726,7 +726,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sin(30)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-0.9880316240928618").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-0.98803162409286178999")));
     }
 
     [Test]
@@ -735,7 +735,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("tan(45)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1")));
     }
 
     [Test]
@@ -744,7 +744,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("csc(30)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -753,7 +753,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("cot(45)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1")));
     }
 
     [Test]
@@ -762,7 +762,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("sec(60)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -771,7 +771,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("atan(1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("45").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("45")));
     }
 
     [TestCase("asin(0.5)", 3, "30")]
@@ -811,7 +811,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("asin(0.5)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("30").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("30")));
     }
 
     [Test]
@@ -819,7 +819,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("atan(1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.7853981633974483").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.78539816339744830962")));
     }
 
     [Test]
@@ -827,7 +827,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("asec(2)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1.0471975511965979").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1.04719755119659774615")));
     }
 
     [Test]
@@ -836,7 +836,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("acot(1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("45").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("45")));
     }
 
     [Test]
@@ -844,7 +844,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("acot(1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.7853981633974483").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.78539816339744830962")));
     }
 
     [Test]
@@ -858,7 +858,7 @@ public class ExpressionEvaluatingTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1.1752011936438014").ToDouble()));
+            Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1.17520119364380145688")));
             Assert.That(_session.Value(), Is.EqualTo(radians));
         }
     }
@@ -868,7 +868,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("p");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3.141592653589793").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3.14159265358979323846")));
     }
 
     [Test]
@@ -876,7 +876,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("2p");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6.283185307179586").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("6.28318530717958647692")));
     }
 
     [Test]
@@ -884,7 +884,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sin2p");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2.8566421160436644").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2.85664211604366420008")));
     }
 
     [Test]
@@ -892,7 +892,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("E");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2.718281828459045").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2.71828182845904523536")));
     }
 
     [Test]
@@ -900,7 +900,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("cos(p)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-1")));
     }
 
     [Test]
@@ -909,7 +909,7 @@ public class ExpressionEvaluatingTests
         _session.Mode = AngleMode.DEG;
         _session.Type("cos(180)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-1")));
     }
 
     [Test]
@@ -917,7 +917,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("p^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("9.869604401089358").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("9.86960440108935861882")));
     }
 
     [Test]
@@ -925,7 +925,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("p+p");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6.283185307179586").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("6.28318530717958647692")));
     }
 
     [Test]
@@ -933,7 +933,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("ln(E^2)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2")));
     }
 
     [Test]
@@ -941,7 +941,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0-7%3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-1").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-1")));
     }
 
     [Test]
@@ -949,7 +949,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0%5");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -957,7 +957,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("3%7");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("3")));
     }
 
     [Test]
@@ -965,7 +965,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("5%2.5");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -1048,7 +1048,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("123456789012345*1");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("123456789012345").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("123456789012345")));
     }
 
     [Test]
@@ -1073,7 +1073,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("1234567890+1234567890");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("2469135780").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("2469135780")));
     }
 
     [Test]
@@ -1081,7 +1081,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0.1+0.2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.3").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.3")));
     }
 
     [Test]
@@ -1089,7 +1089,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("1/3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.3333333333333333").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.33333333333333333333")));
     }
 
     [Test]
@@ -1097,7 +1097,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0.1+0.2+0.3");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.6").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.6")));
     }
 
     [Test]
@@ -1105,7 +1105,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sin(p/6)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("0.5").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("0.5")));
     }
 
     [Test]
@@ -1113,7 +1113,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0*5");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -1121,7 +1121,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0-0");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -1129,7 +1129,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("1000000*1000000");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("1000000000000").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("1000000000000")));
     }
 
     [Test]
@@ -1137,7 +1137,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("0-0.0000001");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("-1E-07").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("-1E-07")));
     }
 
     [Test]
@@ -1145,7 +1145,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("6*0");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -1153,7 +1153,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("6*0*2");
 
-        Assert.That(_session.Value().ToDouble(), Is.Zero);
+        Assert.That(_session.Value(), Is.EqualTo(Number.Zero));
     }
 
     [Test]
@@ -1169,7 +1169,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("6%0");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("6")));
     }
 
     [Test]
@@ -1177,7 +1177,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("((1+2)*(3+4)+(5-6)^2)*(2^3+1)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("198").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("198")));
     }
 
     [Test]
@@ -1185,7 +1185,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sqrt(2)*sqrt(2)+cbrt(27)+(2^10)/4-5!");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("141").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("141")));
     }
 
     [Test]
@@ -1193,7 +1193,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("ln(E^5)-log(1000)+sqrt(16)");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.Parse("6").ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.Parse("6")));
     }
 
     [Test]
@@ -1201,7 +1201,7 @@ public class ExpressionEvaluatingTests
     {
         _session.Type("sin(p/6)^2+cos(p/6)^2");
 
-        Assert.That(_session.Value().ToDouble(), Is.EqualTo(Number.One.ToDouble()));
+        Assert.That(_session.Value(), Is.EqualTo(Number.One));
     }
 
     [Test]
