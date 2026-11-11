@@ -8,8 +8,9 @@ A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc p
 
 ### Expression Evaluation
 
-- **Real-time calculation** - results update as you build an expression, not just when you press =
-- **Arithmetic operations** - add (`+`), subtract (`-`), divide (`÷`), multiply (`x`)
+- **High precision** - custom numeric type to support accuracy and precision
+- **Real-time calculation** - results update as you update the expression, not just when you press =
+- **Arithmetic operations** - add (`+`), subtract (`-`), divide (`÷`), multiply (`×`)
 - **Scientific operations** - power (`^`), square root (`√`), cube root (`∛`), natural log (`ln`), base-10 log (`log`), factorial (`n!`), modulo (`%`)
 - **Trigonometric operations** - standard (`sin`, `cos`, `tan`), inverse (`asin`, `acos`, `atan`), reciprocal (`sec`, `csc`, `cot`), their inverses (`asec`, `acsc`, `acot`), and the complete **hyperbolic** set: `sinh`, `cosh`, `tanh`, `csch`, `sech`, `coth`, `asinh`, `acosh`, `atanh`, `acsch`, `asech`, `acoth`
 - **Angle modes** - switch between radians (RAD) and degrees (DEG)
@@ -25,7 +26,9 @@ A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc p
 
 - **Material 3 dynamic theming** - seven scheme styles: Vibrant, TonalSpot, Expressive, Rainbow, FruitSalad, Content, Fidelity
 - **Wallpaper-based colors** - on Android 12+, pull colors straight from your wallpaper
-- **Manual color control** - pick a seed color and MCalc derives the entire palette
+- **Derived color control** - pick a seed color and get the entire palette derived
+- **Manual color control** - pick each color for the palette separately
+- **Custom color presets** - a bunch of predefined palettes with base-16 schemes you know
 - **Light, dark, or auto** - follow the system theme or lock to one
 - **Darker mode** - darken the tone of colors to reduce eye strain and save battery
 - **Fine-tuned typography** - three monospace fonts or your system font, with independent scaling for input, output, history, and every settings screen (open to changing fonts)
@@ -36,47 +39,11 @@ A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc p
 - **Click to copy** - automatically copies expression or result from history into the current calculation
 - **Live formatting** - configurable decimal separator (comma or period)
 - **Smart E-notation** - force scientific notation on, off, or let it switch automatically by magnitude
-- **Configurable animations** - toggle or tune click, transition, and morph animations
-- **Readable at a glance** - large, legible input and output
+- **Configurable animations** - toggle or set click, transition, and morph animations
 
 ### In-app screenshots
 
 | | | |
 |:---:|:---:|:---:|
-| <img src="Screenshots/display.png" width="230" alt="Main calculator display"> | <img src="Screenshots/settings.png" width="230" alt="Settings page"> | <img src="Screenshots/formatting.png" width="230" alt="Number formatting settings"> |
-| <img src="Screenshots/layout.png" width="230" alt="Custom layout editor"> | <img src="Screenshots/history.png" width="230" alt="Expression history"> | |
-
-## Development (with nix)
-
-The build toolchain (the .NET SDK with the Android workload inside its
-store root, the pinned Android SDK, and a JDK) is provided by a Nix flake in
-this repository.
-
-```sh
-direnv allow .      # once: auto-activates the shell on cd (needs direnv)
-```
-
-Then build with a script from project root:
-
-```sh
-./nix/build-android.sh
-```
-
-The flake pins `nixpkgs` and `tadfisher/android-nixpkgs`, so the toolchain is
-reproducible and cached after the first build.
-
-### Updating the toolchain
-
-```sh
-nix run .#update-workload           # newest published .NET Android workload
-nix run .#update-sdk                # newest .NET SDK patch of the pinned line
-nix run .#upgrade-sdk {version}     # move the toolchain to another .NET SDK line
-nix run .#status                    # what is pinned, and whether an update exists
-```
-
-To lock an existing workload state instead of bootstrapping a new one, run the
-generator directly:
-
-```sh
-DOTNET_STATE=~/.dotnet ./nix/gen-android-workload.sh
-```
+| <img src="Screenshots/display.png" width="230" alt="Main calculator display"> | <img src="Screenshots/history.png" width="230" alt="Expression history"> | <img src="Screenshots/formatting.png" width="230" alt="Number formatting settings"> |
+| <img src="Screenshots/settings.png" width="230" alt="Settings"> | <img src="Screenshots/appearance.png" width="230" alt="Appearance settings"> | <img src="Screenshots/layout.png" width="230" alt="Custom layout editor"> |
