@@ -1,8 +1,17 @@
-# MCalc
+<h1 align="center">
+  <img src="assets/app-icon.svg" width="56" height="56" alt="MCalc app icon" align="top">
+  <big><big>MCalc</big></big>
+</h1>
 
-A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc prioritizes readability, customization, and the advanced functions most basic mobile calculators leave out.
+<p><big>A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc prioritizes readability, customization, and the advanced functions most basic mobile calculators leave out.</big></p>
 
-[![Get it on Obtainium](assets/badge_obtainium.png)](https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.mcalc.app%2522%252C%2522url%2522%253A%2522https%253A%252F%252Fgithub.com%252FIRefactoredThat%252FMCalc%2522%252C%2522author%2522%253A%2522IRefactoredThat%2522%252C%2522name%2522%253A%2522MCalc%2522%257D)
+<h1 align="center">Download</h1>
+
+<p align="center">
+  <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.mcalc.app%2522%252C%2522url%2522%253A%2522https%253A%2F%2Fgithub.com%252FIRefactoredThat%252FMCalc%2522%252C%2522author%2522%253A%2522IRefactoredThat%2522%252C%2522name%2522%253A%2522MCalc%2522%257D"><img src="assets/badge_obtainium.png" height="112" alt="Get it on Obtainium"></a>
+  &emsp;
+  <a href="https://github.com/IRefactoredThat/MCalc/releases"><img src="assets/badge_github.svg" height="112" alt="Get it on GitHub"></a>
+</p>
 
 ## Features
 
@@ -45,5 +54,5 @@ A clean, high-precision calculator for Android, built with .NET 10 MAUI. MCalc p
 
 | | | |
 |:---:|:---:|:---:|
-| <img src="Screenshots/display.png" width="230" alt="Main calculator display"> | <img src="Screenshots/history.png" width="230" alt="Expression history"> | <img src="Screenshots/formatting.png" width="230" alt="Number formatting settings"> |
-| <img src="Screenshots/settings.png" width="230" alt="Settings"> | <img src="Screenshots/appearance.png" width="230" alt="Appearance settings"> | <img src="Screenshots/layout.png" width="230" alt="Custom layout editor"> |
+| <img src="screenshots/display.png" width="230" alt="Main calculator display"> | <img src="screenshots/history.png" width="230" alt="Expression history"> | <img src="screenshots/formatting.png" width="230" alt="Number formatting settings"> |
+| <img src="screenshots/settings.png" width="230" alt="Settings"> | <img src="screenshots/appearance.png" width="230" alt="Appearance settings"> | <img src="screenshots/layout.png" width="230" alt="Custom layout editor"> |
